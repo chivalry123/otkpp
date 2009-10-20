@@ -1,0 +1,14 @@
+
+INCLUDE_DIRECTORIES(${OTKPP_INCLUDE_DIRS})
+
+ADD_EXECUTABLE(otktest otktest.cpp)
+
+TARGET_LINK_LIBRARIES(otktest otkpp matheval)
+
+IF(WITH_FORTRAN)
+  TARGET_LINK_LIBRARIES(otktest otkpp_fortran gfortran)
+ENDIF(WITH_FORTRAN)
+
+IF(WITH_GSL)
+  TARGET_LINK_LIBRARIES(otktest gsl gslcblas)
+ENDIF(WITH_GSL)

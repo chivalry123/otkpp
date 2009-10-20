@@ -1,0 +1,98 @@
+Introduction
+------------
+OTK++ is a nonlinear constrained/unconstrained optimization library 
+written in C++. It also has a Python-based interface for testing 
+and comparing algorithms and a Qt-based GUI for demonstration 
+purposes. Linear algebra operations and Python interfaces are 
+written by using uBLAS and Boost.Python.
+
+Implemented algorithms
+----------------------
+The currently implemented algorithms are for minimization of 
+functions of the form f:R^n->R. Some algorithms also support 
+imposing constraints.
+
+The following algorithms are implemented by the author of this package:
+  Line search algorithms:
+    * More and Thuente
+    * Fletcher
+  Trust region algorithms:
+    * Steihaug
+    * Dogleg
+  Multidimensional solvers:
+    * Hooke-Jeeves
+    * PARTAN
+    * Steihaug-SR1
+    * Dogleg-BFGS
+    * Fletcher-Reeves and Polak-Ribiere conjugate gradient 
+      algorithms
+    * BFGS and L-BFGS algorithms
+    * Modified Newton
+
+Other algorithms included in this library:
+  * Algorithms implemented in the GSL multimin package (version 1.11)
+  * L-BFGS-B for bound-constrained large-scale optimization [3]
+  * LMBM algorithm for nonsmooth large-scale optimization [4]
+
+Algorithms to be implemented (either by rewriting from scratch or 
+by using existing Fortran implementations):
+  * Powell's NEWUOA algorithm
+
+Requirements
+------------
+
+Required dependencies:
+  uBLAS   >= 1.34
+  g++     >= 4.2
+  CMake   >= 2.6
+
+Optional dependencies:
+  Library/program   Version    CMake flag                 Enables
+  GSL               >= 1.11    -DWITH_GSL=ON/OFF          GSL minimization algorithms
+  GNU libmatheval   >= 1.1.3   -DWITH_LIBMATHEVAL=ON/OFF  symbolic function evaluation
+  gfortran          >= 4.2     -DWITH_FORTRAN=ON/OFF      algorithms implemented in 
+                                                          Fortran (e.g. LMBM)
+  Qt                >= 4.3     -DWITH_QT=ON/OFF           Qt-based GUI
+  Qwt               >= 5.1     -DWITH_QT=ON/OFF           2d plotting widgets
+  QwtPlot3D         >= 0.2     -DWITH_QT=ON/OFF           3d plotting widgets
+
+NOTE: -DWITH_LIBMATHEVAL does not have effect in the current version, and thus 
+libmatheval is required.
+
+Installation
+------------
+
+Installing the C++ libraries:
+-----------------------------
+
+OTK++ uses CMake as its build system. To install the C++ libraries, 
+extract the otkpp tarball and type the following commands:
+
+  cmake . <optional flags>   <- put your CMake flags here
+  make
+  make install
+
+By default, headers will be installed in /usr/local/include/otkpp, 
+libraries in /usr/local/lib and binaries in /usr/local/bin. You can 
+change the install prefix by appending -DCMAKE_INSTALL_PREFIX=<your-prefix> 
+to the list of CMake flags.
+
+References
+----------
+
+The algorithms implemented in OTK++ are based on the following 
+references:
+
+[1] J. Nocedal and S.J. Wright, Numerical Optimization, 1999
+
+[2] C.T. Kelley, Iterative Methods for Optimization, 1999
+
+[3] C. Zhu, R.H. Byrd and J. Nocedal, L-BFGS-B: Algorithm 778: L-BFGS-B, 
+    FORTRAN routines for large scale bound constrained optimization (1997), 
+    ACM Transactions on Mathematical Software, Vol 23, Num. 4, pp. 550-560
+
+[4] N. Karmitsa,  "LMBM - FORTRAN Subroutines for Large-Scale Nonsmooth 
+    Minimization: User's Manual", TUCS Technical Report, No. 856, Turku 
+    Centre for Computer Science, Turku, 2007.
+
+Seppo Pulkkinen <seppul@utu.fi>

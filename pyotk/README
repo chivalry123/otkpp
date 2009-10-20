@@ -1,0 +1,40 @@
+Introduction
+------------
+
+PyOTK is a Python extension for OTK++. It uses Boost.Python 
+for exposing the OTK++ classes into Python. Several classes 
+and functions for analyzing and visualizing the behaviour of 
+minimization algorithms are implemented in PyOTK.
+
+Requirements
+------------
+
+As PyOTK is an extension of OTK++, it requires that the OTK++ 
+libraries, and they must be installed with either the prefix 
+/usr or /usr/local.
+
+PyOTK has been tested to compile with Python 2.5/2.6 and 
+Boost.Python 1.34. Python 3.0 and newer are not currently 
+supported. PyOTK also requires the following Python libraries:
+
+  Matplotlib  >=  0.98
+  NumPy       >=  1.1.0
+  SciPy       >=  0.6.0
+
+Installation
+------------
+
+PyOTK uses distutils for compiling the C++ interface libraries 
+and copying the Python scripts to appropriate directories in 
+the system path. To install PyOTK, extract the pyotk tarball 
+and type the following command:
+
+  python setup.py install
+
+NOTE: The functionality of the Python interface depends 
+on the flags the OTK++ library was compiled with. The setup.py 
+script automatically parses the configuration file generated 
+by the OTK++ install script and reads the variables it 
+was configured with.
+
+Seppo Pulkkinen <seppul@utu.fi>
