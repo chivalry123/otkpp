@@ -12,12 +12,13 @@ struct solver_state_to_python
     
     PyObject *x_tuple = 
       numpy_utils::vector_to_tuple::convert(solver.getX());
-    //Py_INCREF(x_tuple);
     PyDict_SetItem(classDict, PyString_FromString("x"), x_tuple);
+    Py_DECREF(x_tuple);
     
     PyObject *X_matrix = 
       numpy_utils::matrix_to_ndarray::convert(solver.getXArray());
     PyDict_SetItem(classDict, PyString_FromString("X"), X_matrix);
+    Py_DECREF(X_matrix);
     
     PyDict_SetItem(classDict, PyString_FromString("f"), PyFloat_FromDouble(solver.getFVal()));
     
@@ -25,13 +26,14 @@ struct solver_state_to_python
     {
       PyObject *g_tuple = 
         numpy_utils::vector_to_tuple::convert(solver.getGradient());
-      //Py_INCREF(g_tuple);
       PyDict_SetItem(classDict, PyString_FromString("g"), g_tuple);
+      Py_DECREF(g_tuple);
     }
     
     PyObject *state_class = PyClass_New(NULL, classDict, className);
+    Py_DECREF(classDict);
+    Py_DECREF(className);
     
-    Py_INCREF(state_class);
     return state_class;
   }
 };

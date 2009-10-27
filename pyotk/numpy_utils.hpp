@@ -22,12 +22,12 @@ namespace numpy_utils
     
     return a;
   }
-
+  
   static array zeros(int m, int n)
   {
     return make_array(m, n, 0.0);
   }
-
+  
   struct matrix_to_ndarray
   {
     static PyObject* convert(const matrix< double > &M)
@@ -78,6 +78,14 @@ namespace numpy_utils
 
   struct vector_to_tuple
   {
+    static tuple convert_boost(const vector< double > &v)
+    {
+      list l;
+      for(int i = 0; i < v.size(); i++)
+        l.append(v[i]);
+      return tuple(l);
+    }
+    
     static PyObject* convert(const vector< double > &v)
     {
       list l;

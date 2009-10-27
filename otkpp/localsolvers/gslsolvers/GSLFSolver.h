@@ -11,7 +11,7 @@
 
 using namespace boost::numeric::ublas;
 
-/// Defines the parameters of a GSLDolver.
+/// Defines the parameters of a GSLFSolver.
 struct GSLFSolver_setup : public SolverSetup
 {
   vector< double > stepSize;  ///< initial simplex size

@@ -6,6 +6,10 @@
 class LineMinimizer;
 
 /// Defines a gradient-based solver.
+/**
+ * This class defines additional methods and attributes 
+ * used by all native gradient-based solvers.
+ */
 class GradientSolver : public AbstractGradientSolver
 {
  public:

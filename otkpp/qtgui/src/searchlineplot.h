@@ -11,18 +11,17 @@ class Function;
 
 class SearchLinePlot : public QwtPlot
 {
-public:
+ public:
   SearchLinePlot(QWidget *parent);
-  
   void setFunction(Function *f);
-  
   void setSearchLine(double x1, double y1,
                      double x2, double y2);
-private:
+ private:
   static const int NUM_PLOT_POINTS_;
   
   Function *f_;
   QwtPlotCurve graph_;
+  double lineLength_;
   vector< double > lineSegment_;
   vector< double > lineOrigin_;
   QwtPlotCurve stepPoint_;

@@ -34,8 +34,7 @@ void SearchLinePlot::setFunction(Function *f)
 void SearchLinePlot::setSearchLine(double x1, double y1,
                                    double x2, double y2)
 {
-  double fxOne;
-  double one;
+  double fxMin;
   vector< double > p1(2);
   vector< double > p2(2);
   
@@ -46,20 +45,23 @@ void SearchLinePlot::setSearchLine(double x1, double y1,
   
   lineOrigin_ = p1;
   lineSegment_ = p2 - p1;
+  lineLength_ = sqrt(pow(p2[0]-p1[0], 2.0) + pow(p2[1]-p1[1], 2.0));
   
   double x[NUM_PLOT_POINTS_];
   double fx[NUM_PLOT_POINTS_];
   
   for(int i = 0; i < NUM_PLOT_POINTS_; i++)
   {
-    x[i] = i / (NUM_PLOT_POINTS_ - 1.0) * 2.0;
-    fx[i] = phi_(x[i]);
+    x[i] = i / (NUM_PLOT_POINTS_ - 1.0) * 2.0 * lineLength_;
+    fx[i] = phi_(x[i] / lineLength_);
   }
   
   graph_.setData(x, fx, NUM_PLOT_POINTS_);
-  one = 1.0;
-  fxOne = phi_(1.0);
-  stepPoint_.setData(&one, &fxOne, 1);
+  fxMin = phi_(1.0);
+  stepPoint_.setData(&lineLength_, &fxMin, 1);
+  
+  setAxisScale(QwtPlot::xBottom, 0.0, 2.0 * lineLength_);
+  
   replot();
 }
 

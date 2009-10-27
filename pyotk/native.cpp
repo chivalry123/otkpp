@@ -59,16 +59,18 @@ struct SolverInput
 
 struct SolverResults_Python
 {
-  SolverInput input;       // the used input parameters
-  bool converged;          // was the chosen stopping criterion satisfied
-  int n;                   // number of variables
-  int num_iter;            // number of used iterations
-  int num_func_eval;       // number of function evaluations
-  int num_grad_eval;       // number of gradient evaluations
-  list states;             // list of solver states for each iteration step
-  double time;             // used time
-  double term_val;         // the final termination test value
-  vector< double > xMin;   // the a priori-known minimizer, if it has been specified
+  SolverInput input;        // the used input parameters
+  bool converged;           // was the chosen stopping criterion satisfied
+  double f_final;           // the final estimate for the minimum function value
+  int n;                    // number of variables
+  int num_iter;             // number of used iterations
+  int num_func_eval;        // number of function evaluations
+  int num_grad_eval;        // number of gradient evaluations
+  list states;              // list of solver states for each iteration step
+  double time;              // used time
+  double term_val;          // the final termination test value
+  //vector< double > x_min;   // the a priori-known minimizer, if it has been specified
+  tuple x_final;            // the final estimate for the minimizer
 };
 
 SolverResults_Python minimize(NativeSolver &solver,
@@ -167,14 +169,16 @@ SolverResults_Python minimize(NativeSolver &solver,
     results.input.hasConstraints = false;
   results.input.solverInfo.m = solver.getM();
   
-  results.converged         = converged;
-  results.n                 = objFunc.getN();
-  results.num_iter          = std::min(k + 1, MAX_NUM_ITER);
-  results.num_func_eval     = solver.getNumFuncEval();
-  results.num_grad_eval     = solver.getNumGradEval();
-  results.term_val          = stopCrit.getTestValue(solver);
-  if(typeid(stopCrit) == typeid(XDistToMinTest))
-    results.xMin = dynamic_cast< const XDistToMinTest & >(stopCrit).getXMin();
+  results.converged     = converged;
+  results.f_final       = solver.getFVal();
+  results.n             = objFunc.getN();
+  results.num_iter      = std::min(k + 1, MAX_NUM_ITER);
+  results.num_func_eval = solver.getNumFuncEval();
+  results.num_grad_eval = solver.getNumGradEval();
+  results.term_val      = stopCrit.getTestValue(solver);
+  results.x_final       = numpy_utils::vector_to_tuple::convert_boost(solver.getX());
+  /*if(typeid(stopCrit) == typeid(XDistToMinTest))
+    results.x_min = dynamic_cast< const XDistToMinTest & >(stopCrit).getXMin();*/
   
   if(timeTest == true)
   {
@@ -240,8 +244,9 @@ SolverResults_Python minimize(NativeSolver &solver,
 
 void init_functions()
 {
-  class_< Function >("Function", 
-    init< const std::string &, Function::DerivEvalType >());
+  class_< Function >("Function",
+    init< const std::string &, optional< Function::DerivEvalType > >())
+    .def("get_n", &Function::getN);
   enum_< Function::FuncEvalType >("FuncEvalType")
     .value("symbolic", Function::SYMBOLIC)
     .value("compiled", Function::COMPILED);
@@ -371,16 +376,17 @@ BOOST_PYTHON_MODULE(native)
     .def_readonly("objfunc",         &SolverInput::objFunc)
     .def_readonly("solver_info",     &SolverInput::solverInfo);
   class_< SolverResults_Python >("SolverResults")
-    .def_readonly("input",           &SolverResults_Python::input)
-    //.def_readonly("function",          &SolverResults_Python::function)
-    .def_readonly("converged",       &SolverResults_Python::converged)
-    .def_readonly("n",               &SolverResults_Python::n)
-    .def_readonly("num_iter",        &SolverResults_Python::num_iter)
-    .def_readonly("num_func_eval",   &SolverResults_Python::num_func_eval)
-    .def_readonly("num_grad_eval",   &SolverResults_Python::num_grad_eval)
-    .def_readonly("states",          &SolverResults_Python::states)
-    .def_readonly("time",            &SolverResults_Python::time)
-    .def_readonly("term_val",        &SolverResults_Python::term_val);
+    .def_readonly("input",         &SolverResults_Python::input)
+    .def_readonly("f_final",       &SolverResults_Python::f_final)
+    .def_readonly("converged",     &SolverResults_Python::converged)
+    .def_readonly("n",             &SolverResults_Python::n)
+    .def_readonly("num_iter",      &SolverResults_Python::num_iter)
+    .def_readonly("num_func_eval", &SolverResults_Python::num_func_eval)
+    .def_readonly("num_grad_eval", &SolverResults_Python::num_grad_eval)
+    .def_readonly("states",        &SolverResults_Python::states)
+    .def_readonly("time",          &SolverResults_Python::time)
+    .def_readonly("term_val",      &SolverResults_Python::term_val)
+    .def_readonly("x_final",       &SolverResults_Python::x_final);
   def("minimize", minimize,
       (boost::python::arg("C") = NoConstraints(),
       boost::python::arg("verbosity") = 0,

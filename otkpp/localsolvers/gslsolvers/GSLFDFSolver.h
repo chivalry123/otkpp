@@ -11,7 +11,7 @@
 
 using namespace boost::numeric::ublas;
 
-/// Defines the parameters of a GSLDFSolver.
+/// Defines the parameters of a GSLFDFSolver.
 struct GSLFDFSolver_setup : public SolverSetup
 {
   double stepSize;  ///< initial step size for line searches
