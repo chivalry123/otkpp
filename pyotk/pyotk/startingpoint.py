@@ -11,7 +11,8 @@ def starting_point_analysis(s, f, p_min, x1, x2, y1, y2, n, tol=1e-3):
 	if len(p_min) > 6:
 		raise ValueError('maximum number of 6 minima allowed')
 	
-	C = [ (1, 0, 0), (0, 1, 0), (0, 0, 1), (0, 1, 1), (1, 0, 1), (1, 1, 0) ]
+	COLORS = [ (1, 0, 0), (0, 1, 0), (0, 0, 1),
+             (0, 1, 1), (1, 0, 1), (1, 1, 0) ]
 	I = zeros((n, n, 3))
 	
 	dx = x2 - x1
@@ -37,7 +38,7 @@ def starting_point_analysis(s, f, p_min, x1, x2, y1, y2, n, tol=1e-3):
 				ci = ci + 1
 			
 			if found_p_min is not None:
-				I[i][j][:] = C[ci][:]
+				I[i][j][:] = COLORS[ci][:]
 			else:
 				I[i][j][:] = 1
 	

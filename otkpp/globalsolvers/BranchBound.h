@@ -1,7 +1,7 @@
 
 #ifndef BRANCHBOUND_H
 
-#include "GlobalSolver.h"
+#include <otkpp/globalsolvers/GlobalSolver.h>
 
 #include <list>
 #include <vector>

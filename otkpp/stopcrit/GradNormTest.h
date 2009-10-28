@@ -1,10 +1,11 @@
 
 #ifndef GRADNORMTEST
 
+#include <otkpp/lib/Cloneable.h>
 #include <otkpp/stopcrit/StoppingCriterion.h>
 
 /// Implements stopping criterion for gradient norm \f$\|\nabla f(\mathbf{x}_k)\|\f$.
-class GradNormTest : public StoppingCriterion
+class GradNormTest : public Cloneable< GradNormTest, StoppingCriterion >
 {
  public:
   /// Constructs gradient norm test with the given threshold value.

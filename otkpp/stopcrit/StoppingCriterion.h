@@ -1,6 +1,7 @@
 
 #ifndef STOPPINGCRITERION_H
 
+class CompoundStoppingCriterion;
 class NativeSolver;
 
 /// Defines a stopping criterion for a minimization algorithm.
@@ -8,6 +9,8 @@ class StoppingCriterion
 {
  public:
   virtual ~StoppingCriterion() { }
+  
+  virtual StoppingCriterion *clone() const = 0;
   
   /// Returns the computed value that is tested against the user-given limit.
   virtual double getTestValue(const NativeSolver &s) const = 0;

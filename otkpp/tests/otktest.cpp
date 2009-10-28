@@ -117,8 +117,16 @@ static void testLMBM()
 }
 #endif
 
+#include "CompoundStoppingCriterion.h"
+#include "GradNormTest.h"
+#include "FDistToMinTest.h"
+
 int main(int argc, char **argv)
 {
+  GradNormTest t1(1e-8);
+  FDistToMinTest t2(0, 1e-8, false);
+  CompoundStoppingCriterion t3 = CompoundStoppingCriterion(t1) + t2;
+  
   std::list< NativeSolver * > algoList;
   std::list< Function * > funcList;
   vector< double > x0(2);

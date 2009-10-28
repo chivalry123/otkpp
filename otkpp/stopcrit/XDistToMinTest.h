@@ -1,11 +1,12 @@
 
 #ifndef XDISTTOMINTEST_H
 
+#include <otkpp/lib/Cloneable.h>
 #include <otkpp/localsolvers/native/NativeSolver.h>
 #include <otkpp/stopcrit/StoppingCriterion.h>
 
 /// Implements stopping criterion for \f$\|\mathbf{x}_{k}-\mathbf{x}^*\|\f$.
-class XDistToMinTest : public StoppingCriterion
+class XDistToMinTest : public Cloneable< XDistToMinTest, StoppingCriterion >
 {
  public:
   /// Constructs a new stopping criterion.
