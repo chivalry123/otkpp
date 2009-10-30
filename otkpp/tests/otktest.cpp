@@ -120,12 +120,15 @@ static void testLMBM()
 #include "CompoundStoppingCriterion.h"
 #include "GradNormTest.h"
 #include "FDistToMinTest.h"
+#include "MaxNumIterTest.h"
 
 int main(int argc, char **argv)
 {
-  GradNormTest t1(1e-8);
+  /*GradNormTest t1(1e-8);
   FDistToMinTest t2(0, 1e-8, false);
-  CompoundStoppingCriterion t3 = CompoundStoppingCriterion(t1) + t2;
+  CompoundStoppingCriterion t3 = t1 + t2;
+  CompoundStoppingCriterion t4 = t3;
+  CompoundStoppingCriterion t5(t4);*/
   
   std::list< NativeSolver * > algoList;
   std::list< Function * > funcList;
@@ -133,7 +136,7 @@ int main(int argc, char **argv)
   std::list< Function * >::const_iterator f;
   std::list< NativeSolver * >::const_iterator s;
   NativeSolver::IterationStatus status;
-  StoppingCriterion *stopCrit;
+  CompoundStoppingCriterion *stopCrit;
   int k;
   
   initAlgorithmList(algoList);
@@ -141,7 +144,8 @@ int main(int argc, char **argv)
   vector< double > xMin(2);
   xMin[0] = 1.0;
   xMin[1] = 1.0;
-  stopCrit = new XDistToMinTest(xMin, 1e-6, false);
+  stopCrit = new CompoundStoppingCriterion(XDistToMinTest(
+    xMin, 1e-6, false) + MaxNumIterTest(MAX_NUM_ITER));
   
   x0[0] = -1.2;
   x0[1] = 1.0;
@@ -166,7 +170,6 @@ int main(int argc, char **argv)
         k++;
       }
       while(status == NativeSolver::ITERATION_CONTINUE && 
-            k < MAX_NUM_ITER && 
             ((*s)->hasBuiltInStoppingCriterion() || stopCrit->test(**s) == false));
       
       printResults((*s)->getName(), k, (*s)->getX(), 

@@ -10,6 +10,9 @@ class StoppingCriterion
  public:
   virtual ~StoppingCriterion() { }
   
+  /// Combines this stopping criterion with another one.
+  CompoundStoppingCriterion operator+(const StoppingCriterion &sc);
+  
   virtual StoppingCriterion *clone() const = 0;
   
   /// Returns the computed value that is tested against the user-given limit.

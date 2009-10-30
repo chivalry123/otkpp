@@ -15,10 +15,19 @@ class CompoundStoppingCriterion : public Cloneable< CompoundStoppingCriterion, S
 {
  public:
   CompoundStoppingCriterion() { }
-  CompoundStoppingCriterion(const StoppingCriterion &sc) { }
-  ~CompoundStoppingCriterion() { }
   
+  /// Copy constructor.
+  CompoundStoppingCriterion(const CompoundStoppingCriterion &sc);
+  
+  /// Destructor.
+  ~CompoundStoppingCriterion();
+  
+  /// Assignment operator.
+  CompoundStoppingCriterion &operator=(const CompoundStoppingCriterion &sc);
+  
+  /// Insert a new stopping criterion.
   CompoundStoppingCriterion operator+(const StoppingCriterion &sc);
+  
   double getTestValue(const NativeSolver &s) const;
   bool test(const NativeSolver &s) const ;
  private:
