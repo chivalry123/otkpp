@@ -36,8 +36,11 @@ SET(OTKPP_SRCS "../constraints/BoundConstraints.cpp"
                "../localsolvers/native/NativeSolver.cpp"
                "../localsolvers/native/PARTAN.cpp"
                "../localsolvers/native/SteihaugSR1.cpp"
+               "../stopcrit/CompoundStoppingCriterion.cpp"
                "../stopcrit/FDistToMinTest.cpp"
                "../stopcrit/GradNormTest.cpp"
+               "../stopcrit/MaxNumIterTest.cpp"
+               "../stopcrit/StoppingCriterion.cpp"
                "../stopcrit/XDistToMinTest.cpp"
                "../testproblems/MGHTestFunction.cpp")
 

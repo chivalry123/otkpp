@@ -41,7 +41,7 @@ CompoundStoppingCriterion CompoundStoppingCriterion::operator+(const StoppingCri
 
 double CompoundStoppingCriterion::getTestValue(const NativeSolver &s) const
 {
-  throw std::runtime_error("operation not implemented");
+  return 0.0; //throw std::runtime_error("operation not implemented");
 }
 
 bool CompoundStoppingCriterion::test(const NativeSolver &s) const
