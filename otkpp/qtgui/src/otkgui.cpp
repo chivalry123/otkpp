@@ -363,8 +363,14 @@ void OTKGui::startIteration()
   if(minimizerThread_ != NULL)
     return;
   
+  if(guiModel_->getObjFunc() == NULL)
+  {
+    QMessageBox::critical(this, tr("Error"), tr("No objective function specified."));
+    return;
+  }
+  
   int solverIndex = widgets_->algorithmComboBox->currentIndex();
-  Solver *solver = OTKGuiModel::getSolverInstance_(solverIndex);
+  Solver *solver = guiModel_->getSolverInstance_(solverIndex);
   StoppingCriterion *stopCrit = getStopCritInstance_();
   if(stopCrit == NULL)
   {
@@ -372,12 +378,12 @@ void OTKGui::startIteration()
     return;
   }
   
-  guiModel_->getObjFunc().resetEvalCounters();
-  guiModel_->getObjFunc().enableEvalCounting();
+  guiModel_->getObjFunc()->resetEvalCounters();
+  guiModel_->getObjFunc()->enableEvalCounting();
   
   delete minimizerThread_;
   minimizerThread_ = 
-    new MinimizerThread(&guiModel_->getObjFunc(), solver,
+    new MinimizerThread(guiModel_->getObjFunc(), solver,
                         guiModel_->getStartingPointX(),
                         guiModel_->getStartingPointY(),
                         stopCrit,
@@ -550,10 +556,10 @@ void OTKGui::showSelectedIterate(double x, double y)
 
   xv(0) = x;
   xv(1) = y;
-  fx = guiModel_->getObjFunc()(xv);
+  fx = (*guiModel_->getObjFunc())(xv);
   widgets_->curIterFValField->setText(QString::number(fx, 'g', 3));
   
-  guiModel_->getObjFunc().g(xv, g);
+  guiModel_->getObjFunc()->g(xv, g);
   gNorm = norm_2(g);
   widgets_->curIterGNormField->setText(QString::number(gNorm, 'g', 3));
 }
@@ -579,7 +585,7 @@ void OTKGui::updateObjectiveFunction()
       QMessageBox::critical(this, tr("Error"), tr("Invalid function expression. Check syntax."));
       return;
     }
-    if(guiModel_->getObjFunc().getN() != 2)
+    if(guiModel_->getObjFunc()->getN() != 2)
     {
       QMessageBox::critical(this, tr("Error"), tr("Invalid number of variables. Must be n=2."));
       return;
@@ -608,11 +614,11 @@ void OTKGui::updateObjectiveFunction()
     widgets_->surfacePlot->setPlotRange(x1, x2, y1, y2, z1, z2);
     setPlotRange_(x1, x2, y1, y2, z1, z2);
   }
-  widgets_->iterationPlot->setFunction  (&guiModel_->getObjFunc());
-  widgets_->searchLinePlot->setFunction (&guiModel_->getObjFunc());
-  widgets_->surfacePlot->setFunction    (&guiModel_->getObjFunc());
+  widgets_->iterationPlot->setFunction (guiModel_->getObjFunc());
+  widgets_->searchLinePlot->setFunction(guiModel_->getObjFunc());
+  widgets_->surfacePlot->setFunction   (guiModel_->getObjFunc());
   
-  if(oldObjFunc != &guiModel_->getObjFunc())
+  if(oldObjFunc != guiModel_->getObjFunc())
     delete oldObjFunc;
 }
 

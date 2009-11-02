@@ -1,8 +1,13 @@
 
 #include "GradientSolver.h"
 
+#ifdef WITH_LIBMATHEVAL
+GradientSolver::GradientSolver(bool useFDiffGradient) : 
+  AbstractGradientSolver(useFDiffGradient == false ? Function::DERIV_SYMBOLIC : Function::DERIV_FDIFF_CENTRAL_2) { }
+#else
 GradientSolver::GradientSolver(bool useFDiffGradient) : 
   AbstractGradientSolver(Function::DERIV_FDIFF_CENTRAL_2) { }
+#endif
 
 const vector< double > GradientSolver::getGradient() const
 {

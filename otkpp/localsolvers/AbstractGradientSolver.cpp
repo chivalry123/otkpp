@@ -13,5 +13,7 @@ void AbstractGradientSolver::setup_(const Function &objFunc,
   if(gEvalType_ != Function::DERIV_SYMBOLIC)
 #endif
     objFunc_ = objFunc.createCopy(gEvalType_);
+  objFunc_.resetEvalCounters();
+  objFunc_.enableEvalCounting();
   NativeSolver::setup_(objFunc_, x0, solverSetup);
 }

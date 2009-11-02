@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Optimization Toolkit v. 0.2.2 alpha</string>
+   <string>Optimization Toolkit v. 0.2.3 alpha</string>
   </property>
   <widget class="QWidget" name="centralwidget" >
    <widget class="QFrame" name="frame" >

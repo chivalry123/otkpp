@@ -3,6 +3,7 @@
 
 #cmakedefine WITH_FORTRAN
 #cmakedefine WITH_GSL
+#cmakedefine WITH_LIBMATHEVAL
 #cmakedefine WITH_PYTHON
 #cmakedefine WITH_QT
 

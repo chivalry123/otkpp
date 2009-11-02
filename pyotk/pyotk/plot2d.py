@@ -10,14 +10,14 @@ import numpy
 from native import *
 from plotutils import *
 from testproblems import *
-from matplotlib import pyplot
+from matplotlib.pyplot import *
 from numpy import arange,logspace,meshgrid
 
 def plot_bound_constraints(C):
-	pyplot.plot([C.L[0], C.U[0]], [C.L[1], C.L[1]], color='black', linestyle='dashed')
-	pyplot.plot([C.L[0], C.U[0]], [C.U[1], C.U[1]], color='black', linestyle='dashed')
-	pyplot.plot([C.L[0], C.L[0]], [C.L[1], C.U[1]], color='black', linestyle='dashed')
-	pyplot.plot([C.U[0], C.U[0]], [C.L[1], C.U[1]], color='black', linestyle='dashed')
+	plot([C.L[0], C.U[0]], [C.L[1], C.L[1]], color='black', linestyle='dashed')
+	plot([C.L[0], C.U[0]], [C.U[1], C.U[1]], color='black', linestyle='dashed')
+	plot([C.L[0], C.L[0]], [C.L[1], C.U[1]], color='black', linestyle='dashed')
+	plot([C.U[0], C.U[0]], [C.L[1], C.U[1]], color='black', linestyle='dashed')
 
 def plot_contours(f, x1, x2, y1, y2, z1, z2,
                   z_logscale, new_figure=True):
@@ -30,20 +30,20 @@ opens a new window for the plot.
 	X,Y,Z = tabulate_function(f, 300, (x1, x2), (y1, y2))
   
 	if new_figure == True:
-		fig = pyplot.figure()
+		fig = figure()
   
 	if z_logscale == True:
 		V = logspace(math.log10(z1), math.log10(z2), 15)
 	else:
 		V = arange(z1, z2, (z2 - z1) / 20);
 	
-	pyplot.contour(X, Y, Z, V, colors='k', linewidths=0.25)
+	contour(X, Y, Z, V, colors='k', linewidths=0.25)
   
-	pyplot.xlim(x1, x2)
-	pyplot.ylim(y1, y2)
+	xlim(x1, x2)
+	ylim(y1, y2)
   
 	if new_figure == True:
-		pyplot.show()
+		show()
 
 def plot_iterates_on_contours(results, x1, x2, y1, y2, z1, z2,
                               z_logscale=True, new_figure=True):
@@ -56,7 +56,7 @@ a new window for the plot. This function requires that
 the objective function is a function of two variables, otherwise 
 a ValueError is raised."""
 	if new_figure == True:
-		pyplot.figure()
+		figure()
 	
 	if results.n != 2:
 		raise ValueError('cannot plot an objective function of more than two variables')
@@ -72,9 +72,9 @@ a ValueError is raised."""
 			PX.append(it.x[0])
 			PY.append(it.x[1])
 			
-		pyplot.plot(PX, PY, '-o', color='black',
-                markerfacecolor='gray', markeredgecolor='black',
-                linewidth=2, markersize=6)
+		plot(PX, PY, '-o', color='black',
+         markerfacecolor='gray', markeredgecolor='black',
+         linewidth=2, markersize=6)
 	else:
 		for s in results.states:
 			PX = []
@@ -83,18 +83,18 @@ a ValueError is raised."""
 				PX.append(s.X[0, vi % 3])
 				PY.append(s.X[1, vi % 3])
 		
-			pyplot.plot(PX, PY, '-o', color='black',
-                  markerfacecolor='gray', markeredgecolor='black',
-                  linewidth=2, markersize=6)
+			plot(PX, PY, '-o', color='black',
+           markerfacecolor='gray', markeredgecolor='black',
+           linewidth=2, markersize=6)
 	
 	if results.input.has_constraints and type(results.input.C) == native.BoundConstraints:
 		plot_bound_constraints(results.input.C)
 	
-	pyplot.xlim(x1, x2)
-	pyplot.ylim(y1, y2)
+	xlim(x1, x2)
+	ylim(y1, y2)
 	
 	if new_figure == True:
-		pyplot.show()
+		show()
 
 def main():
 	f = Beale()

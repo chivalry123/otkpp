@@ -6,7 +6,8 @@ function of used iterations.
 """
 
 from native import *
-from matplotlib import rc, pyplot
+from matplotlib import rc
+from matplotlib.pyplot import *
 from numpy import *
 from scipy.linalg import norm
 from testproblems import *
@@ -29,7 +30,7 @@ Otherwise, a ValueError is raised."""
 		stopcrit = XDistToMinTest(p.x_min, eps=eps, relative=False)
 		
 		R = zeros((max_num_iter, len(S)))
-		pyplot.figure()
+		figure()
 	
 		max_norm = 0
 		max_used_iter = 0
@@ -47,18 +48,19 @@ Otherwise, a ValueError is raised."""
 			max_used_iter = max(results.num_iter, max_used_iter)
 			si = si + 1
 		
-		plots = pyplot.semilogy(I, R, linewidth=2)
-		pyplot.title(p.name)
-		pyplot.xlim(0, 1.2 * max_used_iter)
-		pyplot.ylim(eps, 10 * max_norm)
-		pyplot.xlabel('Iterations')
-		pyplot.ylabel(r'\|\mathbf{x}_k-\mathbf{x}^*\|')
+		plots = semilogy(I, R, linewidth=2)
+		title(p.name)
+		xlim(0, 1.2 * max_used_iter)
+		ylim(eps, 10 * max_norm)
+		xlabel('Iterations')
+		ylabel(r'\|\mathbf{x}_k-\mathbf{x}^*\|')
 		legends = []
 		for i in range(len(S)):
 			legends.append(S[i].get_name().replace('_', '\_'))
-		pyplot.legend(plots, legends, loc='upper right')
+		legend(plots, legends, loc='upper right')
+		grid(True)
 		
-		pyplot.show()
+		show()
 	
 	return
 
@@ -91,9 +93,9 @@ name strings:
 		qi = qi + 1
 	
 	rc('text', usetex=True)
-	pyplot.figure()
-	plots = pyplot.semilogy(X, Y)
-	pyplot.xlim(1, results.num_iter)
+	figure()
+	plots = semilogy(X, Y)
+	xlim(1, results.num_iter)
 	
 	legends = []
 	for q in quantities:
@@ -106,10 +108,10 @@ name strings:
 		elif q == 'simplexvolume':
 			legends.append(r'$|V(S_k)|$')
 	
-	pyplot.legend(plots, legends, loc='lower left')
-	pyplot.xlabel('k')
-	pyplot.grid(True);
-	pyplot.show()
+	legend(plots, legends, loc='lower left')
+	xlabel('k')
+	grid(True)
+	show()
 
 def main():
 	S = [ LinminBFGS(BFGSLmType.morethuente),

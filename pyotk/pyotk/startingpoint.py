@@ -10,7 +10,7 @@ minimum point.
 
 from numpy import *
 from plot2d import plot_contours
-from pylab import figure, imshow, show, subplot
+from matplotlib.pyplot import *
 from testproblems import *
 
 def starting_point_analysis(s, f, p_min, x1, x2, y1, y2, n, tol=1e-3):

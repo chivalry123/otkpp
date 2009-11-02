@@ -47,14 +47,14 @@ const BoundConstraints *OTKGuiModel::getConstraints() const
   return C_;
 }
 
-Function &OTKGuiModel::getObjFunc()
+Function *OTKGuiModel::getObjFunc()
 {
-  return *objFunc_;
+  return objFunc_;
 }
 
-const Function &OTKGuiModel::getObjFunc() const
+const Function *OTKGuiModel::getObjFunc() const
 {
-  return *objFunc_;
+  return objFunc_;
 }
 
 OTKGuiModel::ObjFuncType OTKGuiModel::getObjFuncType() const
@@ -75,6 +75,15 @@ OTKGuiModel::SelectedTool OTKGuiModel::getSelectedTool() const
 Solver *OTKGuiModel::getSolverInstance_(int index)
 {
   int i = 0;
+  
+  Function::DerivEvalType derivEvalType;
+
+#ifdef WITH_LIBMATHEVAL
+  if(objFunc_->hasSymbolicExpression())
+    derivEvalType = Function::DERIV_SYMBOLIC;
+  else
+#endif
+    derivEvalType = Function::DERIV_FDIFF_CENTRAL_2;
   
   if(index == 0)
     return new MNewton();
@@ -97,23 +106,23 @@ Solver *OTKGuiModel::getSolverInstance_(int index)
 #ifdef WITH_GSL
   i = 6;
   if(index == 9)
-    return new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_fr);
+    return new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_fr, derivEvalType);
   else if(index == 10)
-    return new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_pr);
+    return new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_pr, derivEvalType);
   else if(index == 11)
     return new GSLFSolver(gsl_multimin_fminimizer_nmsimplex);
   else if(index == 12)
-    return new GSLFDFSolver(gsl_multimin_fdfminimizer_steepest_descent);
+    return new GSLFDFSolver(gsl_multimin_fdfminimizer_steepest_descent, derivEvalType);
   else if(index == 13)
-    return new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs);
+    return new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs, derivEvalType);
   else if(index == 14)
-    return new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2);
+    return new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2, derivEvalType);
 #endif
 #ifdef WITH_FORTRAN
   else if(index == 9 + i)
     return new LMBM();
   else if(index == 10 + i)
-    return new LBFGSB();
+    return new LBFGSB(derivEvalType);
 #endif
   else
     return NULL;

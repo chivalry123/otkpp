@@ -5,6 +5,7 @@ import sys
 def read_config_h():
 	with_fortran = False
 	with_gsl = False
+	with_libmatheval = False
 	
 	config_file = '/usr/include/otkpp/config.h'
 	try:
@@ -22,26 +23,32 @@ def read_config_h():
 			with_fortran = True
 		if find(l, '#define WITH_GSL') != -1:
 			with_gsl = True
+		if find(l, '#define WITH_LIBMATHEVAL') != -1:
+			with_libmatheval = True
 	
 	f.close()
 	
-	return [with_fortran, with_gsl]
+	return [with_fortran, with_gsl,with_libmatheval]
 
-[with_fortran, with_gsl] = read_config_h()
+[with_fortran, with_gsl,with_libmatheval] = read_config_h()
 
 macros = []
 if with_fortran == True:
 	macros.append(('WITH_FORTRAN', 1))
 if with_gsl == True:
 	macros.append(('WITH_GSL', 1))
+if with_libmatheval == True:
+	macros.append(('WITH_LIBMATHEVAL', 1))
 
-libs = ['otkpp', 'boost_python', 'matheval', 'rt']
+libs = ['otkpp', 'boost_python', 'rt']
 if with_fortran == True:
 	libs.append('otkpp_fortran')
 	libs.append('gfortran')
 if with_gsl == True:
 	libs.append('gsl')
 	libs.append('gslcblas')
+if with_libmatheval == True:
+	libs.append('matheval')
 
 pyotk_native = Extension(
 	name = 'pyotk.native',
@@ -63,7 +70,7 @@ pyotk_plotutils = Extension(
 
 setup(
 	name = 'pyotk',
-	version = '0.1.1',
+	version = '0.1.2',
 	packages = ['pyotk'],
 	ext_modules = [pyotk_native, pyotk_plotutils],
 	#install_requires = ['numpy>=1.1.0', 'scipy>=0.6.0', 'matplotlib>=0.98.0'],

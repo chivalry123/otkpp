@@ -45,6 +45,7 @@ of alpha.
 	title(r'Function: $(\alpha x)^2+y^2$, algorithm: ' + s.get_name())
 	xlabel(r'$\alpha$')
 	ylabel('number of iterations')
+	grid(True)
 	show()
 
 def main():

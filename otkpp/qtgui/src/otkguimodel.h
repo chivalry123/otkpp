@@ -43,12 +43,12 @@ class OTKGuiModel
   
   void deactivateConstraints();
   const BoundConstraints *getConstraints() const;
-  Function &getObjFunc();
-  const Function &getObjFunc() const;
+  Function *getObjFunc();
+  const Function *getObjFunc() const;
   ObjFuncType getObjFuncType() const;
   PlotType getPlotType() const;
   SelectedTool getSelectedTool() const;
-  static Solver *getSolverInstance_(int index);
+  Solver *getSolverInstance_(int index);
   double getStartingPointX() const;
   double getStartingPointY() const;
   const StoppingCriterion &getStopCrit() const;

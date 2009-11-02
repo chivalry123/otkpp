@@ -13,7 +13,7 @@ Programming 91 (2002), no. 2, 201-213
 
 from native import *
 from matplotlib import rc
-from matplotlib import pyplot
+from matplotlib.pyplot import *
 from numpy import *
 from testproblems import *
 
@@ -78,20 +78,21 @@ True, the results are also plotted."""
 	if plot_results == True:
 		markers = ['^', 's', 'x', 'o', '+']
 		rc('text', usetex=True)
-		pyplot.figure()
+		figure()
 		plots = []
 		for si in range(len(S)):
-			plots += pyplot.plot(tau, rho[:, si], '-' + markers[si], 
+			plots += plot(tau, rho[:, si], '-' + markers[si], 
 				linewidth=2, markersize=6)
 		legends = []
 		for s in S:
 			legends.append(s.get_name().replace('_', '\_'))
-		pyplot.legend(plots, legends, loc='lower right')
-		pyplot.xlabel(r'\tau')
-		pyplot.ylabel(r'\rho_s(2^\tau)')
-		pyplot.xlim(0, tau[len(tau) - 1])
-		pyplot.ylim(0, 1.05)
-		pyplot.show()
+		legend(plots, legends, loc='lower right')
+		xlabel(r'\tau')
+		ylabel(r'\rho_s(2^\tau)')
+		xlim(0, tau[len(tau) - 1])
+		ylim(0, 1.05)
+		grid(True)
+		show()
 	
 	return (R, tau, rho)
 
