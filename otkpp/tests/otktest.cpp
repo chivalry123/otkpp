@@ -1,12 +1,16 @@
 
+#include "CompoundStoppingCriterion.h"
 #include "ConjGradMT.h"
 #include "DoglegBFGS.h"
+#include "FDistToMinTest.h"
 #include "Function.h"
+#include "GradNormTest.h"
 #ifdef WITH_GSL
 #include "GSLFSolver.h"
 #include "GSLFDFSolver.h"
 #endif
 #include "HookeJeeves.h"
+#include "MaxNumIterTest.h"
 #include "MGHTestFunction.h"
 #include "MNewton.h"
 #include "NativeSolver.h"
@@ -56,7 +60,9 @@ static void initAlgorithmList(std::list< NativeSolver * > &algoList)
 
 void initFuncList(std::list< Function * > &funcList)
 {
+#ifdef WITH_LIBMATHEVAL
   funcList.push_back(new Function(F_EXPR, Function::DERIV_SYMBOLIC));
+#endif
   funcList.push_back(new ExtendedRosenbrock(2, Function::DERIV_FDIFF_CENTRAL_2));
 }
 
@@ -89,7 +95,7 @@ static void printResults(const std::string &algoName,
     printf("%-15s: FAILURE (%s)\n", algoName.c_str(), "???"); // TODO: error code string
 }
 
-#ifdef WITH_FORTRAN
+/*#ifdef WITH_FORTRAN
 static void testLBFGSB()
 {
   LBFGSB solver;
@@ -115,12 +121,7 @@ static void testLMBM()
   
   solver.solve(f, x0);
 }
-#endif
-
-#include "CompoundStoppingCriterion.h"
-#include "GradNormTest.h"
-#include "FDistToMinTest.h"
-#include "MaxNumIterTest.h"
+#endif*/
 
 int main(int argc, char **argv)
 {
@@ -153,9 +154,11 @@ int main(int argc, char **argv)
   int fi = 0;
   for(f = funcList.begin(); f != funcList.end(); f++)
   {
+#ifdef WITH_LIBMATHEVAL
     if(fi == 0)
       std::cout<<"Rosenbrock function with symbolic evaluation:"<<std::endl;
     else
+#endif
       std::cout<<"Precompiled Rosenbrock function with finite-difference derivatives:"<<std::endl;
     
     for(s = algoList.begin(); s != algoList.end(); s++)

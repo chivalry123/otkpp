@@ -10,9 +10,6 @@ SET(OTKPP_SRCS "../constraints/BoundConstraints.cpp"
                "../function/FunctionEvaluator.cpp"
                "../function/GradientEvaluator.cpp"
                "../function/HessianEvaluator.cpp"
-               "../function/SymbolicFunctionEvaluator.cpp"
-               "../function/SymbolicGradientEvaluator.cpp"
-               "../function/SymbolicHessianEvaluator.cpp"
                "../linalg/BFGSUpdater.cpp"
                "../linalg/LBFGSUpdater.cpp"
                "../linalg/InvLBFGSUpdater.cpp"
@@ -51,6 +48,14 @@ SET(OTKPP_GSL_SRCS "../localsolvers/gslsolvers/GSLFSolver.cpp"
 IF(WITH_GSL)
   SET(OTKPP_SRCS ${OTKPP_SRCS} ${OTKPP_GSL_SRCS})
 ENDIF(WITH_GSL)
+
+SET(OTKPP_MATHEVAL_SRCS "../function/SymbolicFunctionEvaluator.cpp"
+                        "../function/SymbolicGradientEvaluator.cpp"
+                        "../function/SymbolicHessianEvaluator.cpp")
+
+IF(WITH_LIBMATHEVAL)
+  SET(OTKPP_SRCS ${OTKPP_SRCS} ${OTKPP_MATHEVAL_SRCS})
+ENDIF(WITH_LIBMATHEVAL)
 
 SET(OTKPP_FORTRAN_SRCS "../localsolvers/lbfgsb/LBFGSB.cpp"
                        "../localsolvers/lmbm/func_wrapper.cpp"

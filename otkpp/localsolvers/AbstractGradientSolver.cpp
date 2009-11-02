@@ -9,7 +9,9 @@ void AbstractGradientSolver::setup_(const Function &objFunc,
                                     const SolverSetup &solverSetup,
                                     const Constraints &C)
 {
+#ifdef WITH_LIBMATHEVAL
   if(gEvalType_ != Function::DERIV_SYMBOLIC)
+#endif
     objFunc_ = objFunc.createCopy(gEvalType_);
   NativeSolver::setup_(objFunc_, x0, solverSetup);
 }

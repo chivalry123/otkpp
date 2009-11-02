@@ -3,11 +3,11 @@
 #include "FDiffGradientEvaluator.h"
 #include "FDiffHessianEvaluator.h"
 #include "Function.h"
-//#ifdef WITH_LIBMATHEVAL
+#ifdef WITH_LIBMATHEVAL
 #include "SymbolicFunctionEvaluator.h"
 #include "SymbolicGradientEvaluator.h"
 #include "SymbolicHessianEvaluator.h"
-//#endif
+#endif
 
 #include <sstream>
 
@@ -18,17 +18,20 @@ Function::Function()
   HEvaluator_ = NULL;
 }
 
+#ifdef WITH_LIBMATHEVAL
 Function::Function(const std::string &expr,
                    DerivEvalType gEvalType)
 {
   constructSymbolicFunction_(expr, gEvalType);
 }
+#endif
 
 Function::Function(const FunctionEvaluator &fEval,
                    DerivEvalType gEvalType)
 {
   evaluator_ = fEval.clone();
   
+#ifdef WITH_LIBMATHEVAL
   if(gEvalType == Function::DERIV_SYMBOLIC)
   {
     if(dynamic_cast< SymbolicFunctionEvaluator * >(evaluator_) != NULL)
@@ -42,7 +45,9 @@ Function::Function(const FunctionEvaluator &fEval,
     else
       throw std::runtime_error("symbolic gradient evaluator requires a symbolic function evaluator");
   }
-  else if(gEvalType == Function::DERIV_FDIFF_CENTRAL_2)
+  else
+#endif
+  if(gEvalType == Function::DERIV_FDIFF_CENTRAL_2)
   {
     gEvaluator_ = new FDiffGradientEvaluator(FDiffGradientEvaluator::CENTRAL_2, evaluator_);
     HEvaluator_ = new FDiffHessianEvaluator(evaluator_);
@@ -93,6 +98,7 @@ double Function::operator()(const vector< double > &x) const
   return (*evaluator_)(x);
 }
 
+#ifdef WITH_LIBMATHEVAL
 void Function::constructSymbolicFunction_(const std::string &expr, 
                                           DerivEvalType gEvalType)
 {
@@ -113,6 +119,7 @@ void Function::constructSymbolicFunction_(const std::string &expr,
   else
     throw std::runtime_error("unsupported gradient evaluator type");
 }
+#endif
 
 double *Function::g(const double *x, double *g) const
 {
@@ -138,10 +145,13 @@ Function Function::createCopy(DerivEvalType gEvalType) const
 {
   Function f;
   f.evaluator_ = evaluator_->clone();
+#ifdef WITH_LIBMATHEVAL
   if(gEvalType == Function::DERIV_SYMBOLIC)
     f.gEvaluator_ = new SymbolicGradientEvaluator(
       dynamic_cast< SymbolicFunctionEvaluator * >(evaluator_));
-  else if(gEvalType == Function::DERIV_FDIFF_CENTRAL_2)
+  else
+#endif
+  if(gEvalType == Function::DERIV_FDIFF_CENTRAL_2)
     f.gEvaluator_ = new FDiffGradientEvaluator(
       FDiffGradientEvaluator::CENTRAL_2, evaluator_);
   else
@@ -156,14 +166,17 @@ int Function::getN() const
   return evaluator_->getN();
 }
 
+#ifdef WITH_LIBMATHEVAL
 const std::string Function::getSymbolicExpression() const
 {
   if(hasSymbolicExpression())
     return dynamic_cast< SymbolicFunctionEvaluator * >(evaluator_)->getExpression();
 }
+#endif
 
 void Function::getVariableNames(std::list< std::string > &result) const
 {
+#ifdef WITH_LIBMATHEVAL
   if(hasSymbolicExpression())
   {
     result.clear();
@@ -174,6 +187,7 @@ void Function::getVariableNames(std::list< std::string > &result) const
   }
   else
   {
+#endif
     result.clear();
     for(int i = 0; i < getN(); i++)
     {
@@ -181,14 +195,18 @@ void Function::getVariableNames(std::list< std::string > &result) const
       vn<<"x"<<i+1;
       result.push_back(vn.str());
     }
+#ifdef WITH_LIBMATHEVAL
   }
+#endif
 }
 
 bool Function::hasSymbolicExpression() const
 {
+#ifdef WITH_LIBMATHEVAL
   if(dynamic_cast< SymbolicFunctionEvaluator * >(evaluator_) != NULL)
     return true;
   else
+#endif
     return false;
 }
 

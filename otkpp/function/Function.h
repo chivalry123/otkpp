@@ -20,17 +20,17 @@ class Function
  public:
   enum FuncEvalType
   {
-//#ifdef WITH_LIBMATHEVAL
+#ifdef WITH_LIBMATHEVAL
     SYMBOLIC,  ///< symbolically evaluated function
-//#endif
+#endif
     COMPILED   ///< a precompiled function written in C/C++
   };
   
   enum DerivEvalType
   {
-//#ifdef WITH_LIBMATHEVAL
+#ifdef WITH_LIBMATHEVAL
     DERIV_SYMBOLIC,        ///< symbolic derivative
-//#endif
+#endif
     DERIV_FDIFF_FORWARD,   ///< two-point forward difference approximation
     DERIV_FDIFF_CENTRAL_2, ///< two-point central difference approximation
     DERIV_FDIFF_CENTRAL_4  ///< four-point central difference approximation
@@ -38,10 +38,12 @@ class Function
   
   /// Default constructor.
   Function();
-  
+
+#ifdef WITH_LIBMATHEVAL
   /// Constructs a new function with the given expression.
   Function(const std::string &expr,
            DerivEvalType gEvalType = DERIV_SYMBOLIC);
+#endif
   
   /*/// Constructs a new function with a function pointer.
   /**
@@ -75,9 +77,11 @@ class Function
   
   /// Returns the number of variables.
   int getN() const;
-  
+
+#ifdef WITH_LIBMATHEVAL
   /// Returns the expression/name of this function (if applicable).
   const std::string getSymbolicExpression() const;
+#endif
   
   /// Returns the names of the variables of this function (if a symbolic expression is available)
   void getVariableNames(std::list< std::string > &result) const;
@@ -150,8 +154,10 @@ class Function
   GradientEvaluator *gEvaluator_;
   HessianEvaluator  *HEvaluator_;
   
+#ifdef WITH_LIBMATHEVAL
   void constructSymbolicFunction_(const std::string &expr,
                                   DerivEvalType gEvalType = DERIV_SYMBOLIC);
+#endif
 };
 
 #define FUNCTION_H

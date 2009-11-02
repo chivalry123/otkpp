@@ -151,6 +151,7 @@ void OTKGuiModel::setConstraints(double x1, double x2, double y1, double y2)
   C_->U[1] = y2;
 }
 
+#ifdef WITH_LIBMATHEVAL
 Function *OTKGuiModel::setObjFunc(const std::string &expr)
 {
   /*delete objFunc_;
@@ -159,6 +160,7 @@ Function *OTKGuiModel::setObjFunc(const std::string &expr)
   objFunc_ = new Function(expr);
   return oldObjFunc;
 }
+#endif
 
 Function *OTKGuiModel::setObjFunc(int tfIndex)
 {

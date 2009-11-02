@@ -2,7 +2,7 @@
 #include "GradientSolver.h"
 
 GradientSolver::GradientSolver(bool useFDiffGradient) : 
-  AbstractGradientSolver(Function::DERIV_SYMBOLIC) { }
+  AbstractGradientSolver(Function::DERIV_FDIFF_CENTRAL_2) { }
 
 const vector< double > GradientSolver::getGradient() const
 {

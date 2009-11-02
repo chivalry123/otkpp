@@ -36,6 +36,7 @@ ENDIF(NOT QWTPLOT3D_INCLUDE_DIR)
 
 OPTION(WITH_FORTRAN "compile additional algorithms implemented in Fortran" ON)
 OPTION(WITH_GSL "compile with additional GSL algorithms" ON)
+OPTION(WITH_LIBMATHEVAL "compile with symbolic evaluation support" ON)
 #OPTION(WITH_PYTHON "compile with Python support" ON)
 OPTION(WITH_QT "compile with Qt-based gui" ON)
 SET(QT_UIC_EXECUTABLE "" uic-qt4)
@@ -48,6 +49,10 @@ ENDIF(WITH_FORTRAN)
 IF(WITH_GSL)
   ADD_DEFINITIONS(-DWITH_GSL)
 ENDIF(WITH_GSL)
+
+IF(WITH_LIBMATHEVAL)
+  ADD_DEFINITIONS(-DWITH_LIBMATHEVAL)
+ENDIF(WITH_LIBMATHEVAL)
 
 ADD_SUBDIRECTORY(constraints)
 ADD_SUBDIRECTORY(function)

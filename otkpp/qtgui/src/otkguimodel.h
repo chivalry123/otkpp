@@ -58,7 +58,9 @@ class OTKGuiModel
   void objectiveFunctionChanged(const Function *);*/
  //public slots:
   void setConstraints(double x1, double x2, double y1, double y2);
+#ifdef WITH_LIBMATHEVAL
   Function *setObjFunc(const std::string &expr);
+#endif
   Function *setObjFunc(int tfIndex);
   void setObjFuncM(int m);
   void setObjFuncType(ObjFuncType type);

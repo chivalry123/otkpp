@@ -23,7 +23,7 @@ class LBFGSB : public AbstractGradientSolver
 {
  public:
   /// Constructs a new L-BFGS-B solver with the given gradient evaluator type.
-  LBFGSB(Function::DerivEvalType gEvalType = Function::DERIV_SYMBOLIC);
+  LBFGSB(Function::DerivEvalType gEvalType = Function::DERIV_FDIFF_CENTRAL_2);
 
   const vector< double > getGradient() const;
   std::string getName() const;

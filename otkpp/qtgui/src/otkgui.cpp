@@ -570,6 +570,7 @@ void OTKGui::updateObjectiveFunction()
   
   if(guiModel_->getObjFuncType() == OTKGuiModel::USER_SYM_EXPR)
   {
+#ifdef WITH_LIBMATHEVAL
     std::string expr = widgets_->objFuncExpression->displayText().toStdString();
     try {
       oldObjFunc = guiModel_->setObjFunc(expr);
@@ -583,6 +584,9 @@ void OTKGui::updateObjectiveFunction()
       QMessageBox::critical(this, tr("Error"), tr("Invalid number of variables. Must be n=2."));
       return;
     }
+#else
+    QMessageBox::critical(this, tr("Error"), tr("OTK++ was not compiled with libmatheval support. Symbolic function expressions are not supported."));
+#endif
   }
   else
   {
