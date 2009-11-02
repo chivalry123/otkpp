@@ -1,3 +1,9 @@
+"""Implements tools for analyzing convergence rates.
+
+This module implements methods for comparing convergence 
+rates of algorithms and plotting given quantities as a 
+function of used iterations.
+"""
 
 from native import *
 from matplotlib import rc, pyplot

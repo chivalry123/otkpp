@@ -1,3 +1,9 @@
+"""Implements tools for printing result tables.
+
+This module implements functions for printing statistical 
+information such as number of iterations, function iterations, 
+etc. about iteration results.
+"""
 
 from native import *
 import sys
@@ -33,6 +39,18 @@ def print_table(T, num_rows, num_cols, column_widths, stream=None, print_mode=No
 			tr = tr + 1
 
 def solver_results_table(S, f, x0, sc, max_num_iter):
+	"""For a given set of solvers S, the given test function f, 
+print a table of statistical information of the given solvers. 
+The starting point and stopping criterion are specified with 
+the parameters x0 and sc, respectively. Iterations are terminates 
+after max_num_iter steps. The results table contains the following 
+information for each solver on termination of the iteration:
+  - number of iterations
+  - number of function evaluations
+  - number of function evaluations per iteration
+  - number of gradient evaluations
+  - number of gradient evaluations per iteration
+"""
 	num_rows = len(S) + 1
 	num_cols = 6
 	R = []

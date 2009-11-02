@@ -1,3 +1,8 @@
+"""Implements tools for parameter scaling analysis.
+
+This module implements tools for analyzing the effect 
+of parameter scaling on convergence rates.
+"""
 
 from native import *
 from numpy import logspace,zeros
@@ -5,6 +10,12 @@ from matplotlib import rc
 from matplotlib.pyplot import *
 
 def scaling_analysis(s):
+	"""For a given solver s, analyze the effect of parameter 
+scaling with a test function f(x,y)=(alpha*x)^2+y^2. The number 
+of iterations required to reach the distance of 1/alpha*1e-8 
+from the starting point (3/alpha,2) is plotted as a function 
+of alpha.
+"""
 	min_alpha_exp = -6
 	max_alpha_exp = 0
 	num_alpha_val = 25

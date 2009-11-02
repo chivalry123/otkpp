@@ -1,10 +1,25 @@
 
+"""Implements tools for starting point analysis.
+
+This module implements tools for computing basin 
+sets of a minimization algorithm. A basin set of a 
+given minimum point is a set containing the starting 
+points from which the iteration converges to this 
+minimum point.
+"""
+
 from numpy import *
 from plot2d import plot_contours
 from pylab import figure, imshow, show, subplot
 from testproblems import *
 
 def starting_point_analysis(s, f, p_min, x1, x2, y1, y2, n, tol=1e-3):
+	"""For a given solver s, test problem p and a list of a-priori 
+known minimizers p_min, draw a 2d plot with basin sets on top of 
+contour lines. The plotting range is [x1,x2]x[y1,y2], and n is the 
+number of points in the nxn grid in one dimension. An iteration is 
+considered to converge to a minimizer x*, if |x-x*|<tol. If f is not 
+a function of two variables, a ValueError is raised."""
 	if f.get_n() != 2:
 		raise ValueError('only functions of two variables are supported')
 	

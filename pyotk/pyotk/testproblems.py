@@ -1,9 +1,34 @@
+"""Defines a set of test problems.
+
+This module complements the More, Garbow and Hillstrom 
+problem set implemented in OTK++ and implements a Python 
+interface. Whereas OTK++ implements only evaluators for 
+these functions, this module also contains the following 
+definitions:
+  - symbolic expressions and expression generators for 
+    arbitrary-dimensional functions
+  - default starting points
+  - default stopping criteria
+  - known minimizers and minimum function values, if any
+  - plotting ranges for two-variable functions
+
+Note: Each test function has the otk_instance attribute that 
+should be used when passing test functions as arguments to 
+other PyOTK functions. Most functions implemented in PyOTK 
+require the OTK++ instance instead of a wrapped instance of 
+a test function class defined in this module.
+"""
+
+# TODO: Implement an automatic mechanism for 
+# converting a test function to otk_instance when it 
+# is required.
 
 from inspect import getargspec
 import native
 from native import *
 
 class TestFunction:
+	"""The base class for test functions."""
 	def __init__(self, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic, n=0, m=0):
 		if fEvalType == FuncEvalType.symbolic:
 			self.otk_instance = Function(self.generate_expression(), gEvalType)
@@ -21,6 +46,7 @@ class TestFunction:
 			self.otk_instance = eval(eval_str)
 
 class PlotSpec:
+	"""Defines plotting ranges and axis scales."""
 	def __init__(self, x_range, y_range, z_range, z_logscale):
 		self.x_range = x_range
 		self.y_range = y_range

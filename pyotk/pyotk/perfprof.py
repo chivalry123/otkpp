@@ -1,3 +1,15 @@
+"""Implements tools for computing performance profiles.
+
+This module implements an utility for computing 
+the Dolan and More performance profiles for a 
+set of solvers given set on a given set of test 
+problems. For the definition of a performance 
+profile, see
+
+E.D. Dolan and J.J. More, Benchmarking optimization 
+software with performance profiles, Mathematical 
+Programming 91 (2002), no. 2, 201-213
+"""
 
 from native import *
 from matplotlib import rc
