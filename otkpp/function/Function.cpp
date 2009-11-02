@@ -60,7 +60,12 @@ Function::Function(const Function &f)
 {
   evaluator_  = f.evaluator_->clone();
   gEvaluator_ = f.gEvaluator_->clone();
+  if(gEvaluator_->usesFiniteDifference())
+    dynamic_cast< FDiffGradientEvaluator * >(gEvaluator_)->setFEvaluator(evaluator_);
   HEvaluator_ = f.HEvaluator_->clone();
+  // TODO: do this to Hessian also
+  /*if(gEvaluator_->usesFiniteDifference())
+    dynamic_cast< FDiffGradientEvaluator * >(gEvaluator_)->setFEvaluator(evaluator_);*/
 }
 
 Function::~Function()
@@ -148,15 +153,15 @@ Function Function::createCopy(DerivEvalType gEvalType) const
 #ifdef WITH_LIBMATHEVAL
   if(gEvalType == Function::DERIV_SYMBOLIC)
     f.gEvaluator_ = new SymbolicGradientEvaluator(
-      dynamic_cast< SymbolicFunctionEvaluator * >(evaluator_));
+      dynamic_cast< SymbolicFunctionEvaluator * >(f.evaluator_));
   else
 #endif
   if(gEvalType == Function::DERIV_FDIFF_CENTRAL_2)
     f.gEvaluator_ = new FDiffGradientEvaluator(
-      FDiffGradientEvaluator::CENTRAL_2, evaluator_);
+      FDiffGradientEvaluator::CENTRAL_2, f.evaluator_);
   else
     throw std::runtime_error("unsupported gradient evaluator type");
-  f.HEvaluator_ = new FDiffHessianEvaluator(evaluator_);
+  f.HEvaluator_ = new FDiffHessianEvaluator(f.evaluator_);
   
   return f;
 }

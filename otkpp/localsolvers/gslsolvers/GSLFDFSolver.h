@@ -41,8 +41,13 @@ class GSLFDFSolver : public AbstractGradientSolver
    *  - steepest_descent
    * @param gEvalType gradient evaluator type to be used with this solver.
    */
+#ifdef WITH_LIBMATHEVAL
+  GSLFDFSolver(const std::string &gslName,
+               Function::DerivEvalType gEvalType = Function::DERIV_SYMBOLIC);
+#else
   GSLFDFSolver(const std::string &gslName,
                Function::DerivEvalType gEvalType = Function::DERIV_FDIFF_CENTRAL_2);
+#endif
   
   /// Constructs a new GSL solver with the given type.
   /**
@@ -50,8 +55,13 @@ class GSLFDFSolver : public AbstractGradientSolver
    * @param type see the GSL documentation
    * @param gEvalType gradient evaluator type to be used with this solver.
    */
+#ifdef WITH_LIBMATHEVAL
+  GSLFDFSolver(const gsl_multimin_fdfminimizer_type *type,
+               Function::DerivEvalType gEvalType = Function::DERIV_SYMBOLIC);
+#else
   GSLFDFSolver(const gsl_multimin_fdfminimizer_type *type,
                Function::DerivEvalType gEvalType = Function::DERIV_FDIFF_CENTRAL_2);
+#endif
   
   ~GSLFDFSolver();
   

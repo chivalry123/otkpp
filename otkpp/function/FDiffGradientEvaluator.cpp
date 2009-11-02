@@ -24,6 +24,11 @@ int FDiffGradientEvaluator::getN() const
   return fEval_->getN();
 }
 
+void FDiffGradientEvaluator::setFEvaluator(FunctionEvaluator *fEval)
+{
+  fEval_ = fEval;
+}
+
 bool FDiffGradientEvaluator::usesFiniteDifference() const
 {
   return true;

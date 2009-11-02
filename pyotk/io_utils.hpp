@@ -65,10 +65,10 @@ void printSummary(int k, const NativeSolver &s, const Function &f)
   if(s.usesGradient())
     std::cout<<std::setw(35)<<"Minimum gradient:"<<s.getGradient()<<std::endl;
   std::cout<<std::setw(35)<<"iterations:"<<k<<std::endl;
-  std::cout<<std::setw(35)<<"function evaluations:"<<f.getFuncEvalCounter()<<std::endl;
+  std::cout<<std::setw(35)<<"function evaluations:"<<s.getNumFuncEval()<<std::endl;
   if(s.usesGradient())
-    std::cout<<std::setw(35)<<"gradient evaluations:"<<f.getGradEvalCounter()<<
-      " ("<<f.getN() * f.getGradEvalCounter()<<")"<<std::endl;
+    std::cout<<std::setw(35)<<"gradient evaluations:"<<s.getNumGradEval()<<
+    " ("<<f.getN() * s.getNumGradEval()<<")"<<std::endl;
   /*if(s.getType() == GSLMinimizerWrapper::FD2F)
     std::cout<<std::setw(35)<<"Hessian evaluations:"<<f.getHessEvalCounter()<<
       " ("<<f.n() * (f.n() + 1) / 2.0 * f.getHessEvalCounter()<<")"<<std::endl;*/

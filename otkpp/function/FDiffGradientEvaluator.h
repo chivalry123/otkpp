@@ -28,6 +28,9 @@ class FDiffGradientEvaluator : public Cloneable< FDiffGradientEvaluator, Gradien
   /// Returns the number of variables.
   int getN() const;
   
+  /// Sets the function evaluator for computing finite-difference gradients.
+  void setFEvaluator(FunctionEvaluator *fEval);
+  
   bool usesFiniteDifference() const;
  private:
   FunctionEvaluator *fEval_;
