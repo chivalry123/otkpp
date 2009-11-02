@@ -65,9 +65,10 @@ NativeSolver::IterationStatus NativeSolver::iterate()
 SolverResults NativeSolver::solve(const Function &objFunc,
                                   const vector< double > &x0,
                                   const SolverSetup &solverSetup,
-                                  const StoppingCriterion *stopCrit)
+                                  const Constraints &C,
+                                  const StoppingCriterion *stopCrit,
+                                  bool timeTest)
 {
-  // TODO: this is a work in progress
   bool converged = false;
   std::list< vector< double > > iterates;
   unsigned int k = 0;
@@ -83,7 +84,8 @@ SolverResults NativeSolver::solve(const Function &objFunc,
   
   do
   {
-    iterates.push_back(getX());
+    if(timeTest == false)
+      iterates.push_back(getX());
     if(status == ITERATION_CONTINUE && converged)
       break;
     
@@ -101,6 +103,7 @@ SolverResults NativeSolver::solve(const Function &objFunc,
   while(status == ITERATION_CONTINUE && 
         converged == false && k < MAX_NUM_ITER);
   
+  results.converged   = converged;
   results.iterates    = iterates;
   results.xMin        = getX();
   results.fMin        = getFVal();
@@ -108,6 +111,7 @@ SolverResults NativeSolver::solve(const Function &objFunc,
   results.numFuncEval = getNumFuncEval();
   results.numGradEval = getNumGradEval();
   //results.numHessEval = getNumHessEval();
+  results.time = 0; // TODO: write a special time test mode.
   
   return results;
 }

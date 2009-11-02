@@ -33,7 +33,9 @@ LMBM::~LMBM() { }
 SolverResults LMBM::solve(const Function &objFunc,
                           const vector< double > &x0,
                           const SolverSetup &solverSetup,
-                          const StoppingCriterion *stopCrit)
+                          const Constraints &C,
+                          const StoppingCriterion *stopCrit,
+                          bool timeTest)
 {
   std::list< vector< double > > iterates;
   SolverResults results;
@@ -105,12 +107,4 @@ SolverResults LMBM::solve(const Function &objFunc,
   delete[] x;
   
   return results;
-}
-
-void LMBM::setup_(const Function &objFunc,
-                  const vector< double > &x0,
-                  const SolverSetup &solverSetup,
-                  const Constraints &C)
-{
-  // TODO
 }

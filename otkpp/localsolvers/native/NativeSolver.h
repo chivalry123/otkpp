@@ -79,7 +79,9 @@ class NativeSolver : public Solver
   SolverResults solve(const Function &objFunc,
                       const vector< double > &x0,
                       const SolverSetup &solverSetup = DefaultSolverSetup(),
-                      const StoppingCriterion *stopCrit = NULL);
+                      const Constraints &C = NoConstraints(),
+                      const StoppingCriterion *stopCrit = NULL,
+                      bool timeTest = false);
  protected:
   double f_;
   unsigned int nIter_;

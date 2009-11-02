@@ -80,7 +80,7 @@ void MinimizerThread::run()
   }
   else
   {
-    SolverResults results = solver_->solve(*objFunc_, x0, DefaultSolverSetup());
+    SolverResults results = solver_->solve(*objFunc_, x0);
     
     results_.xMin        = results.xMin[0];
     results_.yMin        = results.xMin[1];

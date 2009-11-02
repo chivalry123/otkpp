@@ -53,9 +53,9 @@ IF(WITH_GSL)
 ENDIF(WITH_GSL)
 
 SET(OTKPP_FORTRAN_SRCS "../localsolvers/lbfgsb/LBFGSB.cpp"
-                       "../localsolvers/lbfgsb/routines.f"
                        "../localsolvers/lmbm/func_wrapper.cpp"
                        "../localsolvers/lmbm/LMBM.cpp"
+                       "../localsolvers/lbfgsb/routines.f"
                        "../localsolvers/lmbm/lmbm.f"
                        "../localsolvers/lmbm/lmsub.f"
                        "../localsolvers/lmbm/matcal.f"

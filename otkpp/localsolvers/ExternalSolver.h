@@ -5,7 +5,7 @@
 
 /// Defines the interface for external algorithms.
 /**
- * This class defines the interface of third-party 
+ * This class defines the interface of external 
  * solvers for which intermediate results cannot 
  * be obtained. Hence, this class only provides a 
  * method for obtaining final results.
@@ -16,7 +16,9 @@ class ExternalSolver : public Solver
   virtual SolverResults solve(const Function &objFunc,
                               const vector< double > &x0,
                               const SolverSetup &solverSetup = DefaultSolverSetup(),
-                              const StoppingCriterion *stopCrit = NULL) = 0;
+                              const Constraints &C = NoConstraints(),
+                              const StoppingCriterion *stopCrit = NULL,
+                              bool timeTest = false) = 0;
 };
 
 #define EXTERNALSOLVER_H

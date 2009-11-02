@@ -57,20 +57,22 @@ class LMBM : public ExternalSolver
   bool hasBuiltInStoppingCriterion() const { return true; }
   bool isGSLSolver() const { return false; }
   bool isExternalSolver() const { return true; }
-  void setup(const Function &objFunc,
+  /*void setup(const Function &objFunc,
              const vector< double > &x0,
-             const SolverSetup &solverSetup = DefaultSolverSetup()) { }
+             const SolverSetup &solverSetup = DefaultSolverSetup()) { }*/
   SolverResults solve(const Function &objFunc,
                       const vector< double > &x0,
                       const SolverSetup &solverSetup = DefaultSolverSetup(),
-                      const StoppingCriterion *stopCrit = NULL);
+                      const Constraints &C = NoConstraints(),
+                      const StoppingCriterion *stopCrit = NULL,
+                      bool timeTest = false);
   bool usesGradient() const { return true; }
   bool usesHessian() const { return true; }
  private:
   void setup_(const Function &objFunc,
               const vector< double > &x0,
               const SolverSetup &solverSetup,
-              const Constraints &C);
+              const Constraints &C) { }
 };
 
 #define LMBMSOLVER_H

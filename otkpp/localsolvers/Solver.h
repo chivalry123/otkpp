@@ -73,17 +73,21 @@ class Solver
              const SolverSetup &solverSetup = DefaultSolverSetup(),
              const Constraints &C = NoConstraints());
   
-  // Solves the given problem by using this solver.
-  /*
-   * @param objFunc the objective function
-   * @param x0 
-   * @param solverSetup 
-   * @param stopCrit 
+  /// Solves the given problem by using this solver and returns the results.
+  /**
+   * @param objFunc objective function
+   * @param x0 starting point
+   * @param solverSetup solver parameters
+   * @param C constraints
+   * @param stopCrit stopping criterion
+   * @return a SolverResults structure containing the results
    */
   virtual SolverResults solve(const Function &objFunc,
                               const vector< double > &x0,
                               const SolverSetup &solverSetup = DefaultSolverSetup(),
-                              const StoppingCriterion *stopCrit = NULL) = 0;
+                              const Constraints &C = NoConstraints(),
+                              const StoppingCriterion *stopCrit = NULL,
+                              bool timeTest = false) = 0;
   
   /// Does this solver support the given constraints.
   virtual bool supportsConstraints(const Constraints &C) { return false; }

@@ -25,7 +25,7 @@ class CompoundStoppingCriterion : public Cloneable< CompoundStoppingCriterion, S
   /// Assignment operator.
   CompoundStoppingCriterion &operator=(const CompoundStoppingCriterion &sc);
   
-  /// Insert a new stopping criterion.
+  /// Combines this stopping criterion with another one.
   CompoundStoppingCriterion operator+(const StoppingCriterion &sc);
   
   double getTestValue(const NativeSolver &s) const;

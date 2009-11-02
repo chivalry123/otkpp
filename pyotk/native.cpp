@@ -53,10 +53,11 @@ struct SolverInfo
 
 struct SolverInput
 {
-  boost::shared_ptr< Constraints > C;  // the used constraints for the problem
+  boost::shared_ptr< Constraints > C;  // the constraints for the problem
   Function objFunc;                    // the objective function
   bool hasConstraints;                 // does the test problem have constraints
   SolverInfo solverInfo;               // information about the used solver
+  // TODO: stopping criterion?
 };
 
 struct SolverResults_Python
@@ -71,7 +72,6 @@ struct SolverResults_Python
   list states;              // list of solver states for each iteration step
   double time;              // used time
   double term_val;          // the final termination test value
-  //vector< double > x_min;   // the a priori-known minimizer, if it has been specified
   tuple x_final;            // the final estimate for the minimizer
 };
 
@@ -118,32 +118,37 @@ SolverResults_Python minimize(NativeSolver &solver,
     else
       objFunc.resetEvalCounters();
     
-    do
+    if(!solver.isExternalSolver())
     {
-      if(verbosity >= 2)
-        printResultsTableRow(k, solver, objFunc);
-      
-      if(timeTest == false)
-        results.states.append(solver);
-      
-      if(status == NativeSolver::ITERATION_CONTINUE && converged)
-        break;
-      
-      status = solver.iterate();
-      
-      if(status != NativeSolver::ITERATION_CONTINUE && 
-         stopCrit.test(solver) == false)
+      do
       {
-        converged = false;
-        break;
+        if(verbosity >= 2)
+          printResultsTableRow(k, solver, objFunc);
+        
+        if(timeTest == false)
+          results.states.append(solver);
+        
+        if(status == NativeSolver::ITERATION_CONTINUE && converged)
+          break;
+        
+        status = solver.iterate();
+        
+        if(status != NativeSolver::ITERATION_CONTINUE && 
+          stopCrit.test(solver) == false)
+        {
+          converged = false;
+          break;
+        }
+        k++;
+        
+        converged = stopCrit.test(solver);
       }
-      k++;
-      
-      converged = stopCrit.test(solver);
+      while(status == NativeSolver::ITERATION_CONTINUE && 
+            converged == false && k < MAX_NUM_ITER);
     }
-    while(status == NativeSolver::ITERATION_CONTINUE && 
-          converged == false && k < MAX_NUM_ITER);
-  
+    else
+      throw std::runtime_error("external solvers are not yet supported by the driver routine");
+    
     if(timeTest == false)
       results.states.append(solver);
     else
@@ -179,8 +184,6 @@ SolverResults_Python minimize(NativeSolver &solver,
   results.num_grad_eval = solver.getNumGradEval();
   results.term_val      = stopCrit.getTestValue(solver);
   results.x_final       = numpy_utils::vector_to_tuple::convert_boost(solver.getX());
-  /*if(typeid(stopCrit) == typeid(XDistToMinTest))
-    results.x_min = dynamic_cast< const XDistToMinTest & >(stopCrit).getXMin();*/
   
   if(timeTest == true)
   {
