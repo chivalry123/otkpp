@@ -57,7 +57,7 @@ Otherwise, a ValueError is raised."""
 		legends = []
 		for i in range(len(S)):
 			legends.append(S[i].get_name().replace('_', '\_'))
-		legend(plots, legends, loc='upper right')
+		legend(plots, legends, loc='upper right', shadow=True)
 		grid(True)
 		
 		show()
@@ -94,7 +94,7 @@ name strings:
 	
 	rc('text', usetex=True)
 	figure()
-	plots = semilogy(X, Y)
+	plots = semilogy(X, Y, linewidth=2)
 	xlim(1, results.num_iter)
 	
 	legends = []
@@ -108,7 +108,7 @@ name strings:
 		elif q == 'simplexvolume':
 			legends.append(r'$|V(S_k)|$')
 	
-	legend(plots, legends, loc='lower left')
+	legend(plots, legends, loc='lower left', shadow=True)
 	xlabel('k')
 	grid(True)
 	show()

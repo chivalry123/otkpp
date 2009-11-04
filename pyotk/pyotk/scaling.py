@@ -40,7 +40,7 @@ of alpha.
 	
 	rc('text', usetex=True)
 	figure()
-	semilogx(alpha_val, num_iter)
+	semilogx(alpha_val, num_iter, linewidth=2)
 	ylim(0, 1.1*max_num_iter)
 	title(r'Function: $(\alpha x)^2+y^2$, algorithm: ' + s.get_name())
 	xlabel(r'$\alpha$')

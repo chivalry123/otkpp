@@ -86,7 +86,7 @@ True, the results are also plotted."""
 		legends = []
 		for s in S:
 			legends.append(s.get_name().replace('_', '\_'))
-		legend(plots, legends, loc='lower right')
+		legend(plots, legends, loc='lower right', shadow=True)
 		xlabel(r'\tau')
 		ylabel(r'\rho_s(2^\tau)')
 		xlim(0, tau[len(tau) - 1])

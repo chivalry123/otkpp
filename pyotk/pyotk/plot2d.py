@@ -64,28 +64,48 @@ a ValueError is raised."""
 	plot_contours(results.input.objfunc, x1, x2, y1, y2, z1, z2,
                 z_logscale=z_logscale, new_figure=False)
 	
-	PX = []
-	PY = []
-	
-	if results.input.solver_info.m == 1:
-		for it in results.states:
-			PX.append(it.x[0])
-			PY.append(it.x[1])
-			
-		plot(PX, PY, '-o', color='black',
-         markerfacecolor='gray', markeredgecolor='black',
-         linewidth=2, markersize=6)
-	else:
+	if results.input.solver_info.m > 1:
 		for s in results.states:
 			PX = []
 			PY = []
 			for vi in range(0, 4):
 				PX.append(s.X[0, vi % 3])
 				PY.append(s.X[1, vi % 3])
-		
+			
 			plot(PX, PY, '-o', color='black',
            markerfacecolor='gray', markeredgecolor='black',
-           linewidth=2, markersize=6)
+           linewidth=0.4, markersize=3, linestyle='dashed')
+	
+	PX = []
+	PY = []
+
+	for it in results.states:
+		PX.append(it.x[0])
+		PY.append(it.x[1])
+
+	plot(PX, PY, '-o', color='black',
+       markerfacecolor='gray', markeredgecolor='black',
+       linewidth=2, markersize=6)
+	
+	#if results.input.solver_info.m == 1:
+		#for it in results.states:
+			#PX.append(it.x[0])
+			#PY.append(it.x[1])
+			
+		#plot(PX, PY, '-o', color='black',
+         #markerfacecolor='gray', markeredgecolor='black',
+         #linewidth=2, markersize=6)
+	#else:
+		#for s in results.states:
+			#PX = []
+			#PY = []
+			#for vi in range(0, 4):
+				#PX.append(s.X[0, vi % 3])
+				#PY.append(s.X[1, vi % 3])
+		
+			#plot(PX, PY, '-o', color='black',
+           #markerfacecolor='gray', markeredgecolor='black',
+           #linewidth=2, markersize=6)
 	
 	if results.input.has_constraints and type(results.input.C) == native.BoundConstraints:
 		plot_bound_constraints(results.input.C)
