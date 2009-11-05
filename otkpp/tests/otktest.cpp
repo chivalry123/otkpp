@@ -14,6 +14,7 @@
 #include "MGHTestFunction.h"
 #include "MNewton.h"
 #include "NativeSolver.h"
+#include "NEWUOA.h"
 #include "LinminBFGS.h"
 #include "SteihaugSR1.h"
 #include "PARTAN.h"
@@ -95,7 +96,7 @@ static void printResults(const std::string &algoName,
     printf("%-15s: FAILURE (%s)\n", algoName.c_str(), "???"); // TODO: error code string
 }
 
-/*#ifdef WITH_FORTRAN
+#ifdef WITH_FORTRAN
 static void testLBFGSB()
 {
   LBFGSB solver;
@@ -121,15 +122,25 @@ static void testLMBM()
   
   solver.solve(f, x0);
 }
-#endif*/
+
+static void testNEWUOA()
+{
+  NEWUOA solver;
+  
+  Gulf f(10, Function::DERIV_FDIFF_CENTRAL_2);
+  vector< double > x0(3);
+  x0[0] = 5;
+  x0[1] = 2.5;
+  x0[2] = 0.15;
+  
+  solver.solve(f, x0);
+}
+#endif
 
 int main(int argc, char **argv)
 {
-  /*GradNormTest t1(1e-8);
-  FDistToMinTest t2(0, 1e-8, false);
-  CompoundStoppingCriterion t3 = t1 + t2;
-  CompoundStoppingCriterion t4 = t3;
-  CompoundStoppingCriterion t5(t4);*/
+  testNEWUOA();
+  return EXIT_SUCCESS;
   
   std::list< NativeSolver * > algoList;
   std::list< Function * > funcList;

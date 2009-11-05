@@ -1,7 +1,7 @@
 
 #ifndef LMBMSOLVER_H
 
-#include "ExternalSolver.h"
+#include <otkpp/localsolvers/ExternalSolver.h>
 
 /// Defines parameters for the LMBM algorithm.
 struct LMBM_setup : public SolverSetup
