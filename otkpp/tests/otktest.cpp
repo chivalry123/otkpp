@@ -139,9 +139,6 @@ static void testNEWUOA()
 
 int main(int argc, char **argv)
 {
-  testNEWUOA();
-  return EXIT_SUCCESS;
-  
   std::list< NativeSolver * > algoList;
   std::list< Function * > funcList;
   vector< double > x0(2);

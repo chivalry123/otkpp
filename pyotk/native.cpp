@@ -252,11 +252,13 @@ void init_functions()
 #ifdef WITH_LIBMATHEVAL
   class_< Function >("Function",
     init< const std::string &, optional< Function::DerivEvalType > >())
-    .def("get_n", &Function::getN);
+    .def("get_n", &Function::getN)
+    .def("get_symbolic_expression", &Function::getSymbolicExpression)
 #else
   class_< Function >("Function")
-    .def("get_n", &Function::getN);
+    .def("get_n", &Function::getN)
 #endif
+    .def("has_symbolic_expression", &Function::hasSymbolicExpression);
   enum_< Function::FuncEvalType >("FuncEvalType")
 #ifdef WITH_LIBMATHEVAL
     .value("symbolic", Function::SYMBOLIC)

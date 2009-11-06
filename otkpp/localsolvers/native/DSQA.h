@@ -7,6 +7,10 @@
 class DSQA : public NativeSolver
 {
  public:
+  bool hasBuiltInStoppingCriterion() const;
+  bool isGSLSolver() const;
+ private:
+  void generateInitialPoints_(const vector< double > &x0);
 };
 
 #define DSQA_H

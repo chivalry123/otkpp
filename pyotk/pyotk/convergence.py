@@ -109,7 +109,7 @@ name strings:
 			legends.append(r'$|V(S_k)|$')
 	
 	legend(plots, legends, loc='lower left', shadow=True)
-	xlabel('k')
+	xlabel('Iterations')
 	grid(True)
 	show()
 

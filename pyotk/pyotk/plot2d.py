@@ -42,6 +42,11 @@ opens a new window for the plot.
 	xlim(x1, x2)
 	ylim(y1, y2)
   
+	#if isinstance(f, TestFunction):
+		#title(f.name)
+	#elif isinstance(f, native.Function) and f.has_symbolic_expression():
+		#title(f.get_symbolic_expression())
+	
 	if new_figure == True:
 		show()
 

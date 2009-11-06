@@ -20,6 +20,7 @@ SET(OTKPP_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
                        "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/native"
                        "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/native/linmin"
                        "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/native/trsreg"
+                       "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/newuoa"
                        "${CMAKE_CURRENT_SOURCE_DIR}/stopcrit"
                        "${CMAKE_CURRENT_SOURCE_DIR}/testproblems"
                        "${CMAKE_CURRENT_SOURCE_DIR}/tests")
