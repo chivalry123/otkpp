@@ -60,6 +60,7 @@ a function of two variables, a ValueError is raised."""
 	figure()
 	imshow(I, extent=(x1, x2, y1, y2))
 	plot_contours(f, x1, x2, y1, y2, 0.1, 500, True, False)
+	title("Algorithm: " + s.get_name())
 	show()
 
 def main():

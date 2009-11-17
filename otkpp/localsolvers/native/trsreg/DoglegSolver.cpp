@@ -59,7 +59,7 @@ vector< double > &DoglegSolver::computeStep(const vector< double > &x,
     xPlus = x + p;
     fxPlus = (*f_)(xPlus);
     
-    nonzeroStep = updateRadius(fx, fxPlus, x, g, H, p);
+    nonzeroStep = updateRadius_(fx, fxPlus, x, g, H, p);
     
     j++;
   }

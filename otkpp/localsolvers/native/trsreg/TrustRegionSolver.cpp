@@ -14,18 +14,28 @@ double TrustRegionSolver::computeReduction_(double fx,
   return ared / pred;
 }
 
+double TrustRegionSolver::getDelta() const
+{
+  return delta_;
+}
+
+void TrustRegionSolver::setDelta(double delta)
+{
+  delta_ = delta;
+}
+  
 void TrustRegionSolver::setup(const Function &f)
 {
   f_ = &f;
   doSetup_();
 }
 
-bool TrustRegionSolver::updateRadius(double fx,
-                                     double fxPlus,
-                                     const vector< double > &x,
-                                     const vector< double > &g,
-                                     const matrix< double > &H,
-                                     const vector< double > &p)
+bool TrustRegionSolver::updateRadius_(double fx,
+                                      double fxPlus,
+                                      const vector< double > &x,
+                                      const vector< double > &g,
+                                      const matrix< double > &H,
+                                      const vector< double > &p)
 {
   double rho = computeReduction_(fx, fxPlus, x, g, H, p);
   if(rho < 0.25)

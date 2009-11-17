@@ -34,6 +34,10 @@ class TrustRegionSolver
                                         double &fxPlus,
                                         const vector< double > *Hg = NULL) = 0;
   
+  double getDelta() const;
+  
+  void setDelta(double delta);
+  
   /// Initializes this trust region solver with the given objective function.
   void setup(const Function &f);
  protected:
@@ -52,12 +56,12 @@ class TrustRegionSolver
   
   virtual void doSetup_() = 0;
   
-  bool updateRadius(double fx,
-                    double fxPlus,
-                    const vector< double > &x,
-                    const vector< double > &g,
-                    const matrix< double > &H,
-                    const vector< double > &p);
+  bool updateRadius_(double fx,
+                     double fxPlus,
+                     const vector< double > &x,
+                     const vector< double > &g,
+                     const matrix< double > &H,
+                     const vector< double > &p);
 };
 
 #define TRUSTREGIONSOLVER_H

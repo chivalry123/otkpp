@@ -2,6 +2,7 @@
 #include "CompoundStoppingCriterion.h"
 #include "ConjGradMT.h"
 #include "DoglegBFGS.h"
+//#include "DSQA.h"
 #include "FDistToMinTest.h"
 #include "Function.h"
 #include "GradNormTest.h"
@@ -24,6 +25,8 @@
 #include "LMBM.h"
 #endif
 
+#include "QuadInterp.h"
+
 #include <cstdlib>
 #include <iostream>
 #include <list>
@@ -32,7 +35,7 @@
 static const std::string F_EXPR = "(1-x)^2+100*(y-x*x)^2";
 //static const std::string F_EXPR = "(1.5-x*(1-y))^2+(2.25-x*(1-y^2))^2+(2.625-x*(1-y^3))^2";
 //static const std::string F_EXPR = "x*x+y*y";
-static const unsigned int MAX_NUM_ITER = 10000;
+static const unsigned int MAX_NUM_ITER = 1000;
 
 static void initAlgorithmList(std::list< NativeSolver * > &algoList)
 {
@@ -43,6 +46,7 @@ static void initAlgorithmList(std::list< NativeSolver * > &algoList)
   algoList.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs));
   algoList.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2));
 #endif
+  //algoList.push_back(new DSQA());
   algoList.push_back(new DoglegBFGS());
   algoList.push_back(new SteihaugSR1());
   algoList.push_back(new LinminBFGS(LinminBFGS::FLETCHER));
