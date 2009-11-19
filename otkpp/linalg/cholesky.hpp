@@ -151,7 +151,7 @@ template < class MATRIX >
  * @param L a triangular matrix
  * @param x input: right hand side b; output: solution x
  */
-template < class TRIA, class VEC > void cholesky_solve(const TRIA& L, VEC& x, ublas::lower)
+template < class TRIA, class VEC > void cholesky_solve(const TRIA& L, VEC& x/*, ublas::lower*/)
 {
   using namespace ublas;
 //   ::inplace_solve(L, x, lower_tag(), typename TRIA::orientation_category () );
