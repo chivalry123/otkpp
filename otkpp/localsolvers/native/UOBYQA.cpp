@@ -4,8 +4,8 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
-bool sort_pred(const std::pair< int, double > &p1, 
-               const std::pair< int, double > &p2)
+static bool sort_pred(const std::pair< int, double > &p1,
+                      const std::pair< int, double > &p2)
 {
   return p1.second > p2.second;
 }
@@ -260,14 +260,14 @@ double UOBYQA::computeMinEigValEstim_()
 
 void UOBYQA::computeModelStep_(int j, vector< double > &d, double &lj)
 {
-  computeTrsRegStep_(-model_.getGl(j), -model_.getHl(j), rho_, d);
+  /*computeTrsRegStep_(-model_.getGl(j), -model_.getHl(j), rho_, d);
   lj = fabs(model_.evalLagrangian(j, d));
-  return;
+  return;*/
   
   double a, b, c;
   double colNorm;
-  vector< double > D;
-  double DD;
+  vector< double > Hw;
+  double Hw2;
   vector< double > dHat;
   vector< double > dTilde;
   vector< double > h;
@@ -304,28 +304,36 @@ void UOBYQA::computeModelStep_(int j, vector< double > &d, double &lj)
   }
   w = column(H, maxColIdx);
   ww = inner_prod(w, w);
-  D = prod(H, w);
-  DD = inner_prod(D, D);
+  Hw = prod(H, w);
+  Hw2 = inner_prod(Hw, Hw);
   
-  /*a = inner_prod(D, prod(H, D)) * inner_prod(w, D) - DD*DD;
-  b = inner_prod(D, prod(H, D))*ww - DD*inner_prod(w, D);
-  c = DD*ww - inner_prod(w, D)*inner_prod(w, D);
+  if(inner_prod(w, Hw)*inner_prod(w, Hw) >= 
+     0.999 * inner_prod(w, w) * inner_prod(Hw, Hw))
+  {
+    d = Hw;
+    lj = model_.evalLagrangian(j, d);
+    return;
+  }
+  
+  a = inner_prod(Hw, prod(H, Hw)) * inner_prod(w, Hw) - Hw2*Hw2;
+  b = inner_prod(Hw, prod(H, Hw))*ww - Hw2*inner_prod(w, Hw);
+  c = Hw2*ww - inner_prod(w, Hw)*inner_prod(w, Hw);
   r1 = (-b + sqrt(b*b-4.0*a*c))/(2.0*a);
   r2 = (-b - sqrt(b*b-4.0*a*c))/(2.0*a);
-  if(inner_prod(w+r1*D, prod(H, w+r1*D)) / (inner_prod(w+r1*D, w+r1*D)*inner_prod(w+r1*D, w+r1*D)) > 
-     inner_prod(w+r2*D, prod(H, w+r2*D)) / (inner_prod(w+r2*D, w+r2*D)*inner_prod(w+r2*D, w+r2*D)))
-    dTilde = w + r1*D;
+  if(inner_prod(w+r1*Hw, prod(H, w+r1*Hw)) / (inner_prod(w+r1*Hw, w+r1*Hw)*inner_prod(w+r1*Hw, w+r1*Hw)) > 
+     inner_prod(w+r2*Hw, prod(H, w+r2*Hw)) / (inner_prod(w+r2*Hw, w+r2*Hw)*inner_prod(w+r2*Hw, w+r2*Hw)))
+    dTilde = w + r1*Hw;
   else
-    dTilde = w + r2*D;
+    dTilde = w + r2*Hw;
   
   theta = 0.5 * atan(2.0*inner_prod(dHat, prod(H, dTilde)) / 
                     (inner_prod(dHat, prod(H, dHat)) - 
-                    inner_prod(dTilde, prod(H, dTilde))));*/
+                    inner_prod(dTilde, prod(H, dTilde))));
   
   uHat   =  cos(theta)*dTilde + sin(theta)*dHat;
   uTilde = -sin(theta)*dTilde + cos(theta)*dHat;
   
-  /*maxEstim = -1.0;
+  maxEstim = -1.0;
   for(i = 0; i < 8; i++)
   {
     phi = i*M_PI/4.0;
@@ -341,10 +349,10 @@ void UOBYQA::computeModelStep_(int j, vector< double > &d, double &lj)
     }
   }
   
-  d = rho_ * (cos(maxPhi)*uHat + sin(maxPhi)*uTilde); // rho??
-  lj = maxEstim;*/
+  d = rho_ * (cos(maxPhi)*uHat + sin(maxPhi)*uTilde);
+  lj = maxEstim;
   
-  double t1 = fabs(inner_prod(h, uHat)) + 0.5*fabs(inner_prod(uHat, prod(H, uHat)));
+  /*double t1 = fabs(inner_prod(h, uHat)) + 0.5*fabs(inner_prod(uHat, prod(H, uHat)));
   double t2 = fabs(inner_prod(h, uTilde)) + 0.5*fabs(inner_prod(uTilde, prod(H, uTilde)));
   double t3 = 1.0/sqrt(2) * (fabs(inner_prod(h, uHat)) + fabs(inner_prod(h, uTilde))) + 
               0.25 * fabs(inner_prod(uHat, prod(H, uHat)) + inner_prod(uTilde, prod(H, uTilde)));
@@ -356,7 +364,7 @@ void UOBYQA::computeModelStep_(int j, vector< double > &d, double &lj)
   else
     d = rho_ * (uTilde + uHat) / sqrt(2);
   
-  lj = std::max(t1, std::max(t2, t3));
+  lj = std::max(t1, std::max(t2, t3));*/
 }
 
 double UOBYQA::computeReduction_(const vector< double > &x,
@@ -544,49 +552,55 @@ NativeSolver::IterationStatus UOBYQA::iterate_()
   double ratio;
   int t = -1;
   bool trsRegIter = true;
-  double dMove = 0.0;
+  double dMove;
   bool fImproved = false;
-  double dNorm = 0.0;
+  vector< double > xHat;
+  double rhoOld;
   
-  /*std::cout<<"p: "<<p_<<std::endl;
-  std::cout<<"fx_k: "<<f_<<std::endl;
-  //std::cout<<"fxplus: "<<fXPlus_<<std::endl;
-  //std::cout<<"ratio: "<<ratio<<std::endl;
-  std::cout<<"delta: "<<delta_<<std::endl;
-  std::cout<<"H: "<<H_<<std::endl;
-  std::cout<<"g: "<<g_<<std::endl;
-  std::cout<<"c: "<<c_<<std::endl;*/
-  /*for(int i = 0; i < m_; i++)
-    std::cout<<"x["<<i+1<<"]: "<<M_.getX()[i]<<std::endl;*/
-  /*testLagrange_();
-  if(nIter_ == 10)
-    throw std::runtime_error("...");*/
+  /*if(nIter_ == 10)
+    return NativeSolver::ITERATION_SUCCESS;*/
+  
+  /*std::cout<<"iterations: "<<nIter_<<std::endl;
+  std::cout<<" d: "<<d_<<std::endl;
+  std::cout<<" x_b: "<<model_.getOrigin()<<std::endl;*/
+  /*std::cout<<" x_k: "<<model_.getLowestX()<<std::endl;
+  std::cout<<" f_k: "<<model_.getLowestF()<<std::endl;*/
+  /*std::cout<<" x_k: "<<x_<<std::endl;
+  std::cout<<" fx_k: "<<f_<<std::endl;*/
+  /*std::cout<<" delta: "<<delta_<<std::endl;
+  std::cout<<" rho: "<<rho_<<std::endl;*/
+  //std::cout<<" lambda: "<<lambda_<<std::endl;
+  //std::cout<<" moveIndex: "<<moveIndex_<<std::endl;
+  //std::cout<<" dNorm: "<<dNorm_<<std::endl;
+  /*std::cout<<" M: "<<M_<<std::endl;
+  std::cout<<" eps: "<<eps_<<std::endl;*/
   
   // take a trust region step if necessary
   if(moveIndex_ == -1)
   {
     computeTrsRegStep_(model_.getG(), model_.getH(), delta_, d_);
     
-    dNorm = norm_2(d_);
-    if(dNorm < 0.5*rho_)
+    dNorm_ = norm_2(d_);
+    if(dNorm_ < 0.5*rho_)
     {
       trsRegIter = false;
-      lambda_ = computeMinEigValEstim_();
       if(numMUpdates_ >= 10)
+      {
+        lambda_ = computeMinEigValEstim_();
         eps_ = 0.5*rho_*rho_*lambda_;
+      }
       else
         eps_ = 0.0;
     }
     else
       eps_ = 0.0;
   }
-  else
-    t = moveIndex_;
   
   if(trsRegIter == true)
   {
     xPlus_ = model_.getLowestX() + d_;
     fXPlus_ = objFunc_(xPlus_);
+    updateM_();
     
     if(moveIndex_ == -1)
     {
@@ -594,52 +608,58 @@ NativeSolver::IterationStatus UOBYQA::iterate_()
       ratio = computeReduction_(model_.getLowestX(), xPlus_, d_);
       
       if(ratio >= 0.7)
-        delta_ = std::max(delta_, std::max(1.25*dNorm, rho_+dNorm));
+        delta_ = std::max(delta_, std::max(1.25*dNorm_, rho_+dNorm_));
       else if(0.1 < ratio && ratio < 0.7)
-        delta_ = std::max(0.5*delta_, dNorm);
+        delta_ = std::max(0.5*delta_, dNorm_);
       else if(ratio <= 0.1)
-        delta_ = 0.5*dNorm;
+        delta_ = 0.5*dNorm_;
       
       if(delta_ <= 1.5*rho_)
         delta_ = rho_;
       
-      vector< double > xHat;
       if(fXPlus_ >= model_.getLowestF())
         xHat = model_.getLowestX();
       else
         xHat = xPlus_;
       
-      double testVal;
-      double maxTestVal = 0.0;
-      for(int j = 0; j < m_; j++)
-      {
-        dx = xHat - model_.getX()[j];
-        
-        if(fXPlus_ < model_.getLowestF() || j != model_.getLowestIndex())
+      /*if(fXPlus_ < model_.getLowestF())
+      {*/
+        double testVal;
+        double maxTestVal = 0.0;
+        for(int j = 0; j < m_; j++)
         {
-          testVal = fabs(model_.evalLagrangian(j, d_)) * 
-            std::max(1.0, pow(norm_2(model_.getX()[j]-xHat)/rho_, 3.0));
-          if(testVal > maxTestVal)
+          if(j != model_.getLowestIndex() || fXPlus_ < model_.getLowestF())
           {
-            maxTestVal = testVal;
-            t = j;
+            dx = xHat - model_.getX()[j];
+            testVal = fabs(model_.evalLagrangian(j, d_)) * 
+              std::max(1.0, pow(norm_2(dx)/rho_, 3.0));
+            if(testVal > maxTestVal)
+            {
+              maxTestVal = testVal;
+              t = j;
+            }
           }
         }
-      }
-      if(maxTestVal <= 1.0 && fXPlus_ >= model_.getLowestF())
-        t = -1;
+        if(maxTestVal <= 1.0)
+          t = -1;
+      /*}
+      else
+        t = -1;*/
     }
     else
       t = moveIndex_;
     
     if(t != -1)
     {
-      dMove = norm_2(model_.getX()[t] - xPlus_);
-      fImproved = model_.updatePoint(xPlus_, t);
+      vector< double > xt = model_.getX()[t];
+      fImproved = model_.updatePoint(model_.getLowestX() + d_, t);
+      dMove = norm_2(xt - model_.getLowestX());
       updateM_();
       
-      if(moveIndex_ >= 0 || fImproved == true || dNorm > 2.0*rho_ || dMove > 2.0*rho_)
+      if(moveIndex_ != -1 || fImproved == true || dNorm_ > 2.0*rho_ || dMove > 2.0*rho_)
       {
+        //std::cout<<"TERM1"<<std::endl;
+        
         x_ = model_.getLowestX();
         f_ = model_.getLowestF();
         
@@ -669,35 +689,31 @@ NativeSolver::IterationStatus UOBYQA::iterate_()
   
   double lj;
   
-  /*while(J_.size() > 0)
-  {*/
   maxDistSq = 0.0;
   if(J_.size() == 0)
     moveIndex_ = -1;
-  for(int j = 0; j < J_.size(); j++)
+  else
   {
-    /*dx = model_.getLowestX() - model_.getX()[j];
-    if(inner_prod(dx, dx) <= 4.0*rho_*rho_)
-      continue;
-    distSq = inner_prod(dx, dx);*/
-    computeModelStep_(J_[j].first, d_, lj);
-    if(M_*pow(norm_2(model_.getX()[J_[j].first] - 
-       model_.getLowestX()), 3.0) * 
-       fabs(model_.evalLagrangian(J_[j].first, d_)) > eps_)
+    for(int j = 0; j < J_.size(); j++)
     {
-      //maxDistSq = distSq;
-      moveIndex_ = J_[j].first;
-      
-      model_.updatePoint(model_.getLowestX() + d_, moveIndex_);
-      updateM_();
-      
-      break;
+      computeModelStep_(J_[j].first, d_, lj);
+      if(M_*pow(norm_2(model_.getX()[J_[j].first] - 
+         model_.getLowestX()), 3.0) * fabs(lj) > eps_)
+      {
+        //maxDistSq = distSq;
+        moveIndex_ = J_[j].first;
+        
+        model_.updatePoint(model_.getLowestX() + d_, moveIndex_);
+        updateM_();
+        
+        break;
+      }
+      else if(j == J_.size() - 1)
+        moveIndex_ = -1;
     }
-    else if(j == J_.size() - 1)
-      moveIndex_ = -1;
   }
   
-  if(moveIndex_ >= 0 || (moveIndex_ == -1 && dNorm > rho_))
+  if(moveIndex_ >= 0 || (moveIndex_ == -1 && dNorm_ > rho_))
   {
     x_ = model_.getLowestX();
     f_ = model_.getLowestF();
@@ -708,7 +724,7 @@ NativeSolver::IterationStatus UOBYQA::iterate_()
       return NativeSolver::ITERATION_SUCCESS;
   }
   
-  double rhoOld = rho_;
+  rhoOld = rho_;
   if(rhoFinal_ < rho_ && rho_ <= 16.0*rhoFinal_)
     rho_ = rhoFinal_;
   else if(16.0*rhoFinal_ < rho_ && rho_ <= 250.0*rhoFinal_)
@@ -718,13 +734,7 @@ NativeSolver::IterationStatus UOBYQA::iterate_()
   
   delta_ = std::max(0.5*rhoOld, rho_);
   
-  /*dx = model_.getOrigin() - model_.getLowestX();
-  for(int i = 0; i < m_; i++)
-    model_.updatePoint(model_.getX()[i] + dx, i);*/
   model_.setOrigin(model_.getLowestX());
-  
-  x_ = model_.getLowestX();
-  f_ = model_.getLowestF();
   
   //trsRegMinimizer_.computeStep(x_, f_, g_, H_, p, nonZeroStep, xPlus, fXPlus);
   
@@ -741,9 +751,9 @@ NativeSolver::IterationStatus UOBYQA::iterate_()
     return NativeSolver::ITERATION_CONTINUE;*/
   //}
   
-  //testLagrange_();
-  //throw std::runtime_error("test completed");
-  
+  x_ = model_.getLowestX();
+  f_ = model_.getLowestF();
+
   if(nIter_ < 1000)
   {
     if(rho_ > rhoFinal_)
@@ -865,9 +875,9 @@ NativeSolver::IterationStatus UOBYQA::iterate2_()
 }
 
 void UOBYQA::setup_(const Function &objFunc,
-                  const vector< double > &x0,
-                  const SolverSetup &solverSetup,
-                  const Constraints &C)
+                    const vector< double > &x0,
+                    const SolverSetup &solverSetup,
+                    const Constraints &C)
 {
   NativeSolver::setup_(objFunc, x0, solverSetup);
   //trsRegMinimizer_.setup(objFunc);
@@ -880,46 +890,10 @@ void UOBYQA::setup_(const Function &objFunc,
   
   m_ = (n_+1)*(n_+2)/2;
   
-  //X_.resize(m_);
-  /*lDenom_.resize(n_);
-  lDenomHat_.resize(n_);*/
-  /*for(int i = 0; i < m_; i++)
-    X_[i].resize(n_);
-  F_.resize(m_);
-  g_.resize(n_);
-  H_.resize(n_, n_);*/
-  
-  d_.resize(n_);
-  
-  /*cl_.resize(m_);
-  gl_.resize(m_);
-  for(int i = 0; i < m_; i++)
-    gl_[i].resize(n_);
-  Hl_.resize(m_);
-  for(int i = 0; i < m_; i++)
-    Hl_[i].resize(n_, n_);
-  
-  cl_hat_.resize(2*n_ + 1);
-  gl_hat_.resize(2*n_ + 1);
-  for(int i = 0; i < 2*n_+1; i++)
-    gl_hat_[i].resize(n_);
-  Hl_hat_.resize(2*n_ + 1);
-  for(int i = 0; i < 2*n_+1; i++)
-    Hl_hat_[i].resize(n_, n_);*/
-  
-  //generateInitialPoints_(x0);
-  
   x_ = x0;
   f_ = objFunc_(x0);
-  xPlus_ = x0;
-  fXPlus_ = f_;
-  
-  //xiBest_ = 0;
   
   model_ = QuadInterp(objFunc, x0, delta_);
-  //computeInitModelParams_(x0);
-  /*for(int i = 0; i < m_; i++)
-    F_[i] = objFunc_(X_[i]);*/
   
   /*for(int i = 0; i < m_; i++)
     std::cout<<X_[i][0]<<" "<<X_[i][1]<<std::endl;
