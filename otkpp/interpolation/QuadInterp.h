@@ -32,7 +32,9 @@ class QuadInterp
   const std::vector< vector< double > > &getX() const;
   void setOrigin(const vector< double > &xb);
   void test();
+  void testInvariants();
   bool updatePoint(const vector< double > &x, int j);
+  bool updatePoint(const vector< double > &x, double fx, int j);
  private:
   Function f_;
   int n_, m_;
@@ -61,7 +63,6 @@ class QuadInterp
   void computeLagrangeCoeff_last_(const vector< double > &x0, double denom, int i, int j, int k);
   void computeLagrangeCoeff_hat_(const vector< double > &x0, double denom1, double denom2, int j);
   void printInfo_();
-  void testInvariants_();
 };
 
 #define QUADINTERP_H

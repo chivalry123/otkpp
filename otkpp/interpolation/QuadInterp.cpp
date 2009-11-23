@@ -147,14 +147,58 @@ void QuadInterp::test()
   printInfo_();
 }
 
+void QuadInterp::testInvariants()
+{
+  int i;
+  double lix, Lx = 0.0;
+  vector< double > x;
+  
+  for(i = 0; i < m_; i++)
+  {
+    if(f_(X_[i]) != F_[i])
+      throw std::runtime_error("invalid function value");
+    if(f_(X_[i]) < F_[xiLowest_])
+      throw std::runtime_error("invalid best point");
+    if(fabs(eval(X_[i] - xb_) - F_[i]) > 1e-3)
+    {
+      std::cout<<"Q(x): "<<eval(X_[i] - xb_)<<std::endl;
+      std::cout<<"f(x): "<<F_[i]<<std::endl;
+      throw std::runtime_error("invalid interpolation");
+    }
+  }
+  
+  x = xb_;
+  for(i = 0; i < n_; i++)
+    x[i] += (rand() % 100) / 100.0;
+  for(i = 0; i < m_; i++)
+  {
+    lix = evalLagrangian(i, x-xb_);
+    Lx += F_[i] * lix;
+  }
+  if(fabs(Lx - eval(x-xb_)) > 1e-3)
+  {
+    std::cout<<"L(x): "<<Lx<<std::endl;
+    std::cout<<"Q(x): "<<eval(x-xb_)<<std::endl;
+    throw std::runtime_error("mismatching lagrange functions and quadratic model");
+  }
+}
+
 bool QuadInterp::updatePoint(const vector< double > &x, int j)
+{
+  return updatePoint(x, NAN, j);
+}
+
+bool QuadInterp::updatePoint(const vector< double > &x, double fx, int j)
 {
   // Update the Lagrange coefficients.
   double c1, c2;
   vector< double > dx = x - xb_;
   int i;
   bool improved = false;
-  double fv;
+  double m;
+  
+  if(isnan(fx))
+    fx = f_(x);
   
   c2 = 0.5*inner_prod(dx, prod(Hl_[j], dx)) + inner_prod(gl_[j], dx) + cl_[j];
   
@@ -174,18 +218,26 @@ bool QuadInterp::updatePoint(const vector< double > &x, int j)
     Hl_[i] -= c1*Hl_[j];
   }
   
-  fv = f_(x);
-  if(fv < F_[xiLowest_])
+  if(fx < F_[xiLowest_])
   {
     xiLowest_ = j;
     improved = true;
   }
   
-  X_[j] = x;
-  F_[j] = fv;
+  // Update the quadratic model.
+  m = fx - eval(dx);
+  c_ += m*cl_[j];
+  g_ += m*gl_[j];
+  H_ += m*Hl_[j];
   
-  // Update the quadratic model. TODO: optimize this
-  c_ = 0.0;
+  /*for(int i = 0; i < n_; i++)
+    for(int j = 0; j < i; j++)
+      H_(i, j) = H_(j, i);*/
+  
+  X_[j] = x;
+  F_[j] = fx;
+  
+  /*c_ = 0.0;
   g_ = zero_vector< double >(n_);
   H_ = zero_matrix< double >(n_, n_);
   for(i = 0; i < m_; i++)
@@ -193,11 +245,7 @@ bool QuadInterp::updatePoint(const vector< double > &x, int j)
     c_ += F_[i] * cl_[i];
     g_ += F_[i] * gl_[i];
     H_ += F_[i] * Hl_[i];
-  }
-  
-  /*for(int i = 0; i < n_; i++)
-    for(int j = 0; j < i; j++)
-      H_(i, j) = H_(j, i);*/
+  }*/
   
   return improved;
 }
@@ -381,16 +429,5 @@ void QuadInterp::printInfo_()
       Lx += f_(X_[j]) * ljx;
     }
     std::cout<<"L(x)="<<Lx<<std::endl;
-  }
-}
-
-void QuadInterp::testInvariants_()
-{
-  for(int i = 0; i < m_; i++)
-  {
-    if(f_(X_[i]) != F_[i])
-      throw std::runtime_error("invalid function value");
-    if(f_(X_[i]) < F_[xiLowest_])
-      throw std::runtime_error("invalid best point");
   }
 }

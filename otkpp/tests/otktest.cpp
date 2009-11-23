@@ -2,6 +2,7 @@
 #include "CompoundStoppingCriterion.h"
 #include "ConjGradMT.h"
 #include "DoglegBFGS.h"
+#include "DSQA.h"
 #include "FDistToMinTest.h"
 #include "Function.h"
 #include "GradNormTest.h"
@@ -10,15 +11,14 @@
 #include "GSLFDFSolver.h"
 #endif
 #include "HookeJeeves.h"
+#include "LinminBFGS.h"
 #include "MaxNumIterTest.h"
 #include "MGHTestFunction.h"
 #include "MNewton.h"
 #include "NativeSolver.h"
 #include "NEWUOA.h"
-#include "LinminBFGS.h"
 #include "SteihaugSR1.h"
 #include "PARTAN.h"
-//#include "UOBYQA.h"
 #include "XDistToMinTest.h"
 #ifdef WITH_FORTRAN
 #include "LBFGSB.h"
@@ -44,7 +44,7 @@ static void initAlgorithmList(std::list< NativeSolver * > &algoList)
   algoList.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs));
   algoList.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2));
 #endif
-  //algoList.push_back(new UOBYQA());
+  algoList.push_back(new DSQA());
   algoList.push_back(new DoglegBFGS());
   algoList.push_back(new SteihaugSR1());
   algoList.push_back(new LinminBFGS(LinminBFGS::FLETCHER));
