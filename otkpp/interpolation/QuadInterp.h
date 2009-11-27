@@ -30,7 +30,7 @@ class QuadInterp
   const vector< double > &getLowestX() const;
   const vector< double > &getOrigin() const;
   const std::vector< vector< double > > &getX() const;
-  void setOrigin(const vector< double > &xb);
+  void setOrigin(int xbi);
   void test();
   void testInvariants();
   bool updatePoint(const vector< double > &x, int j);

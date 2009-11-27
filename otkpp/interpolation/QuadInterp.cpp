@@ -111,8 +111,9 @@ const std::vector< vector< double > > &QuadInterp::getX() const
   return X_;
 }
 
-void QuadInterp::setOrigin(const vector< double > &xb)
+void QuadInterp::setOrigin(int xbi)
 {
+  const vector< double > &xb = X_[xbi];
   vector< double > dx = xb - xb_;
   
   for(int i = 0; i < m_; i++)
@@ -121,7 +122,8 @@ void QuadInterp::setOrigin(const vector< double > &xb)
     gl_[i] += prod(Hl_[i], dx);
   }
   
-  c_ += 0.5*inner_prod(dx, prod(H_, dx)) + inner_prod(dx, g_);
+  //c_ += 0.5*inner_prod(dx, prod(H_, dx)) + inner_prod(dx, g_);
+  c_ = F_[xbi];
   g_ += prod(H_, dx);
   
   xb_ = xb;
@@ -143,7 +145,7 @@ void QuadInterp::test()
   xNew = xb_;
   xNew[0] -= 0.1;
   xNew[1] += 0.2;
-  setOrigin(xNew);
+  setOrigin(getLowestIndex());
   printInfo_();
 }
 
@@ -200,7 +202,7 @@ bool QuadInterp::updatePoint(const vector< double > &x, double fx, int j)
   if(isnan(fx))
     fx = f_(x);
   
-  c2 = 0.5*inner_prod(dx, prod(Hl_[j], dx)) + inner_prod(gl_[j], dx) + cl_[j];
+  c2 = evalLagrangian(j, dx);
   
   cl_[j] /= c2;
   gl_[j] /= c2;
@@ -211,7 +213,7 @@ bool QuadInterp::updatePoint(const vector< double > &x, double fx, int j)
     if(i == j)
       continue;
     
-    c1 = 0.5*inner_prod(dx, prod(Hl_[i], dx)) + inner_prod(gl_[i], dx) + cl_[i];
+    c1 = evalLagrangian(i, dx);
     
     cl_[i] -= c1*cl_[j];
     gl_[i] -= c1*gl_[j];
@@ -230,22 +232,8 @@ bool QuadInterp::updatePoint(const vector< double > &x, double fx, int j)
   g_ += m*gl_[j];
   H_ += m*Hl_[j];
   
-  /*for(int i = 0; i < n_; i++)
-    for(int j = 0; j < i; j++)
-      H_(i, j) = H_(j, i);*/
-  
   X_[j] = x;
   F_[j] = fx;
-  
-  /*c_ = 0.0;
-  g_ = zero_vector< double >(n_);
-  H_ = zero_matrix< double >(n_, n_);
-  for(i = 0; i < m_; i++)
-  {
-    c_ += F_[i] * cl_[i];
-    g_ += F_[i] * gl_[i];
-    H_ += F_[i] * Hl_[i];
-  }*/
   
   return improved;
 }
