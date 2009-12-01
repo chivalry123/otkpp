@@ -51,7 +51,7 @@ NativeSolver::IterationStatus SteihaugSR1::iterate_()
 
 void SteihaugSR1::setup_(const Function &objFunc,
                       const vector< double > &x0,
-                      const SolverSetup &solverSetup,
+                      const Solver::Setup &solverSetup,
                       const Constraints &C)
 {
   const int n = objFunc.getN();

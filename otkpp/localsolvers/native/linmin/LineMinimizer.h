@@ -9,24 +9,26 @@ using namespace boost::numeric::ublas;
 
 class LineMinimizer;
 
-struct LinminSetup
-{
-  virtual ~LinminSetup() { }
-  
-  virtual const LinminSetup *clone() const = 0;
-  virtual bool isCompatibleWith(const LineMinimizer &s) const = 0;
-};
-
-struct DefaultLinminSetup : public LinminSetup
-{
-  const LinminSetup *clone() const { return new DefaultLinminSetup(); }
-  bool isCompatibleWith(const LineMinimizer &s) const { return true; }
-};
-
 /// A base class for line minimization algorithms.
 class LineMinimizer
 {
  public:
+  /// Defines the parameters for a line minimizer.
+  struct Setup
+  {
+    virtual ~Setup() { }
+  
+    virtual const Setup *clone() const = 0;
+    virtual bool isCompatibleWith(const LineMinimizer &s) const = 0;
+  };
+
+  /// Defines the default parameters for a line minimizer.
+  struct DefaultSetup : public Setup
+  {
+    const Setup *clone() const { return new DefaultSetup(); }
+    bool isCompatibleWith(const LineMinimizer &s) const { return true; }
+  };
+  
   virtual ~LineMinimizer() { }
   
   /// Computes initial line search step length.
@@ -66,11 +68,11 @@ class LineMinimizer
    * @param f the objective function
    * @param s setup parameters
    */
-  void setup(const Function &f, const LinminSetup &s);
+  void setup(const Function &f, const Setup &s);
  protected:
   const Function *f_;
   
-  virtual void doSetup_(const LinminSetup &s) = 0;
+  virtual void doSetup_(const Setup &s) = 0;
 };
 
 #define LINEMINIMIZER_H

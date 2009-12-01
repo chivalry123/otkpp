@@ -21,7 +21,7 @@ bool NEWUOA::isExternalSolver() const
 
 SolverResults NEWUOA::solve(const Function &objFunc,
                             const vector< double > &x0,
-                            const SolverSetup &solverSetup,
+                            const Solver::Setup &solverSetup,
                             const Constraints &C,
                             const StoppingCriterion *stopCrit,
                             bool timeTest)
@@ -31,7 +31,7 @@ SolverResults NEWUOA::solve(const Function &objFunc,
   
   set_newuoa_obj_func(&objFunc);
   
-  int npt = 2*n+1;
+  int npt = 2*n+1/*(n+1)*(n+2)/2*/;
   
   double *x = new double[n];
   for(int i = 0; i < n; i++)
@@ -41,7 +41,7 @@ SolverResults NEWUOA::solve(const Function &objFunc,
   double rhoend = 1e-6;
   
   int iprint = 3;
-  int maxfun = 1000;
+  int maxfun = 10000;
   
   double *w = new double[(npt+13)*(npt+n)+3*n*(n+3)/2];
   

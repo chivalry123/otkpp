@@ -10,7 +10,7 @@ QuadInterp::QuadInterp(const Function &f, const vector< double > &xb, double del
 {
   int i;
   
-  f_ = f;
+  f_ = &f;
   n_ = f.getN();
   m_ = (n_+1)*(n_+2)/2;
   
@@ -157,9 +157,9 @@ void QuadInterp::testInvariants()
   
   for(i = 0; i < m_; i++)
   {
-    if(f_(X_[i]) != F_[i])
+    if((*f_)(X_[i]) != F_[i])
       throw std::runtime_error("invalid function value");
-    if(f_(X_[i]) < F_[xiLowest_])
+    if((*f_)(X_[i]) < F_[xiLowest_])
       throw std::runtime_error("invalid best point");
     if(fabs(eval(X_[i] - xb_) - F_[i]) > 1e-3)
     {
@@ -200,7 +200,7 @@ bool QuadInterp::updatePoint(const vector< double > &x, double fx, int j)
   double m;
   
   if(isnan(fx))
-    fx = f_(x);
+    fx = (*f_)(x);
   
   c2 = evalLagrangian(j, dx);
   
@@ -250,7 +250,7 @@ void QuadInterp::initialize_(const vector< double > &xb, double delta)
   
   xb_ = xb;
   
-  c_ = f_(xb);
+  c_ = (*f_)(xb);
   
   X_[0] = xb;
   for(j = 0; j < n_; j++)
@@ -259,7 +259,7 @@ void QuadInterp::initialize_(const vector< double > &xb, double delta)
     alpha[j] = delta;
     X_[2*j+1][j] += alpha[j];
     
-    if(f_(X_[2*j+1]) < c_)
+    if((*f_)(X_[2*j+1]) < c_)
       beta[j] = 2.0*delta;
     else
       beta[j] = -2.0*delta;
@@ -272,8 +272,8 @@ void QuadInterp::initialize_(const vector< double > &xb, double delta)
     m3 = 0.5*beta[j]*beta[j];
     m4 = beta[j];
     
-    r1 = f_(X_[2*j+1]) - c_;
-    r2 = f_(X_[2*j+2]) - c_;
+    r1 = (*f_)(X_[2*j+1]) - c_;
+    r2 = (*f_)(X_[2*j+2]) - c_;
     D = m1*m4 - m2*m3;
     H_(j, j) = (m4*r1 - m2*r2) / D;
     g_(j) = (-m3*r1 + m1*r2) / D;
@@ -285,11 +285,11 @@ void QuadInterp::initialize_(const vector< double > &xb, double delta)
     {
       i = 2*n_+1+j+1+k*(k-1)/2-1;
       X_[i] = xb;
-      if(f_(X_[2*j+1]) < c_)
+      if((*f_)(X_[2*j+1]) < c_)
         gammaj = delta;
       else
         gammaj = -delta;
-      if(f_(X_[2*k+1]) < c_)
+      if((*f_)(X_[2*k+1]) < c_)
         gammak = delta;
       else
         gammak = -delta;
@@ -297,7 +297,7 @@ void QuadInterp::initialize_(const vector< double > &xb, double delta)
       X_[i][j] += gammaj;
       X_[i][k] += gammak;
       
-      H_(j, k) = (f_(X_[i]) - 0.5*gammak*gammak*H_(k, k) - 
+      H_(j, k) = ((*f_)(X_[i]) - 0.5*gammak*gammak*H_(k, k) - 
                   0.5*gammaj*gammaj*H_(j, j) - gammaj*g_(j) - gammak*g_(k) - c_) / 
                   (gammaj*gammak);
       H_(k, j) = H_(j, k);
@@ -320,7 +320,7 @@ void QuadInterp::initialize_(const vector< double > &xb, double delta)
   computeLagrangeCoeff_first_(0, xb);
   
   for(i = 0; i < m_; i++)
-    F_[i] = f_(X_[i]);
+    F_[i] = (*f_)(X_[i]);
   
   double fLowest = F_[0];
   xiLowest_ = 0;
@@ -405,7 +405,7 @@ void QuadInterp::printInfo_()
     Lx = 0;
     x = X_[i];
     std::cout<<"X["<<i+1<<"]:"<<std::endl;
-    std::cout<<"f(x)="<<f_(x)<<std::endl;
+    std::cout<<"f(x)="<<(*f_)(x)<<std::endl;
     std::cout<<"Q(x)="<<c_ + inner_prod(g_, x-xb_) + 0.5 * inner_prod(x-xb_, prod(H_, x-xb_))<<std::endl;
     for(int j = 0; j < m_; j++)
     {
@@ -414,7 +414,7 @@ void QuadInterp::printInfo_()
       std::cout<<"Hlj: "<<Hl_[j]<<std::endl;*/
       ljx = cl_[j] + inner_prod(gl_[j], x-xb_) + 0.5*inner_prod(x-xb_, prod(Hl_[j], x-xb_));
       std::cout<<"lj[x]: "<<ljx<<std::endl;
-      Lx += f_(X_[j]) * ljx;
+      Lx += (*f_)(X_[j]) * ljx;
     }
     std::cout<<"L(x)="<<Lx<<std::endl;
   }

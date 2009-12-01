@@ -11,7 +11,7 @@ std::string DSQA::getName() const
 
 bool DSQA::hasBuiltInStoppingCriterion() const
 {
-  return true;
+  return false;
 }
 
 bool DSQA::isGSLSolver() const
@@ -133,12 +133,12 @@ NativeSolver::IterationStatus DSQA::iterate_()
   int t = 0;
   bool trsRegIter = true;
   double eta = 0.0;
-
+  
   computeTrsRegStep_(model_.getG(), model_.getH(), delta_, p_);
   xPlus_ = x_ + p_;
   fXPlus = objFunc_(xPlus_);
   ratio = computeReduction_(x_, xPlus_, f_, fXPlus, p_);
-
+  
   t = -1;
   maxDistSq = 0.0;
   for(j = 0; j < m_; j++)
@@ -154,22 +154,26 @@ NativeSolver::IterationStatus DSQA::iterate_()
     }
   }
   
-  if(fXPlus < model_.getLowestF() || inner_prod(p_, p_) <= maxDistSq)
-     fImproved = model_.updatePoint(xPlus_, fXPlus, t);
-    
+  if(t != -1 && (fXPlus < model_.getLowestF() || inner_prod(p_, p_) <= maxDistSq))
+    fImproved = model_.updatePoint(xPlus_, fXPlus, t);
+  
   if(ratio > eta)
     delta_ *= 1.5;
   else
     delta_ *= 0.75;
 
   if(fImproved)
-    model_.setOrigin(model_.getLowestX());
+    model_.setOrigin(model_.getLowestIndex());
   
   x_ = model_.getLowestX();
   f_ = model_.getLowestF();
   
-  /*std::cout<<"i: "<<nIter_<<std::endl;
-  model_.testInvariants();*/
+  //std::cout<<"niter: "<<nIter_<<" x: "<<x_<<" dx: "<<sqrt(maxDistSq)<<std::endl;
+  /*if(nIter_ % 100 == 0)
+  {
+    model_ = QuadInterp(objFunc_, x_, 1e-3);
+    //delta_ = 1e-6;
+  }*/
   
   if(nIter_ < 10000 && delta_ > 1e-12)
     return NativeSolver::ITERATION_CONTINUE;
@@ -179,19 +183,19 @@ NativeSolver::IterationStatus DSQA::iterate_()
 
 void DSQA::setup_(const Function &objFunc,
                   const vector< double > &x0,
-                  const SolverSetup &solverSetup,
+                  const Solver::Setup &solverSetup,
                   const Constraints &C)
 {
   NativeSolver::setup_(objFunc, x0, solverSetup);
   
-  delta_ = 1e-3;
+  delta_ = 1e-2;
   m_ = (n_+1)*(n_+2)/2;
   
   x_ = x0;
   f_ = objFunc_(x0);
   
   model_ = QuadInterp(objFunc, x0, delta_);
-  model_.setOrigin(model_.getLowestX());
+  model_.setOrigin(model_.getLowestIndex());
   p_.resize(n_);
   xPlus_.resize(n_);
 }

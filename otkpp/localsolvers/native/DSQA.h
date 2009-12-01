@@ -1,20 +1,30 @@
 
 #ifndef DSQA_H
 
-#include "QuadInterp.h"
+#include <otkpp/interpolation/QuadInterp.h>
 
 #include <otkpp/localsolvers/native/NativeSolver.h>
 
-/// An experimental direct search algorithm with quadratic interpolation.
+/// An experimental direct search algorithm with quadratic interpolation (based on Powell's UOBYQA).
 class DSQA : public NativeSolver
 {
  public:
+  struct State : public NativeSolver::State
+  {
+    QuadInterp model_;
+    double delta_;
+    int m_;
+    vector< double > p_;
+    vector< double > xPlus_;
+  };
+  
   std::string getName() const;
   bool hasBuiltInStoppingCriterion() const;
   bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
  private:
+  // TODO: move these to State
   QuadInterp model_;
   double delta_;
   int m_;
@@ -35,7 +45,7 @@ class DSQA : public NativeSolver
   NativeSolver::IterationStatus iterate_();
   void setup_(const Function &objFunc,
               const vector< double > &x0,
-              const SolverSetup &solverSetup,
+              const Solver::Setup &solverSetup,
               const Constraints &C);
 };
 

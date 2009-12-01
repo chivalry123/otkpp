@@ -64,7 +64,7 @@ NativeSolver::IterationStatus NativeSolver::iterate()
 
 SolverResults NativeSolver::solve(const Function &objFunc,
                                   const vector< double > &x0,
-                                  const SolverSetup &solverSetup,
+                                  const Solver::Setup &solverSetup,
                                   const Constraints &C,
                                   const StoppingCriterion *stopCrit,
                                   bool timeTest)
@@ -118,7 +118,7 @@ SolverResults NativeSolver::solve(const Function &objFunc,
 
 void NativeSolver::setup_(const Function &objFunc,
                           const vector< double > &x0,
-                          const SolverSetup &solverSetup)
+                          const Solver::Setup &solverSetup)
 {
   x_ = x0;
   f_ = objFunc(x0);

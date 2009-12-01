@@ -21,7 +21,7 @@ bool GradientSolver::hasBuiltInStoppingCriterion() const
 
 void GradientSolver::setup_(const Function &objFunc,
                             const vector< double > &x0,
-                            const SolverSetup &solverSetup,
+                            const Solver::Setup &solverSetup,
                             const Constraints &C)
 {
   AbstractGradientSolver::setup_(objFunc, x0, solverSetup, C);

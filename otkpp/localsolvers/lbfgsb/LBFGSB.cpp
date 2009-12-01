@@ -5,9 +5,9 @@
 #include <cstring>
 #include <typeinfo>
 
-LBFGSBSetup::LBFGSBSetup(int m) : m(m) { }
+LBFGSB::Setup::Setup(int m) : m(m) { }
 
-bool LBFGSBSetup::isCompatibleWith(const Solver &s) const
+bool LBFGSB::Setup::isCompatibleWith(const Solver &s) const
 {
   return (typeid(s) == typeid(const LBFGSB &));
 }
@@ -70,19 +70,19 @@ NativeSolver::IterationStatus LBFGSB::iterate_()
 
 void LBFGSB::setup_(const Function &objFunc,
                     const vector< double > &x0,
-                    const SolverSetup &solverSetup,
+                    const Solver::Setup &solverSetup,
                     const Constraints &C)
 {
   AbstractGradientSolver::setup_(objFunc, x0, solverSetup, C);
   
-  if(typeid(solverSetup) == typeid(const DefaultSolverSetup &))
+  if(typeid(solverSetup) == typeid(const Solver::DefaultSetup &))
   {
     m_ = 10;
   }
   else
   {
-    const LBFGSBSetup &setup = 
-      dynamic_cast< const LBFGSBSetup & >(solverSetup);
+    const LBFGSB::Setup &setup = 
+      dynamic_cast< const LBFGSB::Setup & >(solverSetup);
     m_ = setup.m;
   }
   

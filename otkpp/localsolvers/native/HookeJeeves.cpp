@@ -76,7 +76,7 @@ NativeSolver::IterationStatus HookeJeeves::iterate_()
 
 void HookeJeeves::setup_(const Function &objFunc,
                          const vector< double > &x0,
-                         const SolverSetup &solverSetup,
+                         const Solver::Setup &solverSetup,
                          const Constraints &C)
 {
   x_ = x0;

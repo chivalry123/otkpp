@@ -8,15 +8,15 @@
 static const int I = 20;
 static const int J = 10;
 
-FletcherSetup::FletcherSetup(double eta, double mu, double chi, double tau) : 
+Fletcher::Setup::Setup(double eta, double mu, double chi, double tau) : 
   eta(eta), mu(mu), chi(chi), tau(tau) { }
 
-const LinminSetup *FletcherSetup::clone() const
+const LineMinimizer::Setup *Fletcher::Setup::clone() const
 {
-  return new FletcherSetup(*this);
+  return new Fletcher::Setup(*this);
 }
 
-bool FletcherSetup::isCompatibleWith(const LineMinimizer &s) const
+bool Fletcher::Setup::isCompatibleWith(const LineMinimizer &s) const
 {
   return (typeid(s) == typeid(const Fletcher &));
 }
@@ -134,10 +134,10 @@ double Fletcher::interp_safequard_(double alpha)
   return alpha;
 }
 
-void Fletcher::doSetup_(const LinminSetup &s)
+void Fletcher::doSetup_(const LineMinimizer::Setup &s)
 {
-  if(typeid(s) != typeid(DefaultLinminSetup))
-    setup_ = dynamic_cast< const FletcherSetup & >(s);
+  if(typeid(s) != typeid(LineMinimizer::DefaultSetup))
+    setup_ = dynamic_cast< const Fletcher::Setup & >(s);
   else
-    setup_ = FletcherSetup();
+    setup_ = Fletcher::Setup();
 }

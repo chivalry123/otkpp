@@ -5,15 +5,15 @@
 
 #include <typeinfo>
 
-MoreThuenteSetup::MoreThuenteSetup(double eta, double mu, double gamma, double chi) : 
+MoreThuente::Setup::Setup(double eta, double mu, double gamma, double chi) : 
   eta(eta), mu(mu), gamma(gamma), chi(chi) { }
 
-const LinminSetup *MoreThuenteSetup::clone() const
+const LineMinimizer::Setup *MoreThuente::Setup::clone() const
 {
-  return new MoreThuenteSetup(*this);
+  return new MoreThuente::Setup(*this);
 }
 
-bool MoreThuenteSetup::isCompatibleWith(const LineMinimizer &s) const
+bool MoreThuente::Setup::isCompatibleWith(const LineMinimizer &s) const
 {
   return (typeid(s) == typeid(const MoreThuente &));
 }
@@ -272,16 +272,16 @@ double MoreThuente::psi(double phi, double alpha, double phi0, double dphi0, dou
   return phi - phi0 - mu * dphi0 * alpha;
 }
 
-void MoreThuente::doSetup_(const LinminSetup &s)
+void MoreThuente::doSetup_(const LineMinimizer::Setup &s)
 {
-  if(typeid(s) != typeid(DefaultLinminSetup))
+  if(typeid(s) != typeid(LineMinimizer::DefaultSetup))
   {
-    setup_ = dynamic_cast< const MoreThuenteSetup & >(s);
+    setup_ = dynamic_cast< const MoreThuente::Setup & >(s);
     gamma_ = setup_.gamma;
   }
   else
   {
-    setup_ = MoreThuenteSetup();
+    setup_ = MoreThuente::Setup();
     gamma_ = 0.0;
   }
 }

@@ -4,6 +4,7 @@
 #include "BoundConstraints.h"
 #include "ConjGradMT.h"
 #include "DoglegBFGS.h"
+#include "DSQA.h"
 #include "Function.h"
 #include "GradNormTest.h"
 #ifdef WITH_GSL
@@ -103,25 +104,27 @@ Solver *OTKGuiModel::getSolverInstance_(int index)
     return new ConjGradMT(ConjGradMT::FLETCHER_REEVES);
   else if(index == 8)
     return new ConjGradMT(ConjGradMT::POLAK_RIBIERE);
+  else if(index == 9)
+    return new DSQA();
 #ifdef WITH_GSL
   i = 6;
-  if(index == 9)
+  if(index == 10)
     return new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_fr, derivEvalType);
-  else if(index == 10)
-    return new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_pr, derivEvalType);
   else if(index == 11)
-    return new GSLFSolver(gsl_multimin_fminimizer_nmsimplex);
+    return new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_pr, derivEvalType);
   else if(index == 12)
-    return new GSLFDFSolver(gsl_multimin_fdfminimizer_steepest_descent, derivEvalType);
+    return new GSLFSolver(gsl_multimin_fminimizer_nmsimplex);
   else if(index == 13)
-    return new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs, derivEvalType);
+    return new GSLFDFSolver(gsl_multimin_fdfminimizer_steepest_descent, derivEvalType);
   else if(index == 14)
+    return new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs, derivEvalType);
+  else if(index == 15)
     return new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2, derivEvalType);
 #endif
 #ifdef WITH_FORTRAN
-  else if(index == 9 + i)
-    return new LMBM();
   else if(index == 10 + i)
+    return new LMBM();
+  else if(index == 11 + i)
     return new LBFGSB(derivEvalType);
 #endif
   else

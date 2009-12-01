@@ -269,17 +269,18 @@ void OTKGui::initSolverComboBox_()
   widgets_->algorithmComboBox->insertItem(6,  "LBFGS/MT");
   widgets_->algorithmComboBox->insertItem(7,  "ConjGrad-FR/MT");
   widgets_->algorithmComboBox->insertItem(8,  "ConjGrad-PR/MT");
+  widgets_->algorithmComboBox->insertItem(9,  "DSQA");
 #ifdef WITH_GSL
-  widgets_->algorithmComboBox->insertItem(9,  "gsl_conjugate_fr");
-  widgets_->algorithmComboBox->insertItem(10, "gsl_conjugate_pr");
-  widgets_->algorithmComboBox->insertItem(11, "gsl_nmsimplex");
-  widgets_->algorithmComboBox->insertItem(12, "gsl_steepest_descent");
-  widgets_->algorithmComboBox->insertItem(13, "gsl_vector_bfgs");
-  widgets_->algorithmComboBox->insertItem(14, "gsl_vector_bfgs2");
+  widgets_->algorithmComboBox->insertItem(10,  "gsl_conjugate_fr");
+  widgets_->algorithmComboBox->insertItem(11, "gsl_conjugate_pr");
+  widgets_->algorithmComboBox->insertItem(12, "gsl_nmsimplex");
+  widgets_->algorithmComboBox->insertItem(13, "gsl_steepest_descent");
+  widgets_->algorithmComboBox->insertItem(14, "gsl_vector_bfgs");
+  widgets_->algorithmComboBox->insertItem(15, "gsl_vector_bfgs2");
 #endif
 #ifdef WITH_FORTRAN
-  widgets_->algorithmComboBox->insertItem(15, "LMBM");
-  widgets_->algorithmComboBox->insertItem(16, "L-BFGS-B");
+  widgets_->algorithmComboBox->insertItem(16, "LMBM");
+  widgets_->algorithmComboBox->insertItem(17, "L-BFGS-B");
 #endif
 }
 

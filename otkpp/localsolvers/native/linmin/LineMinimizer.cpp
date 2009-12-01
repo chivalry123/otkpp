@@ -12,9 +12,9 @@ double LineMinimizer::fletcherInitStep(double dphi0, double deltaF)
     return 1.0;
 }
 
-void LineMinimizer::setup(const Function &f, const LinminSetup &s)
+void LineMinimizer::setup(const Function &f, const LineMinimizer::Setup &s)
 {
-  if(typeid(s) != typeid(const DefaultLinminSetup &) && 
+  if(typeid(s) != typeid(const LineMinimizer::DefaultSetup &) && 
      !s.isCompatibleWith(*this))
     throw std::invalid_argument("the line minimizer and its setup are incompatible");
   

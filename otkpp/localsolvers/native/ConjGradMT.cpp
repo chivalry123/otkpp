@@ -77,11 +77,11 @@ NativeSolver::IterationStatus ConjGradMT::iterate_()
 
 void ConjGradMT::setup_(const Function &objFunc,
                         const vector< double > &x0,
-                        const SolverSetup &solverSetup,
+                        const Solver::Setup &solverSetup,
                         const Constraints &C)
 {
   GradientSolver::setup_(objFunc, x0, solverSetup, C);
-  lineMinimizer_.setup(objFunc_, MoreThuenteSetup());
+  lineMinimizer_.setup(objFunc_, MoreThuente::Setup());
   d_ = -g_;
   deltaF_ = 0.0;
   i_ = 0;

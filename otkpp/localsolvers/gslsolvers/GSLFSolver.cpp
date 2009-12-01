@@ -11,7 +11,7 @@ typedef struct
 }
 nmsimplex_state_t;
 
-bool GSLFSolver_setup::isCompatibleWith(const Solver &s) const
+bool GSLFSolver::Setup::isCompatibleWith(const Solver &s) const
 {
   if(typeid(s) == typeid(GSLFSolver))
     return true;
@@ -96,7 +96,7 @@ NativeSolver::IterationStatus GSLFSolver::iterate_()
 
 void GSLFSolver::setup_(const Function &objFunc,
                         const vector< double > &x0,
-                        const SolverSetup &solverSetup,
+                        const Solver::Setup &solverSetup,
                         const Constraints &C)
 {
   const int n = objFunc.getN();
@@ -104,14 +104,14 @@ void GSLFSolver::setup_(const Function &objFunc,
   
   NativeSolver::setup_(objFunc, x0, solverSetup);
   
-  if(typeid(solverSetup) == typeid(DefaultSolverSetup))
+  if(typeid(solverSetup) == typeid(Solver::DefaultSetup))
   {
     stepSize = vector< double >(n);
     for(int i = 0; i < n; i++)
       stepSize(i) = 0.9;
   }
   else
-    stepSize = dynamic_cast< const GSLFSolver_setup & >(solverSetup).stepSize;
+    stepSize = dynamic_cast< const GSLFSolver::Setup & >(solverSetup).stepSize;
   
   if(gslSolver_ != NULL)
     gsl_multimin_fminimizer_free(gslSolver_);

@@ -15,7 +15,7 @@ class NEWUOA : public ExternalSolver
   
   SolverResults solve(const Function &objFunc,
                       const vector< double > &x0,
-                      const SolverSetup &solverSetup = DefaultSolverSetup(),
+                      const Solver::Setup &solverSetup = Solver::DefaultSetup(),
                       const Constraints &C = NoConstraints(),
                       const StoppingCriterion *stopCrit = NULL,
                       bool timeTest = false);
@@ -25,7 +25,7 @@ class NEWUOA : public ExternalSolver
  private:
   void setup_(const Function &objFunc,
               const vector< double > &x0,
-              const SolverSetup &solverSetup,
+              const Solver::Setup &solverSetup,
               const Constraints &C) { }
 };
 

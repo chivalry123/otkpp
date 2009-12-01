@@ -4,7 +4,7 @@
 #include "func_wrapper.h"
 #include "lmbm_utils.h"
 
-LMBM_setup::LMBM_setup()
+LMBM::Setup::Setup()
 {
   mc = 7;
   
@@ -32,7 +32,7 @@ LMBM::~LMBM() { }
 
 SolverResults LMBM::solve(const Function &objFunc,
                           const vector< double > &x0,
-                          const SolverSetup &solverSetup,
+                          const Solver::Setup &solverSetup,
                           const Constraints &C,
                           const StoppingCriterion *stopCrit,
                           bool timeTest)
@@ -97,7 +97,7 @@ SolverResults LMBM::solve(const Function &objFunc,
   results.fMin        = f;
   results.iterates    = iterates;
   results.numIter     = iout[0];
-  results.numFuncEval = iout[1];
+  results.numFuncEval = /*objFunc.getFuncEvalCounter()*/iout[1];
   results.numGradEval = 0;
   results.time        = rtim[0];
   results.xMin        = xMin;

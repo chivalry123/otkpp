@@ -16,7 +16,7 @@ class AbstractGradientSolver : public NativeSolver
   AbstractGradientSolver(Function::DerivEvalType gEvalType);
   virtual void setup_(const Function &objFunc,
                       const vector< double > &x0,
-                      const SolverSetup &solverSetup,
+                      const Setup &solverSetup,
                       const Constraints &C);
 };
 

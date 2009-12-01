@@ -11,15 +11,6 @@
 
 using namespace boost::numeric::ublas;
 
-/// Defines the parameters of a GSLFSolver.
-struct GSLFSolver_setup : public SolverSetup
-{
-  vector< double > stepSize;  ///< initial simplex size
-  
-  bool isCompatibleWith(const Solver &s) const;
-  GSLFSolver_setup(const vector< double > &stepSize) : stepSize(stepSize) { }
-};
-
 /// A wrapper class for gsl_multimin_fminimizer.
 /**
  * This class is a wrapper class for gsl_multimin_fminimizer. 
@@ -28,6 +19,15 @@ struct GSLFSolver_setup : public SolverSetup
 class GSLFSolver : public NativeSolver
 {
  public:
+  /// Defines the parameters of a GSLFSolver.
+  struct Setup : public Solver::Setup
+  {
+    vector< double > stepSize;  ///< initial simplex size
+  
+    bool isCompatibleWith(const Solver &s) const;
+    Setup(const vector< double > &stepSize) : stepSize(stepSize) { }
+  };
+
   /// Constructs a new GSL solver with the given name.
   /**
    * Constructs a new GSL solver with the given name. 
@@ -60,7 +60,7 @@ class GSLFSolver : public NativeSolver
   NativeSolver::IterationStatus iterate_();
   void setup_(const Function &objFunc,
               const vector< double > &x0,
-              const SolverSetup &solverSetup = DefaultSolverSetup(),
+              const Solver::Setup &solverSetup = DefaultSetup(),
               const Constraints &C = NoConstraints());
 };
 

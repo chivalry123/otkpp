@@ -6,8 +6,8 @@
 
 #include <typeinfo>
 
-LinminBFGSSetup::LinminBFGSSetup(const LinminSetup &lmSetup,
-                                 const matrix< double > &H0)
+LinminBFGS::Setup::Setup(const LineMinimizer::Setup &lmSetup,
+                         const matrix< double > &H0)
 {
   this->lmSetup = lmSetup.clone();
   if(H0.size1() > 0)
@@ -16,13 +16,13 @@ LinminBFGSSetup::LinminBFGSSetup(const LinminSetup &lmSetup,
     this->H0 = NULL;
 }
 
-LinminBFGSSetup::~LinminBFGSSetup()
+LinminBFGS::Setup::~Setup()
 {
   delete lmSetup;
   delete H0;
 }
 
-bool LinminBFGSSetup::isCompatibleWith(const Solver &s) const
+bool LinminBFGS::Setup::isCompatibleWith(const Solver &s) const
 {
   return (typeid(s) == typeid(const LinminBFGS &));
 }
@@ -123,26 +123,26 @@ NativeSolver::IterationStatus LinminBFGS::iterate_()
 
 void LinminBFGS::setup_(const Function &objFunc,
                         const vector< double > &x0,
-                        const SolverSetup &solverSetup,
+                        const Solver::Setup &solverSetup,
                         const Constraints &C)
 {
   const int n = objFunc.getN();
   
   GradientSolver::setup_(objFunc, x0, solverSetup, C);
   
-  if(typeid(solverSetup) == typeid(const DefaultSolverSetup &))
+  if(typeid(solverSetup) == typeid(const Solver::DefaultSetup &))
   {
     S_ = identity_matrix< double >(n);
     
     if(lmType_ == LinminBFGS::FLETCHER)
-      lineMinimizer_->setup(objFunc_, FletcherSetup());
+      lineMinimizer_->setup(objFunc_, Fletcher::Setup());
     else if(lmType_ == LinminBFGS::MORE_THUENTE)
-      lineMinimizer_->setup(objFunc_, MoreThuenteSetup());
+      lineMinimizer_->setup(objFunc_, MoreThuente::Setup());
   }
   else
   {
-    const LinminBFGSSetup &setup = 
-      dynamic_cast< const LinminBFGSSetup & >(solverSetup);
+    const LinminBFGS::Setup &setup = 
+      dynamic_cast< const LinminBFGS::Setup & >(solverSetup);
     if(setup.H0 != NULL)
     {
       if(setup.H0->size1() == n && setup.H0->size2() == n)

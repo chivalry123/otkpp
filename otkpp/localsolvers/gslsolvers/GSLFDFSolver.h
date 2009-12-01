@@ -11,17 +11,6 @@
 
 using namespace boost::numeric::ublas;
 
-/// Defines the parameters of a GSLFDFSolver.
-struct GSLFDFSolver_setup : public SolverSetup
-{
-  double stepSize;  ///< initial step size for line searches
-  double tol;       ///< tolerance for line search stopping criterion
-  
-  bool isCompatibleWith(const Solver &s) const;
-  
-  GSLFDFSolver_setup(double stepSize, double tol) : stepSize(stepSize), tol(tol) { }
-};
-
 /// A wrapper class for gsl_multimin_fdfminimizer.
 /**
  * This class is a wrapper class for gsl_multimin_fdfminimizer. 
@@ -30,6 +19,17 @@ struct GSLFDFSolver_setup : public SolverSetup
 class GSLFDFSolver : public AbstractGradientSolver
 {
  public:
+  /// Defines the parameters of a GSLFDFSolver.
+  struct Setup : public Solver::Setup
+  {
+    double stepSize;  ///< initial step size for line searches
+    double tol;       ///< tolerance for line search stopping criterion
+  
+    bool isCompatibleWith(const Solver &s) const;
+  
+    Setup(double stepSize, double tol) : stepSize(stepSize), tol(tol) { }
+  };
+
   /// Constructs a new GSL solver with the given name.
   /**
    * Constructs a new GSL solver with the given name.
@@ -86,7 +86,7 @@ class GSLFDFSolver : public AbstractGradientSolver
   NativeSolver::IterationStatus iterate_();
   void setup_(const Function &objFunc,
               const vector< double > &x0,
-              const SolverSetup &solverSetup = DefaultSolverSetup(),
+              const Solver::Setup &solverSetup = DefaultSetup(),
               const Constraints &C = NoConstraints());
 };
 

@@ -3,22 +3,22 @@
 
 #include <otkpp/localsolvers/native/linmin/LineMinimizer.h>
 
-struct FletcherSetup : public LinminSetup
-{
-  double eta;
-  double mu;
-  double chi;
-  double tau;
-  
-  FletcherSetup(double eta = 0.1, double mu = 0.01, double chi = 9.0, double tau = 0.05);
-  const LinminSetup *clone() const;
-  bool isCompatibleWith(const LineMinimizer &s) const;
-};
-
 /// Implements Fletcher's line search algorithm.
 class Fletcher : public LineMinimizer
 {
  public:
+  struct Setup : public LineMinimizer::Setup
+  {
+    double eta;
+    double mu;
+    double chi;
+    double tau;
+  
+    Setup(double eta = 0.1, double mu = 0.01, double chi = 9.0, double tau = 0.05);
+    const LineMinimizer::Setup *clone() const;
+    bool isCompatibleWith(const LineMinimizer &s) const;
+  };
+
   int minimize(const vector< double > &x,
                const vector< double > &d,
                double alpha0,
@@ -34,9 +34,9 @@ class Fletcher : public LineMinimizer
   double dphil_, dphit_;
   vector< double > xt_;
   vector< double > gt_;
-  FletcherSetup setup_;
+  Setup setup_;
   
-  void doSetup_(const LinminSetup &s);
+  void doSetup_(const LineMinimizer::Setup &s);
   double extrap_safequard_(double alpha);
   double interp_safequard_(double alpha);
 };

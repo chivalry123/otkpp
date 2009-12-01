@@ -40,7 +40,7 @@ class ConjGradMT : public GradientSolver
   IterationStatus iterate_();
   void setup_(const Function &objFunc,
               const vector< double > &x0,
-              const SolverSetup &solverSetup,
+              const Solver::Setup &solverSetup,
               const Constraints &C);
 };
 

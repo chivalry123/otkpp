@@ -3,12 +3,12 @@
 
 #include <otkpp/function/Function.h>
 
-struct TrustRegionSetup { };
-
 /// A base class for trust region algorithms.
 class TrustRegionSolver
 {
  public:
+  struct Setup { };
+  
   /// Computes a step vector.
   /**
    * This method computes the step that minimizes the objective 

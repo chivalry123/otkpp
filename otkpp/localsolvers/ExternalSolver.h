@@ -15,7 +15,7 @@ class ExternalSolver : public Solver
  public:
   virtual SolverResults solve(const Function &objFunc,
                               const vector< double > &x0,
-                              const SolverSetup &solverSetup = DefaultSolverSetup(),
+                              const Solver::Setup &solverSetup = Solver::DefaultSetup(),
                               const Constraints &C = NoConstraints(),
                               const StoppingCriterion *stopCrit = NULL,
                               bool timeTest = false) = 0;

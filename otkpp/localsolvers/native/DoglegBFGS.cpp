@@ -76,7 +76,7 @@ NativeSolver::IterationStatus DoglegBFGS::iterate_()
 
 void DoglegBFGS::setup_(const Function &objFunc,
                         const vector< double > &x0,
-                        const SolverSetup &solverSetup,
+                        const Solver::Setup &solverSetup,
                         const Constraints &C)
 {
   const int n = objFunc.getN();

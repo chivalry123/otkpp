@@ -27,6 +27,11 @@ class NativeSolver : public Solver
     ITERATION_OUT_OF_CONTROL  ///< iteration diverges or has reached infinity
   };
   
+  struct State
+  {
+    
+  };
+  
   NativeSolver() { }
   virtual ~NativeSolver() { }
   
@@ -78,7 +83,7 @@ class NativeSolver : public Solver
   
   SolverResults solve(const Function &objFunc,
                       const vector< double > &x0,
-                      const SolverSetup &solverSetup = DefaultSolverSetup(),
+                      const Setup &solverSetup = DefaultSetup(),
                       const Constraints &C = NoConstraints(),
                       const StoppingCriterion *stopCrit = NULL,
                       bool timeTest = false);
@@ -90,7 +95,7 @@ class NativeSolver : public Solver
   virtual IterationStatus iterate_() = 0;
   virtual void setup_(const Function &objFunc,
                       const vector< double > &x0,
-                      const SolverSetup &solverSetup = DefaultSolverSetup());
+                      const Setup &solverSetup = DefaultSetup());
 };
 
 #define NATIVESOLVER_H

@@ -2,6 +2,7 @@
 #include "CompoundStoppingCriterion.h"
 #include "ConjGradMT.h"
 #include "DoglegBFGS.h"
+#include "DSLA.h"
 #include "DSQA.h"
 #include "FDistToMinTest.h"
 #include "Function.h"
@@ -45,6 +46,7 @@ static void initAlgorithmList(std::list< NativeSolver * > &algoList)
   algoList.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2));
 #endif
   algoList.push_back(new DSQA());
+  algoList.push_back(new DSLA());
   algoList.push_back(new DoglegBFGS());
   algoList.push_back(new SteihaugSR1());
   algoList.push_back(new LinminBFGS(LinminBFGS::FLETCHER));
@@ -129,11 +131,20 @@ static void testNEWUOA()
 {
   NEWUOA solver;
   
-  Gulf f(10, Function::DERIV_FDIFF_CENTRAL_2);
-  vector< double > x0(3);
+  //Gulf f(10, Function::DERIV_FDIFF_CENTRAL_2);
+  ExtendedRosenbrock f(50, Function::DERIV_FDIFF_CENTRAL_2);
+  vector< double > x0(50);
+  for(int i = 0; i < 50; i++)
+  {
+    if(i % 2 == 0)
+      x0[i] = -1.2;
+    else
+      x0[i] = 1.0;
+  }
+  /*vector< double > x0(3);
   x0[0] = 5;
   x0[1] = 2.5;
-  x0[2] = 0.15;
+  x0[2] = 0.15;*/
   
   solver.solve(f, x0);
 }

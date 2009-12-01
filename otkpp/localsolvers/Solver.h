@@ -12,19 +12,6 @@ class Function;
 class Solver;
 class StoppingCriterion;
 
-/// Defines the parameters of a solver.
-struct SolverSetup
-{
-  /// Is this solver setup compatible with the given solver.
-  virtual bool isCompatibleWith(const Solver &s) const = 0;
-};
-
-/// Defines a default solver setup specifying that default parameters are used.
-struct DefaultSolverSetup : public SolverSetup
-{
-  bool isCompatibleWith(const Solver &s) const { return true; }
-};
-
 /// Defines the results of a solver.
 /**
  * This class defines the results produced by 
@@ -45,6 +32,19 @@ struct SolverResults
 class Solver
 {
  public:
+  /// Defines the parameters of a solver.
+  struct Setup
+  {
+    /// Is this solver setup compatible with the given solver.
+    virtual bool isCompatibleWith(const Solver &s) const = 0;
+  };
+
+  /// Defines a default solver setup specifying that default parameters are used.
+  struct DefaultSetup : public Setup
+  {
+    bool isCompatibleWith(const Solver &s) const { return true; }
+  };
+  
   virtual ~Solver() { }
   
   /// Returns the number of points this solver produces each iteration (default = 1).
@@ -70,7 +70,7 @@ class Solver
    */
   void setup(const Function &objFunc,
              const vector< double > &x0,
-             const SolverSetup &solverSetup = DefaultSolverSetup(),
+             const Setup &solverSetup = DefaultSetup(),
              const Constraints &C = NoConstraints());
   
   /// Solves the given problem by using this solver and returns the results.
@@ -84,7 +84,7 @@ class Solver
    */
   virtual SolverResults solve(const Function &objFunc,
                               const vector< double > &x0,
-                              const SolverSetup &solverSetup = DefaultSolverSetup(),
+                              const Setup &solverSetup = DefaultSetup(),
                               const Constraints &C = NoConstraints(),
                               const StoppingCriterion *stopCrit = NULL,
                               bool timeTest = false) = 0;
@@ -103,7 +103,7 @@ class Solver
   
   virtual void setup_(const Function &objFunc,
                       const vector< double > &x0,
-                      const SolverSetup &solverSetup,
+                      const Setup &solverSetup,
                       const Constraints &C) = 0;
 };
 

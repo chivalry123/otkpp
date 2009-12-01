@@ -62,12 +62,12 @@ NativeSolver::IterationStatus MNewton::iterate_()
 
 void MNewton::setup_(const Function &objFunc,
                      const vector< double > &x0,
-                     const SolverSetup &solverSetup,
+                     const Solver::Setup &solverSetup,
                      const Constraints &C)
 {
   const int N = objFunc.getN();
   GradientSolver::setup_(objFunc, x0, solverSetup, C);
-  lineMinimizer_->setup(objFunc_, MoreThuenteSetup());
+  lineMinimizer_->setup(objFunc_, MoreThuente::Setup());
   H_.resize(N, N);
   H_chol_.resize(N, N);
 }

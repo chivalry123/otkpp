@@ -3,22 +3,22 @@
 
 #include <otkpp/localsolvers/native/linmin/LineMinimizer.h>
 
-struct MoreThuenteSetup : public LinminSetup
-{
-  double eta;
-  double mu;
-  double gamma;
-  double chi;
-  
-  MoreThuenteSetup(double eta = 0.1, double mu = 0.001, double gamma = 0.0, double chi = 1e-2);
-  const LinminSetup *clone() const;
-  bool isCompatibleWith(const LineMinimizer &s) const;
-};
-
 /// Implements the More and Thuente line search algorithm.
 class MoreThuente : public LineMinimizer
 {
  public:
+  struct Setup : public LineMinimizer::Setup
+  {
+    double eta;
+    double mu;
+    double gamma;
+    double chi;
+    
+    Setup(double eta = 0.1, double mu = 0.001, double gamma = 0.0, double chi = 1e-2);
+    const LineMinimizer::Setup *clone() const;
+    bool isCompatibleWith(const LineMinimizer &s) const;
+  };
+
   MoreThuente();
   
   int minimize(const vector< double > &x,
@@ -42,7 +42,7 @@ class MoreThuente : public LineMinimizer
   vector< double > gu_;
   int alphau_evaluated_;
   double gamma_;
-  MoreThuenteSetup setup_;
+  Setup setup_;
   
   double trialstep(double alphat, double alphal, double alphau,
                    double fl, double dfl,
@@ -56,7 +56,7 @@ class MoreThuente : public LineMinimizer
                double &phil, double phit, double &phiu,
                double &dphil, double dphit, double &dphiu);
   double psi(double phi, double alpha, double phi0, double dphi0, double mu);
-  void doSetup_(const LinminSetup &s);
+  void doSetup_(const LineMinimizer::Setup &s);
 };
 
 #define MORETHUENTE_H

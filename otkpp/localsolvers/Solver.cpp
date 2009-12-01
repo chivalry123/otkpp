@@ -5,12 +5,12 @@
 
 void Solver::setup(const Function &objFunc,
                    const vector< double > &x0,
-                   const SolverSetup &solverSetup,
+                   const Solver::Setup &solverSetup,
                    const Constraints &C)
 {
   n_ = objFunc.getN();
   
-  if(typeid(solverSetup) != typeid(const DefaultSolverSetup &) && 
+  if(typeid(solverSetup) != typeid(const Solver::DefaultSetup &) && 
      !solverSetup.isCompatibleWith(*this))
     throw std::invalid_argument("the solver and its setup are incompatible");
   

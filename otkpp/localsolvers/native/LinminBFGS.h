@@ -8,22 +8,22 @@
 
 class LineMinimizer;
 
-/// Defines the parameters of a LinminBFGS solver.
-struct LinminBFGSSetup : public SolverSetup
-{
-  const LinminSetup *lmSetup;   ///< line minimizer parameters
-  const matrix< double > *H0;   ///< initial Hessian or inverse Hessian approximation
-  
-  LinminBFGSSetup(const LinminSetup &lmSetup = DefaultLinminSetup(),
-                  const matrix< double > &H0 = zero_matrix< double >(0, 0));
-  ~LinminBFGSSetup();
-  bool isCompatibleWith(const Solver &s) const;
-};
-
 /// Implements the BFGS algorithm with line searches.
 class LinminBFGS : public GradientSolver
 {
  public:
+  /// Defines the parameters of a LinminBFGS solver.
+  struct Setup : public Solver::Setup
+  {
+    const LineMinimizer::Setup *lmSetup;   ///< line minimizer parameters
+    const matrix< double > *H0;            ///< initial Hessian or inverse Hessian approximation
+  
+    Setup(const LineMinimizer::Setup &lmSetup = LineMinimizer::DefaultSetup(),
+          const matrix< double > &H0 = zero_matrix< double >(0, 0));
+    ~Setup();
+    bool isCompatibleWith(const Solver &s) const;
+  };
+
   /// Line search algorithm type.
   enum LinMinType
   {
@@ -61,7 +61,7 @@ class LinminBFGS : public GradientSolver
   IterationStatus iterate_();
   void setup_(const Function &objFunc,
               const vector< double > &x0,
-              const SolverSetup &solverSetup,
+              const Solver::Setup &solverSetup,
               const Constraints &C);
 };
 

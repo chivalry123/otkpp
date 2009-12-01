@@ -2,7 +2,7 @@
 #include "GSLFDFSolver.h"
 #include "GSLUtils.h"
 
-bool GSLFDFSolver_setup::isCompatibleWith(const Solver &s) const
+bool GSLFDFSolver::Setup::isCompatibleWith(const Solver &s) const
 {
   if(typeid(s) == typeid(GSLFDFSolver))
     return true;
@@ -84,7 +84,7 @@ NativeSolver::IterationStatus GSLFDFSolver::iterate_()
 
 void GSLFDFSolver::setup_(const Function &objFunc,
                           const vector< double > &x0,
-                          const SolverSetup &solverSetup,
+                          const Solver::Setup &solverSetup,
                           const Constraints &C)
 {
   const int n = objFunc.getN();
@@ -92,15 +92,15 @@ void GSLFDFSolver::setup_(const Function &objFunc,
   
   AbstractGradientSolver::setup_(objFunc, x0, solverSetup, C);
   
-  if(typeid(solverSetup) == typeid(DefaultSolverSetup))
+  if(typeid(solverSetup) == typeid(Solver::DefaultSetup))
   {
     stepSize = 1.0;
     tol = 0.1;
   }
   else
   {
-    stepSize = dynamic_cast< const GSLFDFSolver_setup & >(solverSetup).stepSize;
-    tol = dynamic_cast< const GSLFDFSolver_setup & >(solverSetup).tol;
+    stepSize = dynamic_cast< const GSLFDFSolver::Setup & >(solverSetup).stepSize;
+    tol = dynamic_cast< const GSLFDFSolver::Setup & >(solverSetup).tol;
   }
   
   if(gslSolver_ != NULL)
