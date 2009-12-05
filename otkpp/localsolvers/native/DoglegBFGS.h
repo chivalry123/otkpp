@@ -10,20 +10,24 @@
 class DoglegBFGS : public GradientSolver
 {
  public:
+  struct State : public GradientSolver::State { };
+  
   DoglegBFGS();
   ~DoglegBFGS();
 
   std::string getName() const;
+  const State &getState() const { return state_; }
   bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
  private:
-  DoglegSolver trSolver_;
+  matrix< double > H_;
   BFGSUpdater matrixUpdater_;
   //LBFGSUpdater *lmatrixUpdater_;
   vector< double > p_;
   vector< double > q_;
-  matrix< double > H_;
+  State state_;
+  DoglegSolver trSolver_;
   
   vector< double > Hg_;
 

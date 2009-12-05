@@ -27,9 +27,9 @@ class QuadInterp
   const matrix< double > &getHl(int i) const;
   double getLowestF() const;
   int getLowestIndex() const;
-  const vector< double > &getLowestX() const;
+  const matrix_column< const matrix< double > > getLowestX() const;
   const vector< double > &getOrigin() const;
-  const std::vector< vector< double > > &getX() const;
+  const matrix< double > &getX() const;
   void setOrigin(int xbi);
   void test();
   void testInvariants();
@@ -39,7 +39,8 @@ class QuadInterp
   const Function *f_;
   int n_, m_;
   
-  std::vector< vector< double > > X_;
+  //std::vector< vector< double > > X_;
+  matrix< double > X_;
   std::vector< double > F_;
   
   vector< double > xb_;

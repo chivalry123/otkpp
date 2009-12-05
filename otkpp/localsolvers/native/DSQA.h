@@ -11,24 +11,20 @@ class DSQA : public NativeSolver
  public:
   struct State : public NativeSolver::State
   {
-    QuadInterp model_;
-    double delta_;
-    int m_;
-    vector< double > p_;
-    vector< double > xPlus_;
+    double delta;
+    QuadInterp model;
   };
   
   std::string getName() const;
+  const State &getState() const { return state_; }
   bool hasBuiltInStoppingCriterion() const;
   bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
  private:
-  // TODO: move these to State
-  QuadInterp model_;
-  double delta_;
   int m_;
   vector< double > p_;
+  State state_;
   vector< double > xPlus_;
   
   double computeReduction_(const vector< double > &x,

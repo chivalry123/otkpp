@@ -1,6 +1,7 @@
 
 #ifndef NATIVESOLVER_H
 
+#include <otkpp/lib/clone_ptr.hpp>
 #include <otkpp/localsolvers/Solver.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
@@ -29,12 +30,16 @@ class NativeSolver : public Solver
   
   struct State
   {
+    double f;
+    vector< double > x;
     
+    virtual ~State() { }
+    //virtual State *clone() const;
   };
   
   NativeSolver() { }
   virtual ~NativeSolver() { }
-  
+
   /// Returns the current iterate \f$\mathbf{x}_{k}\f$.
   virtual const vector< double > getX() const;
   
@@ -69,6 +74,9 @@ class NativeSolver : public Solver
   /// Returns the number of Hessian evaluations since the last setup of this solver.
   unsigned int getNumHessEval() const;
   
+  /// Returns the state of this solver.
+  virtual const State &getState() const = 0;
+  
   /// Is this solver a GSL-based solver.
   virtual bool isGSLSolver() const = 0;
   
@@ -88,14 +96,14 @@ class NativeSolver : public Solver
                       const StoppingCriterion *stopCrit = NULL,
                       bool timeTest = false);
  protected:
-  double f_;
   unsigned int nIter_;
-  vector< double > x_;
   
+  State &getState_();
   virtual IterationStatus iterate_() = 0;
   virtual void setup_(const Function &objFunc,
                       const vector< double > &x0,
-                      const Setup &solverSetup = DefaultSetup());
+                      const Setup &solverSetup = DefaultSetup(),
+                      const Constraints &C = NoConstraints());
 };
 
 #define NATIVESOLVER_H

@@ -39,7 +39,10 @@ GSLFSolver::GSLFSolver(const gsl_multimin_fminimizer_type *type)
 GSLFSolver::~GSLFSolver()
 {
   if(gslSolver_ != NULL)
+  {
+    free(gslSolver_->x->block);
     gsl_multimin_fminimizer_free(gslSolver_);
+  }
 }
 
 double GSLFSolver::getFVal() const
@@ -85,6 +88,8 @@ const matrix< double > GSLFSolver::getXArray() const
 NativeSolver::IterationStatus GSLFSolver::iterate_()
 {
   int status = gsl_multimin_fminimizer_iterate(gslSolver_);
+  state_.f = gslSolver_->fval;
+  
   if(gsl_multimin_test_size(gslSolver_->size, 1e-12) == GSL_SUCCESS)
     return NativeSolver::ITERATION_SUCCESS;
   
@@ -114,8 +119,19 @@ void GSLFSolver::setup_(const Function &objFunc,
     stepSize = dynamic_cast< const GSLFSolver::Setup & >(solverSetup).stepSize;
   
   if(gslSolver_ != NULL)
+  {
+    free(gslSolver_->x->block);
     gsl_multimin_fminimizer_free(gslSolver_);
+  }
   gslSolver_ = gsl_multimin_fminimizer_alloc(type_, n);
+  
+  // THIS IS A HACK!
+  free(gslSolver_->x->block->data);
+  gslSolver_->x->data = gslSolver_->x->block->data = &state_.x[0];
+  gslSolver_->x->owner = 0;
+  gslSolver_->x->size = gslSolver_->x->block->size = n;
+  gslSolver_->x->stride = 1;
+  // !!!!!!!!!!!!!!!
   
   gslFunction_.n = n;
   gslFunction_.params = NULL;

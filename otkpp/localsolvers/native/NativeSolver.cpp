@@ -7,22 +7,34 @@
 
 static const unsigned int MAX_NUM_ITER = 50000;
 
+/*NativeSolver::State *NativeSolver::State::clone() const
+{
+  return new NativeSolver::State(*this);
+}*/
+
+/*NativeSolver::NativeSolver(const NativeSolver &s) : baseState_(s.baseState_->clone()) { }
+
+NativeSolver &NativeSolver::operator=(const NativeSolver &s)
+{
+  baseState_ = std::auto_ptr< NativeSolver::State >(s.baseState_->clone());
+}*/
+
 const vector< double > NativeSolver::getX() const
 {
-  return x_;
+  return getState().x;
 }
 
 const matrix< double > NativeSolver::getXArray() const
 {
   matrix< double > X(n_, 1);
-  matrix_column< matrix< double > >(X, 0) = x_;
+  matrix_column< matrix< double > >(X, 0) = getState().x;
   
   return X;
 }
 
 double NativeSolver::getFVal() const
 {
-  return f_;
+  return getState().f;
 }
 
 const vector< double > NativeSolver::getGradient() const
@@ -53,6 +65,11 @@ unsigned int NativeSolver::getNumGradEval() const
 unsigned int NativeSolver::getNumHessEval() const
 {
   return objFunc_.getHessEvalCounter();
+}
+
+NativeSolver::State &NativeSolver::getState_()
+{
+  return const_cast< NativeSolver::State & >(getState());
 }
 
 NativeSolver::IterationStatus NativeSolver::iterate()
@@ -116,11 +133,17 @@ SolverResults NativeSolver::solve(const Function &objFunc,
   return results;
 }
 
+/*void NativeSolver::allocateState_()
+{
+  state_ = new NativeSolver::State();
+}*/
+
 void NativeSolver::setup_(const Function &objFunc,
                           const vector< double > &x0,
-                          const Solver::Setup &solverSetup)
+                          const Solver::Setup &solverSetup,
+                          const Constraints &C)
 {
-  x_ = x0;
-  f_ = objFunc(x0);
+  getState_().x = x0;
+  getState_().f = objFunc(x0);
   nIter_ = 0;
 }

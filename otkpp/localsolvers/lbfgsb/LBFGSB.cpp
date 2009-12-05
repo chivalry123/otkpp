@@ -13,11 +13,11 @@ bool LBFGSB::Setup::isCompatibleWith(const Solver &s) const
 }
 
 LBFGSB::LBFGSB(Function::DerivEvalType gEvalType) : 
-    AbstractGradientSolver(gEvalType) { }
+  GradientSolver(gEvalType) { }
 
 const vector< double > LBFGSB::getGradient() const
 {
-  return g_;
+  return state_.g;
 }
 
 std::string LBFGSB::getName() const
@@ -54,15 +54,15 @@ NativeSolver::IterationStatus LBFGSB::iterate_()
 {
   int iprint = -1;
   
-  setulb_(&n_, &m_, &x_[0], &constraints_.L[0], &constraints_.U[0],
-          &nbd_[0], &f_, &g_[0], &factr_, &pgtol_, &wa_[0],
+  setulb_(&n_, &m_, &state_.x[0], &constraints_.L[0], &constraints_.U[0],
+          &nbd_[0], &state_.f, &state_.g[0], &factr_, &pgtol_, &wa_[0],
           &iwa_[0], task_, &iprint, csave_, lsave_, isave_,
           dsave_, 60, 60);
   
   if(task_[0] == 'F' && task_[1] == 'G')
   {
-    f_ = objFunc_(x_);
-    objFunc_.g(x_, g_);
+    state_.f = objFunc_(state_.x);
+    objFunc_.g(state_.x, state_.g);
   }
   
   return NativeSolver::ITERATION_CONTINUE;
@@ -73,7 +73,7 @@ void LBFGSB::setup_(const Function &objFunc,
                     const Solver::Setup &solverSetup,
                     const Constraints &C)
 {
-  AbstractGradientSolver::setup_(objFunc, x0, solverSetup, C);
+  GradientSolverBase::setup_(objFunc, x0, solverSetup, C);
   
   if(typeid(solverSetup) == typeid(const Solver::DefaultSetup &))
   {
@@ -86,7 +86,7 @@ void LBFGSB::setup_(const Function &objFunc,
     m_ = setup.m;
   }
   
-  g_.resize(n_);
+  state_.g.resize(n_);
   
   nbd_.resize(n_);
   if(typeid(C) == typeid(const NoConstraints &))
@@ -124,5 +124,5 @@ void LBFGSB::setup_(const Function &objFunc,
   for(int i = 5; i < 60; i++)
     task_[i] = ' ';
   
-  objFunc_.g(x_, g_);
+  objFunc_.g(state_.x, state_.g);
 }

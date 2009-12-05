@@ -47,9 +47,9 @@ void MinimizerThread::run()
     NativeSolver *nativeSolver = dynamic_cast< NativeSolver * >(solver_);
     
     if(C_ != NULL)
-      solver_->setup(*objFunc_, x0, DefaultSolverSetup(), *C_);
+      solver_->setup(*objFunc_, x0, Solver::DefaultSetup(), *C_);
     else
-      solver_->setup(*objFunc_, x0, DefaultSolverSetup(), NoConstraints());
+      solver_->setup(*objFunc_, x0, Solver::DefaultSetup(), NoConstraints());
     results_.iterates.clear();
     results_.iterates.push_back(x0);
     if(nativeSolver->getM() > 1)

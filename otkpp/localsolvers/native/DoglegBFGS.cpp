@@ -53,7 +53,7 @@ NativeSolver::IterationStatus DoglegBFGS::iterate_()
   /*std::cout<<"Hg: "<<Hg_<<std::endl;
   std::cout<<"Hg(correct): "<<prod(H_,g_)<<std::endl;*/
   
-  trSolver_.computeStep(x_, f_, g_, H_, p_, nonzeroStep, xPlus_, fPlus_);
+  trSolver_.computeStep(state_.x, state_.f, state_.g, H_, p_, nonzeroStep, xPlus_, fPlus_);
   
   if(!nonzeroStep)
   {
@@ -62,14 +62,14 @@ NativeSolver::IterationStatus DoglegBFGS::iterate_()
   }
   
   objFunc_.g(xPlus_, gPlus_);
-  q_ = gPlus_ - g_;
+  q_ = gPlus_ - state_.g;
   
   matrixUpdater_.update(p_, q_, H_);
   //lmatrixUpdater_->updateVectors(p_, q_);
   
-  x_ = xPlus_;
-  f_ = fPlus_;
-  g_ = gPlus_;
+  state_.x = xPlus_;
+  state_.f = fPlus_;
+  state_.g = gPlus_;
   
   return NativeSolver::ITERATION_CONTINUE;
 }
@@ -87,6 +87,6 @@ void DoglegBFGS::setup_(const Function &objFunc,
   trSolver_.setup(objFunc_);
   
   H_ = identity_matrix< double >(n);
-  g_.resize(n);
+  state_.g.resize(n);
   gPlus_.resize(n);
 }

@@ -1,7 +1,7 @@
 
 #ifndef GSLFDFSOLVER_H
 
-#include <otkpp/localsolvers/AbstractGradientSolver.h>
+#include <otkpp/localsolvers/native/GradientSolver.h>
 #include <otkpp/localsolvers/gslsolvers/GSLUtils.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
@@ -16,7 +16,7 @@ using namespace boost::numeric::ublas;
  * This class is a wrapper class for gsl_multimin_fdfminimizer. 
  * It conforms to GSL version 1.11.
  */
-class GSLFDFSolver : public AbstractGradientSolver
+class GSLFDFSolver : public GradientSolver
 {
  public:
   /// Defines the parameters of a GSLFDFSolver.
@@ -24,12 +24,14 @@ class GSLFDFSolver : public AbstractGradientSolver
   {
     double stepSize;  ///< initial step size for line searches
     double tol;       ///< tolerance for line search stopping criterion
-  
+    
     bool isCompatibleWith(const Solver &s) const;
-  
+    
     Setup(double stepSize, double tol) : stepSize(stepSize), tol(tol) { }
   };
-
+  
+  struct State : public GradientSolver::State { };
+  
   /// Constructs a new GSL solver with the given name.
   /**
    * Constructs a new GSL solver with the given name.
@@ -68,10 +70,11 @@ class GSLFDFSolver : public AbstractGradientSolver
   double getFVal() const;
   const vector< double > getGradient() const;
   
-  /// Returns the wrapper gsl_multimin_fdfminimizer object.
+  /// Returns the wrapped gsl_multimin_fdfminimizer object.
   const gsl_multimin_fdfminimizer *getGSLSolver() const;
   
   std::string getName() const;
+  const State &getState() const { return state_; }
   const vector< double > getX() const;
   bool hasBuiltInStoppingCriterion() const { return false; }
   bool isGSLSolver() const { return true; }
@@ -81,6 +84,7 @@ class GSLFDFSolver : public AbstractGradientSolver
  private:
   gsl_multimin_function_fdf gslFunction_;
   gsl_multimin_fdfminimizer *gslSolver_;
+  State state_;
   const gsl_multimin_fdfminimizer_type *type_;
   
   NativeSolver::IterationStatus iterate_();

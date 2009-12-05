@@ -36,29 +36,29 @@ NativeSolver::IterationStatus PARTAN::iterate_()
 {
   double alpha;
   
-  if(state_ == 1 || state_ == 2)
+  if(iterState_ == 1 || iterState_ == 2)
   {
-    d_ = -g_;
-    lineMinimizer_->minimize(x_, d_, 1.0, f_, g_,
+    d_ = -state_.g;
+    lineMinimizer_->minimize(state_.x, d_, 1.0, state_.f, state_.g,
                              alpha, xPlus_, fPlus_, gPlus_);
     
-    if(state_ == 1)
+    if(iterState_ == 1)
     {
-      xMinus_ = x_;
-      fMinus_ = f_;
-      gMinus_ = g_;
+      xMinus_ = state_.x;
+      fMinus_ = state_.f;
+      gMinus_ = state_.g;
     }
   }
   else
   {
-    d_ = x_ - xMinus_;
+    d_ = state_.x - xMinus_;
     lineMinimizer_->minimize(xMinus_, d_, 1.0, fMinus_, gMinus_,
                              alpha, xPlus_, fPlus_, gPlus_);
     j_++;
     if(j_ == n_)
     {
       j_ = 1;
-      state_ = 0;
+      iterState_ = 0;
     }
     else
     {
@@ -68,13 +68,13 @@ NativeSolver::IterationStatus PARTAN::iterate_()
     }
   }
   
-  state_++;
-  if(state_ == 4)
-    state_ = 1;
+  iterState_++;
+  if(iterState_ == 4)
+    iterState_ = 1;
 
-  x_ = xPlus_;
-  f_ = fPlus_;
-  g_ = gPlus_;
+  state_.x = xPlus_;
+  state_.f = fPlus_;
+  state_.g = gPlus_;
   
   return NativeSolver::ITERATION_CONTINUE;
 }
@@ -88,6 +88,6 @@ void PARTAN::setup_(const Function &objFunc,
   lineMinimizer_->setup(objFunc_, MoreThuente::Setup());
   
   j_ = 1;
-  d_ = -g_;
-  state_ = 1;
+  d_ = -state_.g;
+  iterState_ = 1;
 }

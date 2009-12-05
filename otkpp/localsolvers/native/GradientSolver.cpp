@@ -3,15 +3,20 @@
 
 #ifdef WITH_LIBMATHEVAL
 GradientSolver::GradientSolver(bool useFDiffGradient) : 
-  AbstractGradientSolver(useFDiffGradient == false ? Function::DERIV_SYMBOLIC : Function::DERIV_FDIFF_CENTRAL_2) { }
+  GradientSolverBase(useFDiffGradient == false ? Function::DERIV_SYMBOLIC : Function::DERIV_FDIFF_CENTRAL_2) { }
 #else
 GradientSolver::GradientSolver(bool useFDiffGradient) : 
-  AbstractGradientSolver(Function::DERIV_FDIFF_CENTRAL_2) { }
+  GradientSolverBase(Function::DERIV_FDIFF_CENTRAL_2) { }
 #endif
 
 const vector< double > GradientSolver::getGradient() const
 {
-  return g_;
+  return getState().g;
+}
+
+GradientSolver::State &GradientSolver::getState_()
+{
+  return const_cast< GradientSolver::State & >(getState());
 }
 
 bool GradientSolver::hasBuiltInStoppingCriterion() const
@@ -24,7 +29,7 @@ void GradientSolver::setup_(const Function &objFunc,
                             const Solver::Setup &solverSetup,
                             const Constraints &C)
 {
-  AbstractGradientSolver::setup_(objFunc, x0, solverSetup, C);
-  g_.resize(objFunc.getN());
-  objFunc.g(x0, g_);
+  GradientSolverBase::setup_(objFunc, x0, solverSetup, C);
+  getState_().g.resize(objFunc.getN());
+  objFunc.g(x0, getState_().g);
 }

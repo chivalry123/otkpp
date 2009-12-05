@@ -1,0 +1,19 @@
+
+#include "GradientSolverBase.h"
+
+GradientSolverBase::GradientSolverBase(Function::DerivEvalType gEvalType) : 
+  gEvalType_(gEvalType) { }
+
+void GradientSolverBase::setup_(const Function &objFunc,
+                                const vector< double > &x0,
+                                const Solver::Setup &solverSetup,
+                                const Constraints &C)
+{
+#ifdef WITH_LIBMATHEVAL
+  if(gEvalType_ != Function::DERIV_SYMBOLIC)
+#endif
+    objFunc_ = objFunc.createCopy(gEvalType_);
+  objFunc_.resetEvalCounters();
+  objFunc_.enableEvalCounting();
+  NativeSolver::setup_(objFunc_, x0, solverSetup, C);
+}

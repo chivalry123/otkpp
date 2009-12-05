@@ -22,10 +22,13 @@ class ConjGradMT : public GradientSolver
     POLAK_RIBIERE    ///< Polak-Ribiere
   };
   
+  struct State : public GradientSolver::State { };
+  
   /// Constructs a new conjugate gradient solver of the given type.
   ConjGradMT(Type type);
   
   std::string getName() const;
+  const State &getState() const { return state_; }
   bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
@@ -35,6 +38,7 @@ class ConjGradMT : public GradientSolver
   double deltaF_;
   int i_;
   MoreThuente lineMinimizer_;
+  State state_;
   Type type_;
   
   IterationStatus iterate_();

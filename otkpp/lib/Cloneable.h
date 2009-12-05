@@ -7,7 +7,7 @@ template< typename D, typename B > class Cloneable : public B
  public:
   virtual B *clone() const
   {
-    return new D(*static_cast<const D *>(this));
+    return new D(*static_cast< const D * >(this));
   }
 };
 

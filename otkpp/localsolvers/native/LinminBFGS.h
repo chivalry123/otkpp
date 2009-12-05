@@ -24,6 +24,8 @@ class LinminBFGS : public GradientSolver
     bool isCompatibleWith(const Solver &s) const;
   };
 
+  struct State : public GradientSolver::State { };
+  
   /// Line search algorithm type.
   enum LinMinType
   {
@@ -44,6 +46,7 @@ class LinminBFGS : public GradientSolver
   ~LinminBFGS();
   
   std::string getName() const;
+  const State &getState() const { return state_; }
   bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
@@ -57,6 +60,7 @@ class LinminBFGS : public GradientSolver
   vector< double > p_;
   vector< double > q_;
   matrix< double > S_;
+  State state_;
   
   IterationStatus iterate_();
   void setup_(const Function &objFunc,

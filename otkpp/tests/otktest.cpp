@@ -1,8 +1,10 @@
 
+#include "clone_ptr.hpp"
+
 #include "CompoundStoppingCriterion.h"
 #include "ConjGradMT.h"
 #include "DoglegBFGS.h"
-#include "DSLA.h"
+//#include "DSLA.h"
 #include "DSQA.h"
 #include "FDistToMinTest.h"
 #include "Function.h"
@@ -46,7 +48,7 @@ static void initAlgorithmList(std::list< NativeSolver * > &algoList)
   algoList.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2));
 #endif
   algoList.push_back(new DSQA());
-  algoList.push_back(new DSLA());
+  //algoList.push_back(new DSLA());
   algoList.push_back(new DoglegBFGS());
   algoList.push_back(new SteihaugSR1());
   algoList.push_back(new LinminBFGS(LinminBFGS::FLETCHER));

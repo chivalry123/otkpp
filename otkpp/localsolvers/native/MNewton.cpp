@@ -39,8 +39,8 @@ NativeSolver::IterationStatus MNewton::iterate_()
 {
   double alpha;
   
-  objFunc_.H(x_, H_);
-  d_ = -g_;
+  objFunc_.H(state_.x, H_);
+  d_ = -state_.g;
   int r = cholesky_decompose(H_, H_chol_);
   /*while(r != 0)
   {
@@ -50,12 +50,12 @@ NativeSolver::IterationStatus MNewton::iterate_()
   inplace_solve(H_chol_, d_, lower_tag());
   inplace_solve(trans(H_chol_), d_, upper_tag());
   
-  lineMinimizer_->minimize(x_, d_, 1.0, f_, g_,
+  lineMinimizer_->minimize(state_.x, d_, 1.0, state_.f, state_.g,
                            alpha, xPlus_, fPlus_, gPlus_);
   
-  x_ = xPlus_;
-  f_ = fPlus_;
-  g_ = gPlus_;
+  state_.x = xPlus_;
+  state_.f = fPlus_;
+  state_.g = gPlus_;
   
   return NativeSolver::ITERATION_CONTINUE;
 }

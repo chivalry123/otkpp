@@ -2,6 +2,7 @@
 #include "QuadInterp.h"
 
 #include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <iostream>
 
 QuadInterp::QuadInterp() : n_(0), m_(0) { }
@@ -14,9 +15,7 @@ QuadInterp::QuadInterp(const Function &f, const vector< double > &xb, double del
   n_ = f.getN();
   m_ = (n_+1)*(n_+2)/2;
   
-  X_.resize(m_);
-  for(i = 0; i < m_; i++)
-    X_[i].resize(n_);
+  X_.resize(n_, m_);
   F_.resize(m_);
   
   g_.resize(n_);
@@ -96,9 +95,9 @@ int QuadInterp::getLowestIndex() const
   return xiLowest_;
 }
 
-const vector< double > &QuadInterp::getLowestX() const
+const matrix_column< const matrix< double > > QuadInterp::getLowestX() const
 {
-  return X_[xiLowest_];
+  return column(X_, xiLowest_);
 }
 
 const vector< double > &QuadInterp::getOrigin() const
@@ -106,14 +105,14 @@ const vector< double > &QuadInterp::getOrigin() const
   return xb_;
 }
 
-const std::vector< vector< double > > &QuadInterp::getX() const
+const matrix< double > &QuadInterp::getX() const
 {
   return X_;
 }
 
 void QuadInterp::setOrigin(int xbi)
 {
-  const vector< double > &xb = X_[xbi];
+  const vector< double > &xb = column(X_, xbi);
   vector< double > dx = xb - xb_;
   
   for(int i = 0; i < m_; i++)
@@ -135,7 +134,7 @@ void QuadInterp::test()
   printInfo_();
   
   std::cout<<"Model after update:"<<std::endl;
-  vector< double > xNew = X_[2];
+  vector< double > xNew = column(X_, 2);
   xNew[0] += 0.1;
   xNew[1] += -0.2;
   updatePoint(xNew, 2);
@@ -157,13 +156,13 @@ void QuadInterp::testInvariants()
   
   for(i = 0; i < m_; i++)
   {
-    if((*f_)(X_[i]) != F_[i])
+    if((*f_)(column(X_, i)) != F_[i])
       throw std::runtime_error("invalid function value");
-    if((*f_)(X_[i]) < F_[xiLowest_])
+    if((*f_)(column(X_, i)) < F_[xiLowest_])
       throw std::runtime_error("invalid best point");
-    if(fabs(eval(X_[i] - xb_) - F_[i]) > 1e-3)
+    if(fabs(eval(column(X_, i) - xb_) - F_[i]) > 1e-3)
     {
-      std::cout<<"Q(x): "<<eval(X_[i] - xb_)<<std::endl;
+      std::cout<<"Q(x): "<<eval(column(X_, i) - xb_)<<std::endl;
       std::cout<<"f(x): "<<F_[i]<<std::endl;
       throw std::runtime_error("invalid interpolation");
     }
@@ -232,7 +231,7 @@ bool QuadInterp::updatePoint(const vector< double > &x, double fx, int j)
   g_ += m*gl_[j];
   H_ += m*Hl_[j];
   
-  X_[j] = x;
+  column(X_, j) = x;
   F_[j] = fx;
   
   return improved;
@@ -252,28 +251,28 @@ void QuadInterp::initialize_(const vector< double > &xb, double delta)
   
   c_ = (*f_)(xb);
   
-  X_[0] = xb;
+  column(X_, 0) = xb;
   for(j = 0; j < n_; j++)
   {
-    X_[2*j+1] = xb;
+    column(X_, 2*j+1) = xb;
     alpha[j] = delta;
-    X_[2*j+1][j] += alpha[j];
+    column(X_, 2*j+1)[j] += alpha[j];
     
-    if((*f_)(X_[2*j+1]) < c_)
+    if((*f_)(column(X_, 2*j+1)) < c_)
       beta[j] = 2.0*delta;
     else
       beta[j] = -2.0*delta;
     
-    X_[2*j+2] = xb;
-    X_[2*j+2][j] += beta[j];
+    column(X_, 2*j+2) = xb;
+    column(X_, 2*j+2)[j] += beta[j];
     
     m1 = 0.5*delta*delta;
     m2 = delta;
     m3 = 0.5*beta[j]*beta[j];
     m4 = beta[j];
     
-    r1 = (*f_)(X_[2*j+1]) - c_;
-    r2 = (*f_)(X_[2*j+2]) - c_;
+    r1 = (*f_)(column(X_, 2*j+1)) - c_;
+    r2 = (*f_)(column(X_, 2*j+2)) - c_;
     D = m1*m4 - m2*m3;
     H_(j, j) = (m4*r1 - m2*r2) / D;
     g_(j) = (-m3*r1 + m1*r2) / D;
@@ -284,20 +283,20 @@ void QuadInterp::initialize_(const vector< double > &xb, double delta)
     for(k = j+1; k < n_; k++)
     {
       i = 2*n_+1+j+1+k*(k-1)/2-1;
-      X_[i] = xb;
-      if((*f_)(X_[2*j+1]) < c_)
+      column(X_, i) = xb;
+      if((*f_)(column(X_, 2*j+1)) < c_)
         gammaj = delta;
       else
         gammaj = -delta;
-      if((*f_)(X_[2*k+1]) < c_)
+      if((*f_)(column(X_, 2*k+1)) < c_)
         gammak = delta;
       else
         gammak = -delta;
       
-      X_[i][j] += gammaj;
-      X_[i][k] += gammak;
+      column(X_, i)[j] += gammaj;
+      column(X_, i)[k] += gammak;
       
-      H_(j, k) = ((*f_)(X_[i]) - 0.5*gammak*gammak*H_(k, k) - 
+      H_(j, k) = ((*f_)(column(X_, i)) - 0.5*gammak*gammak*H_(k, k) - 
                   0.5*gammaj*gammaj*H_(j, j) - gammaj*g_(j) - gammak*g_(k) - c_) / 
                   (gammaj*gammak);
       H_(k, j) = H_(j, k);
@@ -320,7 +319,7 @@ void QuadInterp::initialize_(const vector< double > &xb, double delta)
   computeLagrangeCoeff_first_(0, xb);
   
   for(i = 0; i < m_; i++)
-    F_[i] = (*f_)(X_[i]);
+    F_[i] = (*f_)(column(X_, i));
   
   double fLowest = F_[0];
   xiLowest_ = 0;
@@ -347,7 +346,7 @@ void QuadInterp::computeLagrangeCoeff_first_(int i, const vector< double > &xb)
     
     for(int t = 2*n_+1; t < m_; t++)
     {
-      dx = X_[t] - xb;
+      dx = column(X_, t) - xb;
       coeff = 0.5*inner_prod(prod(dx, Hl_hat_[i]), dx) + 
           inner_prod(gl_hat_[i], dx) + 
           cl_hat_[i];
@@ -384,13 +383,13 @@ void QuadInterp::computeLagrangeCoeff_hat_(const vector< double > &xb, double de
   Hl_hat_[2*j+1] = zero_matrix< double >(n_, n_);
   Hl_hat_[2*j+1](j, j) = 2.0 / denom1;
   gl_hat_[2*j+1] = zero_vector< double >(n_);
-  gl_hat_[2*j+1][j] = (-X_[2*j+2][j] + xb[j]) / denom1;
+  gl_hat_[2*j+1][j] = (-column(X_, 2*j+2)[j] + xb[j]) / denom1;
   cl_hat_[2*j+1] = 0.0;
   
   Hl_hat_[2*j+2] = zero_matrix< double >(n_, n_);
   Hl_hat_[2*j+2](j, j) = 2.0 / denom2;
   gl_hat_[2*j+2] = zero_vector< double >(n_);
-  gl_hat_[2*j+2][j] = (-X_[2*j+1][j] + xb[j]) / denom2;
+  gl_hat_[2*j+2][j] = (-column(X_, 2*j+1)[j] + xb[j]) / denom2;
   cl_hat_[2*j+2] = 0.0;
 }
 
@@ -403,7 +402,7 @@ void QuadInterp::printInfo_()
   for(int i = 0; i < m_; i++)
   {
     Lx = 0;
-    x = X_[i];
+    x = column(X_, i);
     std::cout<<"X["<<i+1<<"]:"<<std::endl;
     std::cout<<"f(x)="<<(*f_)(x)<<std::endl;
     std::cout<<"Q(x)="<<c_ + inner_prod(g_, x-xb_) + 0.5 * inner_prod(x-xb_, prod(H_, x-xb_))<<std::endl;
@@ -414,7 +413,7 @@ void QuadInterp::printInfo_()
       std::cout<<"Hlj: "<<Hl_[j]<<std::endl;*/
       ljx = cl_[j] + inner_prod(gl_[j], x-xb_) + 0.5*inner_prod(x-xb_, prod(Hl_[j], x-xb_));
       std::cout<<"lj[x]: "<<ljx<<std::endl;
-      Lx += (*f_)(X_[j]) * ljx;
+      Lx += (*f_)(column(X_, j)) * ljx;
     }
     std::cout<<"L(x)="<<Lx<<std::endl;
   }

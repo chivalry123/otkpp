@@ -29,6 +29,13 @@ bool DSQA::usesHessian() const
   return false;
 }
 
+/*void DSQA::allocateState_()
+{
+  NativeSolver::state_ = &state_;*/
+  /*NativeSolver::state_ = new DSQA::State();
+  state_ = dynamic_cast< DSQA::State * >(NativeSolver::state_.get_pointer());*/
+//}
+
 double DSQA::computeReduction_(const vector< double > &x,
                                const vector< double > &xPlus,
                                double f,
@@ -38,8 +45,8 @@ double DSQA::computeReduction_(const vector< double > &x,
   double ared, pred;
   
   ared = f - fPlus;
-  pred = -inner_prod(model_.getG(), p) - 
-          0.5*inner_prod(p, prod(model_.getH(), p));
+  pred = -inner_prod(state_.model.getG(), p) - 
+      0.5*inner_prod(p, prod(state_.model.getH(), p));
   
   return ared / pred;
 }
@@ -51,7 +58,7 @@ double DSQA::computeTau_(const vector< double > &d,
   double d2 = inner_prod(d, d);
   double p2 = inner_prod(p, p);
   
-  return (-pd + sqrt(pd*pd - d2*(p2 - delta_*delta_))) / d2;
+  return (-pd + sqrt(pd*pd - d2*(p2 - state_.delta*state_.delta))) / d2;
 }
 
 vector< double > &DSQA::computeTrsRegStep_(const vector< double > &g,
@@ -134,18 +141,18 @@ NativeSolver::IterationStatus DSQA::iterate_()
   bool trsRegIter = true;
   double eta = 0.0;
   
-  computeTrsRegStep_(model_.getG(), model_.getH(), delta_, p_);
-  xPlus_ = x_ + p_;
+  computeTrsRegStep_(state_.model.getG(), state_.model.getH(), state_.delta, p_);
+  xPlus_ = state_.x + p_;
   fXPlus = objFunc_(xPlus_);
-  ratio = computeReduction_(x_, xPlus_, f_, fXPlus, p_);
+  ratio = computeReduction_(state_.x, xPlus_, state_.f, fXPlus, p_);
   
   t = -1;
   maxDistSq = 0.0;
   for(j = 0; j < m_; j++)
   {
-    if(j == model_.getLowestIndex())
+    if(j == state_.model.getLowestIndex())
       continue;
-    dx = model_.getLowestX() - model_.getX()[j];
+    dx = state_.model.getLowestX() - column(state_.model.getX(), j);
     distSq = inner_prod(dx, dx);
     if(distSq > maxDistSq)
     {
@@ -154,19 +161,20 @@ NativeSolver::IterationStatus DSQA::iterate_()
     }
   }
   
-  if(t != -1 && (fXPlus < model_.getLowestF() || inner_prod(p_, p_) <= maxDistSq))
-    fImproved = model_.updatePoint(xPlus_, fXPlus, t);
+  if(t != -1 && (fXPlus < state_.model.getLowestF() || 
+     inner_prod(p_, p_) <= maxDistSq))
+    fImproved = state_.model.updatePoint(xPlus_, fXPlus, t);
   
   if(ratio > eta)
-    delta_ *= 1.5;
+    state_.delta *= 1.5;
   else
-    delta_ *= 0.75;
+    state_.delta *= 0.75;
 
   if(fImproved)
-    model_.setOrigin(model_.getLowestIndex());
+    state_.model.setOrigin(state_.model.getLowestIndex());
   
-  x_ = model_.getLowestX();
-  f_ = model_.getLowestF();
+  state_.x = state_.model.getLowestX();
+  state_.f = state_.model.getLowestF();
   
   //std::cout<<"niter: "<<nIter_<<" x: "<<x_<<" dx: "<<sqrt(maxDistSq)<<std::endl;
   /*if(nIter_ % 100 == 0)
@@ -175,7 +183,7 @@ NativeSolver::IterationStatus DSQA::iterate_()
     //delta_ = 1e-6;
   }*/
   
-  if(nIter_ < 10000 && delta_ > 1e-12)
+  if(nIter_ < 10000 && state_.delta > 1e-12)
     return NativeSolver::ITERATION_CONTINUE;
   else
     return NativeSolver::ITERATION_SUCCESS;
@@ -186,16 +194,19 @@ void DSQA::setup_(const Function &objFunc,
                   const Solver::Setup &solverSetup,
                   const Constraints &C)
 {
-  NativeSolver::setup_(objFunc, x0, solverSetup);
+  NativeSolver::setup_(objFunc, x0, solverSetup, C);
   
-  delta_ = 1e-2;
+  state_.delta = 1e-2;
   m_ = (n_+1)*(n_+2)/2;
   
-  x_ = x0;
-  f_ = objFunc_(x0);
+  state_.x = x0;
+  state_.f = objFunc_(x0);
   
-  model_ = QuadInterp(objFunc, x0, delta_);
-  model_.setOrigin(model_.getLowestIndex());
+  state_.model = QuadInterp(objFunc, x0, state_.delta);
+  state_.model.setOrigin(state_.model.getLowestIndex());
+  p_.resize(n_);
+  xPlus_.resize(n_);
+  
   p_.resize(n_);
   xPlus_.resize(n_);
 }

@@ -9,10 +9,13 @@ class Solver;
 class MNewton : public GradientSolver
 {
  public:
+  struct State : public GradientSolver::State { };
+  
   MNewton();
   ~MNewton();
   
   std::string getName() const;
+  const State &getState() const { return state_; }
   bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
@@ -21,6 +24,7 @@ class MNewton : public GradientSolver
   matrix< double > H_;
   matrix< double > H_chol_;
   LineMinimizer *lineMinimizer_;
+  State state_;
   
   IterationStatus iterate_();
   void setup_(const Function &objFunc,

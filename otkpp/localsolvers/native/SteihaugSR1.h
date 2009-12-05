@@ -9,10 +9,13 @@
 class SteihaugSR1 : public GradientSolver
 {
  public:
+  struct State : public GradientSolver::State { };
+  
   SteihaugSR1();
   ~SteihaugSR1();
 
   std::string getName() const;
+  const State &getState() const { return state_; }
   bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
@@ -21,6 +24,7 @@ class SteihaugSR1 : public GradientSolver
   SR1Updater matrixUpdater_;
   vector< double > p_;
   vector< double > q_;
+  State state_;
   SteihaugSolver trSolver_;
   
   IterationStatus iterate_();

@@ -84,24 +84,24 @@ NativeSolver::IterationStatus LinminBFGS::iterate_()
   if(iterHistLen_ > 0)
   {
     if(nIter_ >= 1)
-      dirUpdater_.update(g_, d_);
+      dirUpdater_.update(state_.g, d_);
     else
-      d_ = -g_;
+      d_ = -state_.g;
   }
   else
-    d_ = -prod(S_, g_);
+    d_ = -prod(S_, state_.g);
   
-  lineMinimizer_->minimize(x_, d_, 1.0, f_, g_,
+  lineMinimizer_->minimize(state_.x, d_, 1.0, state_.f, state_.g,
                            alpha, xPlus_, fPlus_, gPlus_);
   
-  p_ = xPlus_ - x_;
-  q_ = gPlus_ - g_;
+  p_ = xPlus_ - state_.x;
+  q_ = gPlus_ - state_.g;
   
   D = inner_prod(p_, q_);
   if(iterHistLen_ > 0)
   {
     if(D <= 0.0)
-      d_ = -g_;
+      d_ = -state_.g;
     
     dirUpdater_.storePair(p_, q_);
     dirUpdater_.removeOldestPair();
@@ -114,9 +114,9 @@ NativeSolver::IterationStatus LinminBFGS::iterate_()
       matrixUpdater_->update(p_, q_, S_);
   }
   
-  x_ = xPlus_;
-  f_ = fPlus_;
-  g_ = gPlus_;
+  state_.x = xPlus_;
+  state_.f = fPlus_;
+  state_.g = gPlus_;
   
   return NativeSolver::ITERATION_CONTINUE;
 }

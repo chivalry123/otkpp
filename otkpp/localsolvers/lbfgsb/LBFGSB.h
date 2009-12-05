@@ -1,32 +1,35 @@
 
 #ifndef LBFGSB_H
 
-#include <otkpp/localsolvers/AbstractGradientSolver.h>
+#include <otkpp/localsolvers/native/GradientSolver.h>
 #include <otkpp/constraints/BoundConstraints.h>
 
 /// A wrapper class for Nocedal's L-BFGS-B Fortran implementation.
-class LBFGSB : public AbstractGradientSolver
+class LBFGSB : public GradientSolver
 {
  public:
   /// Defines parameters for L-BFGS-B.
   struct Setup : public Solver::Setup
   {
     int m;
-
+    
     /// Constructs a new L-BFGS-B setup.
     /**
      * @param m the length of iteration history.
      */
     Setup(int m);
-
+    
     bool isCompatibleWith(const Solver &s) const;
   };
-
+  
+  struct State : public GradientSolver::State { };
+   
   /// Constructs a new L-BFGS-B solver with the given gradient evaluator type.
   LBFGSB(Function::DerivEvalType gEvalType = Function::DERIV_FDIFF_CENTRAL_2);
 
   const vector< double > getGradient() const;
   std::string getName() const;
+  const State &getState() const { return state_; }
   bool hasBuiltInStoppingCriterion() const;
   bool isGSLSolver() const;
   bool supportsConstraints(const Constraints &C);
@@ -39,11 +42,11 @@ class LBFGSB : public AbstractGradientSolver
   int isave_[44];
   int lsave_[4];
   double factr_;
-  vector< double > g_;
   std::vector< int > iwa_;
   int m_;
   std::vector< int > nbd_;
   double pgtol_;
+  State state_;
   char task_[60];
   std::vector< double > wa_;
   

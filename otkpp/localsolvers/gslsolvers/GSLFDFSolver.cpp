@@ -11,7 +11,7 @@ bool GSLFDFSolver::Setup::isCompatibleWith(const Solver &s) const
 }
 
 GSLFDFSolver::GSLFDFSolver(const std::string &gslName, Function::DerivEvalType gEvalType) : 
-  AbstractGradientSolver(gEvalType)
+  GradientSolver(gEvalType)
 {
   if(gslName == "conjugate_fr")
     type_ = gsl_multimin_fdfminimizer_conjugate_fr;
@@ -30,7 +30,7 @@ GSLFDFSolver::GSLFDFSolver(const std::string &gslName, Function::DerivEvalType g
 }
 
 GSLFDFSolver::GSLFDFSolver(const gsl_multimin_fdfminimizer_type *type, Function::DerivEvalType gEvalType) : 
-  AbstractGradientSolver(gEvalType)
+  GradientSolver(gEvalType)
 {
   type_ = type;
   gslSolver_ = NULL;
@@ -39,7 +39,11 @@ GSLFDFSolver::GSLFDFSolver(const gsl_multimin_fdfminimizer_type *type, Function:
 GSLFDFSolver::~GSLFDFSolver()
 {
   if(gslSolver_ != NULL)
+  {
+    free(gslSolver_->x->block);
+    free(gslSolver_->gradient->block);
     gsl_multimin_fdfminimizer_free(gslSolver_);
+  }
 }
 
 double GSLFDFSolver::getFVal() const
@@ -74,6 +78,7 @@ const vector< double > GSLFDFSolver::getX() const
 NativeSolver::IterationStatus GSLFDFSolver::iterate_()
 {
   int status = gsl_multimin_fdfminimizer_iterate(gslSolver_);
+  state_.f = gslSolver_->f;
   
   // TODO: error codes
   if(status == GSL_ENOPROG)
@@ -90,7 +95,7 @@ void GSLFDFSolver::setup_(const Function &objFunc,
   const int n = objFunc.getN();
   double stepSize, tol;
   
-  AbstractGradientSolver::setup_(objFunc, x0, solverSetup, C);
+  GradientSolver::setup_(objFunc, x0, solverSetup, C);
   
   if(typeid(solverSetup) == typeid(Solver::DefaultSetup))
   {
@@ -104,8 +109,25 @@ void GSLFDFSolver::setup_(const Function &objFunc,
   }
   
   if(gslSolver_ != NULL)
+  {
+    free(gslSolver_->x->block);
+    free(gslSolver_->gradient->block);
     gsl_multimin_fdfminimizer_free(gslSolver_);
+  }
   gslSolver_ = gsl_multimin_fdfminimizer_alloc(type_, n);
+  
+  // THIS IS A HACK!
+  free(gslSolver_->x->block->data);
+  gslSolver_->x->data = gslSolver_->x->block->data = &state_.x[0];
+  gslSolver_->x->owner = 0;
+  gslSolver_->x->size = n;
+  gslSolver_->x->stride = 1;
+  free(gslSolver_->gradient->block->data);
+  gslSolver_->gradient->data = gslSolver_->gradient->block->data = &state_.g[0];
+  gslSolver_->gradient->owner = 0;
+  gslSolver_->gradient->size = n;
+  gslSolver_->gradient->stride = 1;
+  // !!!!!!!!!!!!!!!
   
   gslFunction_.n      = n;
   gslFunction_.params = NULL;

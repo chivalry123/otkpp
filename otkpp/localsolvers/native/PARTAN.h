@@ -9,10 +9,13 @@ class LineMinimizer;
 class PARTAN : public GradientSolver
 {
  public:
+  struct State : public GradientSolver::State { };
+  
   PARTAN();
   ~PARTAN();
   
   std::string getName() const;
+  const State &getState() const { return state_; }
   bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
@@ -20,10 +23,11 @@ class PARTAN : public GradientSolver
   vector< double > d_;
   LineMinimizer *lineMinimizer_;
   int j_;
-  int state_;
+  int iterState_;
   vector< double > xMinus_;
   double fMinus_;
   vector< double > gMinus_;
+  State state_;
   vector< double > y_;
   
   IterationStatus iterate_();

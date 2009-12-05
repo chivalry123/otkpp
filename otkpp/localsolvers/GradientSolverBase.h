@@ -1,11 +1,11 @@
 
-#ifndef ABSTRACTGRADIENTSOLVER_H
+#ifndef GRADIENTSOLVERBASE_H
 
 #include <otkpp/function/Function.h>
 #include <otkpp/localsolvers/native/NativeSolver.h>
 
 /// Defines the interface for gradient-based solvers.
-class AbstractGradientSolver : public NativeSolver
+class GradientSolverBase : public NativeSolver
 {
  public:
   /// Returns the current gradient vector \f$\nabla f(\mathbf{x}_{k})\f$.
@@ -13,13 +13,13 @@ class AbstractGradientSolver : public NativeSolver
  protected:
   Function::DerivEvalType gEvalType_;
   
-  AbstractGradientSolver(Function::DerivEvalType gEvalType);
+  GradientSolverBase(Function::DerivEvalType gEvalType);
   virtual void setup_(const Function &objFunc,
                       const vector< double > &x0,
-                      const Setup &solverSetup,
+                      const NativeSolver::Setup &solverSetup,
                       const Constraints &C);
 };
 
-#define ABSTRACTGRADIENTSOLVER_H
+#define GRADIENTSOLVERBASE_H
 
 #endif

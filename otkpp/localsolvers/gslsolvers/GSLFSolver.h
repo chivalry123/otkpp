@@ -19,11 +19,13 @@ using namespace boost::numeric::ublas;
 class GSLFSolver : public NativeSolver
 {
  public:
+  struct State : public NativeSolver::State { };
+  
   /// Defines the parameters of a GSLFSolver.
   struct Setup : public Solver::Setup
   {
     vector< double > stepSize;  ///< initial simplex size
-  
+    
     bool isCompatibleWith(const Solver &s) const;
     Setup(const vector< double > &stepSize) : stepSize(stepSize) { }
   };
@@ -40,11 +42,12 @@ class GSLFSolver : public NativeSolver
   
   double getFVal() const;
   
-  /// Returns the wrapper gsl_multimin_fminimizer object.
+  /// Returns the wrapped gsl_multimin_fminimizer object.
   const gsl_multimin_fminimizer *getGSLSolver() const;
   
   unsigned int getM() const;
   std::string getName() const;
+  const State &getState() const { return state_; }
   const vector< double > getX() const;
   const matrix< double > getXArray() const;
   bool hasBuiltInStoppingCriterion() const { return true; }
@@ -55,6 +58,7 @@ class GSLFSolver : public NativeSolver
  private:
   gsl_multimin_function gslFunction_;
   gsl_multimin_fminimizer *gslSolver_;
+  State state_;
   const gsl_multimin_fminimizer_type *type_;
   
   NativeSolver::IterationStatus iterate_();

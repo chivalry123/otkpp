@@ -7,7 +7,10 @@
 class HookeJeeves : public NativeSolver
 {
  public:
+  struct State : public NativeSolver::State { };
+  
   std::string getName() const;
+  const State &getState() const { return state_; }
   bool hasBuiltInStoppingCriterion() const;
   bool isGSLSolver() const;
   bool usesGradient() const;
@@ -17,6 +20,7 @@ class HookeJeeves : public NativeSolver
   double delta_;
   double eps_;
   double rho_;
+  State state_;
   vector< double > xPlus_;
   vector< double > y_;
   

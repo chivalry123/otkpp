@@ -53,12 +53,12 @@ NativeSolver::IterationStatus HookeJeeves::iterate_()
     d[j] = 0.0;
   }
   
-  if(!isnan(fy) && !isinf(fy) && fy < f_)
+  if(!isnan(fy) && !isinf(fy) && fy < state_.f)
   {
     xPlus_ = y_;
-    y_ = xPlus_ + alpha_ * (xPlus_ - x_);
-    x_ = xPlus_;
-    f_ = objFunc_(x_);
+    y_ = xPlus_ + alpha_ * (xPlus_ - state_.x);
+    state_.x = xPlus_;
+    state_.f = objFunc_(state_.x);
   }
   else
   {
@@ -67,7 +67,7 @@ NativeSolver::IterationStatus HookeJeeves::iterate_()
     else
     {
       delta_ *= rho_;
-      y_ = x_;
+      y_ = state_.x;
     }
   }
   
@@ -79,8 +79,9 @@ void HookeJeeves::setup_(const Function &objFunc,
                          const Solver::Setup &solverSetup,
                          const Constraints &C)
 {
-  x_ = x0;
-  f_ = objFunc(x0);
+  NativeSolver::setup_(objFunc, x0, solverSetup, C);
+  state_.x = x0;
+  state_.f = objFunc(x0);
 
   delta_ = 1.0;
   eps_ = 1e-10;
