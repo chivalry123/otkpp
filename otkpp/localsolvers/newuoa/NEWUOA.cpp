@@ -19,15 +19,15 @@ bool NEWUOA::isExternalSolver() const
   return true;
 }
 
-SolverResults NEWUOA::solve(const Function &objFunc,
-                            const vector< double > &x0,
-                            const Solver::Setup &solverSetup,
-                            const Constraints &C,
-                            const StoppingCriterion *stopCrit,
-                            bool timeTest)
+boost::shared_ptr< Solver::Results > NEWUOA::solve(Function &objFunc,
+                                                   const vector< double > &x0,
+                                                   const StoppingCriterion &stopCrit,
+                                                   const Solver::Setup &solverSetup,
+                                                   const Constraints &C,
+                                                   bool timeTest)
 {
   int n = objFunc.getN();
-  SolverResults results;
+  Solver::Results *results = new Solver::Results();
   
   set_newuoa_obj_func(&objFunc);
   
@@ -50,7 +50,7 @@ SolverResults NEWUOA::solve(const Function &objFunc,
   delete[] w;
   delete[] x;
   
-  return results;
+  return boost::shared_ptr< Solver::Results >(results);
 }
 
 bool NEWUOA::usesGradient() const

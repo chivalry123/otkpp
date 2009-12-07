@@ -6,6 +6,7 @@
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>
+#include <boost/shared_ptr.hpp>
 #include <list>
 #include <ostream>
 
@@ -32,14 +33,20 @@ class NativeSolver : public Solver
   {
     double f;
     vector< double > x;
+    matrix< double > X;
     
     virtual ~State() { }
-    //virtual State *clone() const;
+    virtual State *clone() const = 0;
+  };
+  
+  struct Results : public Solver::Results
+  {
+    std::vector< boost::shared_ptr< State > > states;
   };
   
   NativeSolver() { }
   virtual ~NativeSolver() { }
-
+  
   /// Returns the current iterate \f$\mathbf{x}_{k}\f$.
   virtual const vector< double > getX() const;
   
@@ -77,9 +84,6 @@ class NativeSolver : public Solver
   /// Returns the state of this solver.
   virtual const State &getState() const = 0;
   
-  /// Is this solver a GSL-based solver.
-  virtual bool isGSLSolver() const = 0;
-  
   /// Returns the objective function associated with this solver.
   const Function &getObjectiveFunction() const;
   
@@ -89,12 +93,12 @@ class NativeSolver : public Solver
   /// Takes one iteration step and returns the status of the algorithm.
   IterationStatus iterate();
   
-  SolverResults solve(const Function &objFunc,
-                      const vector< double > &x0,
-                      const Setup &solverSetup = DefaultSetup(),
-                      const Constraints &C = NoConstraints(),
-                      const StoppingCriterion *stopCrit = NULL,
-                      bool timeTest = false);
+  boost::shared_ptr< Solver::Results > solve(Function &objFunc,
+                                             const vector< double > &x0,
+                                             const StoppingCriterion &stopCrit,
+                                             const Setup &solverSetup = DefaultSetup(),
+                                             const Constraints &C = NoConstraints(),
+                                             bool timeTest = false);
  protected:
   unsigned int nIter_;
   

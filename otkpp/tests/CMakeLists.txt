@@ -3,7 +3,7 @@ INCLUDE_DIRECTORIES(${OTKPP_INCLUDE_DIRS})
 
 ADD_EXECUTABLE(otktest otktest.cpp)
 
-TARGET_LINK_LIBRARIES(otktest otkpp)
+TARGET_LINK_LIBRARIES(otktest otkpp rt)
 
 IF(WITH_FORTRAN)
   TARGET_LINK_LIBRARIES(otktest otkpp_fortran gfortran)

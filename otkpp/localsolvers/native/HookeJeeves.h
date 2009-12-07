@@ -7,12 +7,11 @@
 class HookeJeeves : public NativeSolver
 {
  public:
-  struct State : public NativeSolver::State { };
+  struct State : public Cloneable< State, NativeSolver::State > { };
   
   std::string getName() const;
   const State &getState() const { return state_; }
   bool hasBuiltInStoppingCriterion() const;
-  bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
  private:

@@ -30,15 +30,15 @@ LMBM::LMBM() { }
 
 LMBM::~LMBM() { }
 
-SolverResults LMBM::solve(const Function &objFunc,
-                          const vector< double > &x0,
-                          const Solver::Setup &solverSetup,
-                          const Constraints &C,
-                          const StoppingCriterion *stopCrit,
-                          bool timeTest)
+boost::shared_ptr< Solver::Results > LMBM::solve(Function &objFunc,
+                                                 const vector< double > &x0,
+                                                 const StoppingCriterion &stopCrit,
+                                                 const Solver::Setup &solverSetup,
+                                                 const Constraints &C,
+                                                 bool timeTest)
 {
   std::list< vector< double > > iterates;
-  SolverResults results;
+  Solver::Results *results = new Solver::Results();
   
   //Solver::setup(objFunc, x0, solverSetup);
   //const LMBM_setup &setup = dynamic_cast< const LMBM_setup & >(solverSetup);
@@ -94,17 +94,17 @@ SolverResults LMBM::solve(const Function &objFunc,
       xMin = xi;
   }
   
-  results.fMin        = f;
-  results.iterates    = iterates;
-  results.numIter     = iout[0];
-  results.numFuncEval = /*objFunc.getFuncEvalCounter()*/iout[1];
-  results.numGradEval = 0;
-  results.time        = rtim[0];
-  results.xMin        = xMin;
+  results->fMin        = f;
+  //results.iterates    = iterates;
+  results->numIter     = iout[0];
+  results->numFuncEval = /*objFunc.getFuncEvalCounter()*/iout[1];
+  results->numGradEval = 0;
+  results->time        = rtim[0];
+  results->xMin        = xMin;
   
   delete[] w;
   delete[] xr;
   delete[] x;
   
-  return results;
+  return boost::shared_ptr< Solver::Results >(results);
 }

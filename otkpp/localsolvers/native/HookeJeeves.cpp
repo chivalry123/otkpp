@@ -11,11 +11,6 @@ bool HookeJeeves::hasBuiltInStoppingCriterion() const
   return true;
 }
 
-bool HookeJeeves::isGSLSolver() const
-{
-  return false;
-}
-
 bool HookeJeeves::usesGradient() const
 {
   return false;

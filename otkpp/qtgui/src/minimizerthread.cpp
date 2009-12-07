@@ -1,5 +1,6 @@
 
 #include "BoundConstraints.h"
+#include "GradNormTest.h"
 #include "minimizerthread.h"
 #include "NativeSolver.h"
 #include "OTK.h"
@@ -80,14 +81,16 @@ void MinimizerThread::run()
   }
   else
   {
-    SolverResults results = solver_->solve(*objFunc_, x0);
+    // TODO: stopping criterion for LMBM?
+    boost::shared_ptr< Solver::Results > results = 
+      solver_->solve(*objFunc_, x0, GradNormTest(1e-8));
     
-    results_.xMin        = results.xMin[0];
-    results_.yMin        = results.xMin[1];
-    results_.fMin        = results.fMin;
-    results_.numIter     = results.numIter;
-    results_.numFuncEval = results.numFuncEval;
-    results_.numGradEval = results.numGradEval;
-    results_.iterates    = results.iterates;
+    results_.xMin        = results->xMin[0];
+    results_.yMin        = results->xMin[1];
+    results_.fMin        = results->fMin;
+    results_.numIter     = results->numIter;
+    results_.numFuncEval = results->numFuncEval;
+    results_.numGradEval = results->numGradEval;
+    //results_.iterates    = results->iterates; // TODO: iterates?
   }
 }

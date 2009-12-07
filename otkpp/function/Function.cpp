@@ -58,11 +58,22 @@ Function::Function(const FunctionEvaluator &fEval,
 
 Function::Function(const Function &f)
 {
-  evaluator_  = f.evaluator_->clone();
-  gEvaluator_ = f.gEvaluator_->clone();
-  if(gEvaluator_->usesFiniteDifference())
-    dynamic_cast< FDiffGradientEvaluator * >(gEvaluator_)->setFEvaluator(evaluator_);
-  HEvaluator_ = f.HEvaluator_->clone();
+  if(f.evaluator_ != NULL)
+    evaluator_  = f.evaluator_->clone();
+  else
+    evaluator_ = NULL;
+  if(f.gEvaluator_ != NULL)
+  {
+    gEvaluator_ = f.gEvaluator_->clone();
+    if(gEvaluator_->usesFiniteDifference())
+      dynamic_cast< FDiffGradientEvaluator * >(gEvaluator_)->setFEvaluator(evaluator_);
+  }
+  else
+    gEvaluator_ = NULL;
+  if(f.HEvaluator_ != NULL)
+    HEvaluator_ = f.HEvaluator_->clone();
+  else
+    HEvaluator_ = NULL;
   // TODO: do this to Hessian also
   /*if(gEvaluator_->usesFiniteDifference())
     dynamic_cast< FDiffGradientEvaluator * >(gEvaluator_)->setFEvaluator(evaluator_);*/
@@ -179,8 +190,10 @@ const std::string Function::getSymbolicExpression() const
 }
 #endif
 
-void Function::getVariableNames(std::list< std::string > &result) const
+std::vector< std::string > Function::getVariableNames() const
 {
+  std::vector< std::string > result;
+  
 #ifdef WITH_LIBMATHEVAL
   if(hasSymbolicExpression())
   {
@@ -203,6 +216,8 @@ void Function::getVariableNames(std::list< std::string > &result) const
 #ifdef WITH_LIBMATHEVAL
   }
 #endif
+  
+  return result;
 }
 
 bool Function::hasSymbolicExpression() const

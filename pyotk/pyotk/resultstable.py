@@ -68,8 +68,9 @@ information for each solver on termination of the iteration:
 	column_widths = (30, 6, 6, 6, 6, 6)
 	
 	for si in range(len(S)):
-		results = minimize(S[si], DefaultSolverSetup(),
-		                   f, sc, x0, NoConstraints(), 0, False)
+		#results = minimize(S[si], DefaultSolverSetup(),
+		                   #f, sc, x0, NoConstraints(), 0, False)
+		results = S[si].solve(f, x0, sc, Solver.DefaultSetup(), NoConstraints(), False)
 		R[si+1][0] = S[si].get_name()
 		R[si+1][1] = results.num_iter
 		R[si+1][2] = results.num_func_eval
@@ -80,7 +81,8 @@ information for each solver on termination of the iteration:
 	print_table(R, num_rows, num_cols, column_widths)
 
 def main():
-	S = [ GSLfdfsolver('vector_bfgs'),
+	S = [ DSQA(),
+        GSLfdfsolver('vector_bfgs'),
 	      GSLfdfsolver('vector_bfgs2'),
 	      GSLfdfsolver('conjugate_fr'),
 	      GSLfdfsolver('conjugate_pr') ]

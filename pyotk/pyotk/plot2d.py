@@ -35,7 +35,7 @@ opens a new window for the plot.
 	if z_logscale == True:
 		V = logspace(math.log10(z1), math.log10(z2), 15)
 	else:
-		V = arange(z1, z2, (z2 - z1) / 20);
+		V = arange(z1, z2, (z2 - z1) / 20)
 	
 	contour(X, Y, Z, V, colors='k', linewidths=0.25)
   
@@ -63,13 +63,13 @@ a ValueError is raised."""
 	if new_figure == True:
 		figure()
 	
-	if results.n != 2:
+	if results.setup.n != 2:
 		raise ValueError('cannot plot an objective function of more than two variables')
 	
-	plot_contours(results.input.objfunc, x1, x2, y1, y2, z1, z2,
+	plot_contours(results.setup.objfunc, x1, x2, y1, y2, z1, z2,
                 z_logscale=z_logscale, new_figure=False)
 	
-	if results.input.solver_info.m > 1:
+	if results.setup.m > 1:
 		for s in results.states:
 			PX = []
 			PY = []
@@ -84,9 +84,9 @@ a ValueError is raised."""
 	PX = []
 	PY = []
 
-	for it in results.states:
-		PX.append(it.x[0])
-		PY.append(it.x[1])
+	for s in results.states:
+		PX.append(s.x[0])
+		PY.append(s.x[1])
 
 	plot(PX, PY, '-o', color='black',
        markerfacecolor='gray', markeredgecolor='black',
@@ -112,8 +112,9 @@ a ValueError is raised."""
            #markerfacecolor='gray', markeredgecolor='black',
            #linewidth=2, markersize=6)
 	
-	if results.input.has_constraints and type(results.input.C) == native.BoundConstraints:
-		plot_bound_constraints(results.input.C)
+	#if results.setup.has_constraints and type(results.setup.C) == native.BoundConstraints:
+	if type(results.setup.C) == native.BoundConstraints:
+		plot_bound_constraints(results.setup.C)
 	
 	xlim(x1, x2)
 	ylim(y1, y2)
@@ -133,7 +134,8 @@ def main():
 	#plot_contours(f.otk_instance, x1, x2, y1, y2, z1, z2, z_logscale)
 	
 	s = GSLfdfsolver('vector_bfgs2')
-	results = minimize(s, DefaultSolverSetup(), f.otk_instance, f.stopcrit, f.x0, NoConstraints(), 0, False)
+	#results = minimize(s, Solver.DefaultSetup(), f.otk_instance, f.stopcrit, f.x0, NoConstraints(), 0, False)
+	results = s.solve(f.otk_instance, f.x0, f.stopcrit, Solver.DefaultSetup(), NoConstraints(), False)
 	plot_iterates_on_contours(results, x1, x2, y1, y2, z1, z2)
 
 	f = Trigonometric(n=2)
@@ -147,17 +149,18 @@ def main():
 	
 	s = LBFGSB()
 	C = BoundConstraints(2)
-	C.types[0] = BoundType.both
-	C.types[1] = BoundType.both
-	C.L = [-0.25, -0.25]
-	C.U = [0.25, 0.25]
+	C.types = (BoundType.both, BoundType.both)
+	C.L = (-0.25, -0.25)
+	C.U = (0.25, 0.25)
 	x0 = (-0.5, 0.5)
-	results = minimize(s, DefaultSolverSetup(), f.otk_instance, f.stopcrit, x0, C, 0, False)
+	#results = minimize(s, Solver.DefaultSetup(), f.otk_instance, f.stopcrit, x0, C, 0, False)
+	results = s.solve(f.otk_instance, f.x0, f.stopcrit, Solver.DefaultSetup(), C, False)
 	plot_iterates_on_contours(results, x1, x2, y1, y2, z1, z2)
 
-	C.L = [0.0, 0.4]
-	C.U = [0.6, 0.75]
-	results = minimize(s, DefaultSolverSetup(), f.otk_instance, f.stopcrit, x0, C, 0, False)
+	C.L = (0.0, 0.4)
+	C.U = (0.6, 0.75)
+	#results = minimize(s, Solver.DefaultSetup(), f.otk_instance, f.stopcrit, x0, C, 0, False)
+	results = s.solve(f.otk_instance, x0, f.stopcrit, Solver.DefaultSetup(), C, False)
 	plot_iterates_on_contours(results, x1, x2, y1, y2, z1, z2)
 	
 	s = GSLfsolver('nmsimplex')
@@ -170,7 +173,8 @@ def main():
 	z2 = f.plot_spec.z_range[1]
 	z_logscale = f.plot_spec.z_logscale
 	x0 = (-0.75, 0.5)
-	results = minimize(s, DefaultSolverSetup(), f.otk_instance, f.stopcrit, x0, C, 0, False)
+	#results = minimize(s, Solver.DefaultSetup(), f.otk_instance, f.stopcrit, x0, C, 0, False)
+	results = s.solve(f.otk_instance, x0, f.stopcrit, Solver.DefaultSetup(), C, False)
 	plot_iterates_on_contours(results, x1, x2, y1, y2, z1, z2)
 	
 if __name__ == "__main__":

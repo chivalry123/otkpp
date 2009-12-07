@@ -9,7 +9,7 @@
 class DSQA : public NativeSolver
 {
  public:
-  struct State : public NativeSolver::State
+  struct State : public Cloneable< State, NativeSolver::State >
   {
     double delta;
     QuadInterp model;
@@ -18,7 +18,6 @@ class DSQA : public NativeSolver
   std::string getName() const;
   const State &getState() const { return state_; }
   bool hasBuiltInStoppingCriterion() const;
-  bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
  private:

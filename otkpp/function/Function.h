@@ -84,7 +84,7 @@ class Function
 #endif
   
   /// Returns the names of the variables of this function (if a symbolic expression is available)
-  void getVariableNames(std::list< std::string > &result) const;
+  std::vector< std::string > getVariableNames() const;
   
   /// Returns true if this function has a symbolic expression, false if not.
   bool hasSymbolicExpression() const;

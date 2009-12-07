@@ -10,11 +10,6 @@ std::string SteihaugSR1::getName() const
   return "SR1/STE";
 }
 
-bool SteihaugSR1::isGSLSolver() const
-{
-  return false;
-}
-
 bool SteihaugSR1::usesGradient() const
 {
   return true;

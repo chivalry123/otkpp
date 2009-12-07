@@ -14,11 +14,6 @@ std::string ConjGradMT::getName() const
     return "ConjGrad-PR/MT";
 }
 
-bool ConjGradMT::isGSLSolver() const
-{
-  return false;
-}
-
 bool ConjGradMT::usesGradient() const
 {
   return true;

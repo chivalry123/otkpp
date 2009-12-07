@@ -30,11 +30,6 @@ bool LBFGSB::hasBuiltInStoppingCriterion() const
   return false;
 }
 
-bool LBFGSB::isGSLSolver() const
-{
-  return false;
-}
-
 bool LBFGSB::supportsConstraints(const Constraints &C)
 {
   return (typeid(C) == typeid(BoundConstraints));

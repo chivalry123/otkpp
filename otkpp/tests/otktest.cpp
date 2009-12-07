@@ -102,7 +102,7 @@ static void printResults(const std::string &algoName,
     printf("%-15s: FAILURE (%s)\n", algoName.c_str(), "???"); // TODO: error code string
 }
 
-#ifdef WITH_FORTRAN
+/*#ifdef WITH_FORTRAN
 static void testLBFGSB()
 {
   LBFGSB solver;
@@ -148,9 +148,9 @@ static void testNEWUOA()
   x0[1] = 2.5;
   x0[2] = 0.15;*/
   
-  solver.solve(f, x0);
+  /*solver.solve(f, x0);
 }
-#endif
+#endif*/
 
 int main(int argc, char **argv)
 {
@@ -173,6 +173,10 @@ int main(int argc, char **argv)
   
   x0[0] = -1.2;
   x0[1] = 1.0;
+  
+  /*Function ff(F_EXPR, Function::DERIV_SYMBOLIC);
+  GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2).solve(ff, x0, *stopCrit, Solver::DefaultSetup(), NoConstraints(), false);
+  return EXIT_SUCCESS;*/
   
   int fi = 0;
   for(f = funcList.begin(); f != funcList.end(); f++)

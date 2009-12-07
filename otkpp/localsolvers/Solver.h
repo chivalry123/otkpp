@@ -5,6 +5,7 @@
 #include <otkpp/function/Function.h>
 
 #include <boost/numeric/ublas/vector.hpp>
+#include <boost/shared_ptr.hpp>
 
 using namespace boost::numeric::ublas;
 
@@ -12,37 +13,48 @@ class Function;
 class Solver;
 class StoppingCriterion;
 
-/// Defines the results of a solver.
-/**
- * This class defines the results produced by 
- * iteration of a solver.
- */
-struct SolverResults
-{
-  bool converged;                         ///< was the chosen stopping criterion satisfied
-  double fMin;                            ///< final function value
-  std::list< vector< double > > iterates; ///< iteration points for each iteration step
-  unsigned int numFuncEval;               ///< number of used function evaluations
-  unsigned int numGradEval;               ///< number of used gradient evaluations
-  unsigned int numIter;                   ///< number of used iterations
-  double time;                            ///< used time
-  vector< double > xMin;                  ///< final iterate
-};
-
 class Solver
 {
  public:
   /// Defines the parameters of a solver.
   struct Setup
   {
+    boost::shared_ptr< Constraints > C;
+    unsigned int m;
+    unsigned int n;
+    Function objFunc;
+    
+    virtual Setup *clone() const = 0;
+    
     /// Is this solver setup compatible with the given solver.
     virtual bool isCompatibleWith(const Solver &s) const = 0;
   };
 
   /// Defines a default solver setup specifying that default parameters are used.
-  struct DefaultSetup : public Setup
+  struct DefaultSetup : public Cloneable< DefaultSetup, Setup >
   {
     bool isCompatibleWith(const Solver &s) const { return true; }
+  };
+  
+  /// Defines the results of a solver.
+  /**
+   * This class defines the results produced by 
+   * iteration of a solver.
+   */
+  struct Results
+  {
+    bool converged;                         ///< was the chosen stopping criterion satisfied
+    double fMin;                            ///< final function value
+    //std::list< vector< double > > iterates; ///< iteration points for each iteration step
+    unsigned int numFuncEval;               ///< the number of used function evaluations
+    unsigned int numGradEval;               ///< the number of used gradient evaluations
+    unsigned int numIter;                   ///< the number of used iterations
+    boost::shared_ptr< Setup > setup;       ///< the used input parameters
+    double termVal;                         ///< the final termination test value
+    double time;                            ///< used time
+    vector< double > xMin;                  ///< the final iterate
+    
+    virtual ~Results() { };
   };
   
   virtual ~Solver() { }
@@ -82,12 +94,12 @@ class Solver
    * @param stopCrit stopping criterion
    * @return a SolverResults structure containing the results
    */
-  virtual SolverResults solve(const Function &objFunc,
-                              const vector< double > &x0,
-                              const Setup &solverSetup = DefaultSetup(),
-                              const Constraints &C = NoConstraints(),
-                              const StoppingCriterion *stopCrit = NULL,
-                              bool timeTest = false) = 0;
+  virtual boost::shared_ptr< Solver::Results > solve(Function &objFunc,
+                                                     const vector< double > &x0,
+                                                     const StoppingCriterion &stopCrit,
+                                                     const Setup &solverSetup = DefaultSetup(),
+                                                     const Constraints &C = NoConstraints(),
+                                                     bool timeTest = false) = 0;
   
   /// Does this solver support the given constraints.
   virtual bool supportsConstraints(const Constraints &C) { return false; }

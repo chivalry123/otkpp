@@ -19,10 +19,10 @@ using namespace boost::numeric::ublas;
 class GSLFSolver : public NativeSolver
 {
  public:
-  struct State : public NativeSolver::State { };
+  struct State : public Cloneable< State, NativeSolver::State > { };
   
   /// Defines the parameters of a GSLFSolver.
-  struct Setup : public Solver::Setup
+  struct Setup : public Cloneable< Setup, Solver::Setup >
   {
     vector< double > stepSize;  ///< initial simplex size
     
@@ -51,7 +51,6 @@ class GSLFSolver : public NativeSolver
   const vector< double > getX() const;
   const matrix< double > getXArray() const;
   bool hasBuiltInStoppingCriterion() const { return true; }
-  bool isGSLSolver() const  { return true; }
   void restart();
   bool usesGradient() const;
   bool usesHessian() const;

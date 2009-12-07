@@ -24,27 +24,18 @@ std::ostream &operator<<(std::ostream &os, const vector< double > &v)
 void printResultsTableHeader(const NativeSolver &s, const Function &f)
 {
   int i;
-  std::list< std::string > varNames;
+  std::vector< std::string > varNames;
   
   std::cout<<std::setw(6)<<std::left<<"k";
   
-  f.getVariableNames(varNames);
-  std::list< std::string >::iterator vn;
-  vn = varNames.begin();
+  varNames = f.getVariableNames();
   for(i = 0; i < f.getN(); i++)
-  {
-    std::cout<<std::setw(20)<<std::left<<*vn;
-    vn++;
-  }
+    std::cout<<std::setw(20)<<std::left<<varNames[i];
   
   std::cout<<"f(";
-  vn = varNames.begin();
   for(i = 0; i < f.getN() - 1; i++)
-  {
-    std::cout<<*vn<<",";
-    vn++;
-  }
-  std::cout<<*vn;
+    std::cout<<varNames[i]<<",";
+  std::cout<<varNames[i];
   std::cout<<")"<<std::endl;
 }
 

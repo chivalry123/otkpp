@@ -27,7 +27,7 @@ Otherwise, a ValueError is raised."""
 		if not isinstance(p.stopcrit, XDistToMinTest):
 			raise ValueError("Test problem " + p.name + " does not have a known minimizer.")
 		
-		stopcrit = XDistToMinTest(p.x_min, eps=eps, relative=False)
+		stopcrit = XDistToMinTest(p.x_min, eps, relative=False)
 		
 		R = zeros((max_num_iter, len(S)))
 		figure()
@@ -36,9 +36,10 @@ Otherwise, a ValueError is raised."""
 		max_used_iter = 0
 		si = 0
 		for s in S:
-			results = minimize(s, DefaultSolverSetup(),
-			                   p.otk_instance, stopcrit,
-			                   p.x0, NoConstraints(), 0, False)
+			#results = minimize(s, DefaultSolverSetup(),
+			                   #p.otk_instance, stopcrit,
+			                   #p.x0, NoConstraints(), 0, False)
+			results = s.solve(p.otk_instance, p.x0, stopcrit, Solver.DefaultSetup(), NoConstraints(), False)
 			
 			for i in range(0, results.num_iter):
 				R[i, si] = norm(array(results.states[i].x) - p.x_min)
@@ -114,23 +115,28 @@ name strings:
 	show()
 
 def main():
-	S = [ LinminBFGS(BFGSLmType.morethuente),
-	      LinminBFGS(BFGSLmType.fletcher),
-	      ConjGradMT(ConjGradType.FR),
-	      ConjGradMT(ConjGradType.PR) ]
+	S = [ #DSQA(),
+        LinminBFGS(BFGSLmType.morethuente),
+        LinminBFGS(BFGSLmType.fletcher),
+        #ConjGradMT(ConjGradType.FR),
+        ConjGradMT(ConjGradType.PR) ]
 	
-	P = [ Beale(),
-	      HelicalValley(),
-	      Wood(),
-	      ExtendedRosenbrock(n=10) ]
+	P = [ ExtendedRosenbrock(n=10),
+        BrownBadlyScaled(),
+        Beale(),
+        HelicalValley(),
+        Wood(),
+        VariablyDimensioned(n=10) ]
 	
 	compare_convergence(S, P);
 	
-	tf = ExtendedRosenbrock(8)
-	results = minimize(GSLfdfsolver('vector_bfgs2'),
-                     DefaultSolverSetup(), tf.otk_instance,
-                     GradNormTest(eps=1e-8), tf.x0,
-                     NoConstraints(), 0, False)
+	tf = ExtendedRosenbrock(10)
+	#results = minimize(GSLfdfsolver('vector_bfgs2'),
+                     #DefaultSolverSetup(), tf.otk_instance,
+                     #GradNormTest(eps=1e-8), tf.x0,
+                     #NoConstraints(), 0, False)
+	results = GSLfdfsolver('vector_bfgs2').solve(tf.otk_instance, tf.x0, 
+    GradNormTest(eps=1e-8), Solver.DefaultSetup(), NoConstraints(), False)
 	quantities = ['gradnorm', 'funcval']
 	
 	convergence_plot(results, quantities)

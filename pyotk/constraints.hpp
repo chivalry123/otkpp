@@ -40,6 +40,7 @@ struct BoundConstraints_Python : public Cloneable< BoundConstraints_Python, Cons
   }
 };
 
+// DEPRECATED
 const Constraints *getOTKConstraintsInstance(const Constraints &C)
 {
   if(typeid(C) == typeid(BoundConstraints_Python &))
@@ -58,10 +59,14 @@ void init_constraints()
 {
   class_< Constraints, boost::noncopyable >("Constraints", no_init);
   class_< NoConstraints, bases< Constraints > >("NoConstraints");
-  class_< BoundConstraints_Python, bases< Constraints > >("BoundConstraints", init< int >())
-    .def_readwrite("types", &BoundConstraints_Python::types)
-    .def_readwrite("L", &BoundConstraints_Python::L)
-    .def_readwrite("U", &BoundConstraints_Python::U);
+  class_< BoundConstraints, bases< Constraints > >("BoundConstraints", init< int >())
+    .add_property("types", make_getter(&BoundConstraints::types, return_value_policy< return_by_value >()),
+                           make_setter(&BoundConstraints::types, return_value_policy< return_by_value >()))
+    //.def_readwrite("types", &BoundConstraints::types)
+    .add_property("L", make_getter(&BoundConstraints::L, return_value_policy< return_by_value >()),
+                       make_setter(&BoundConstraints::L, return_value_policy< return_by_value >()))
+    .add_property("U", make_getter(&BoundConstraints::U, return_value_policy< return_by_value >()),
+                       make_setter(&BoundConstraints::U, return_value_policy< return_by_value >()));
   enum_< BoundConstraints::BoundType >("BoundType")
     .value("none", BoundConstraints::NONE)
     .value("lower", BoundConstraints::LOWER)

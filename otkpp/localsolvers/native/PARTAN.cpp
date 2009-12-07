@@ -17,11 +17,6 @@ std::string PARTAN::getName() const
   return "PARTAN";
 }
 
-bool PARTAN::isGSLSolver() const
-{
-  return false;
-}
-
 bool PARTAN::usesGradient() const
 {
   return true;

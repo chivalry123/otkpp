@@ -9,14 +9,13 @@ class LineMinimizer;
 class PARTAN : public GradientSolver
 {
  public:
-  struct State : public GradientSolver::State { };
+  struct State : public Cloneable< State, GradientSolver::State > { };
   
   PARTAN();
   ~PARTAN();
   
   std::string getName() const;
   const State &getState() const { return state_; }
-  bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
  private:

@@ -61,11 +61,6 @@ std::string LinminBFGS::getName() const
   }
 }
 
-bool LinminBFGS::isGSLSolver() const
-{
-  return false;
-}
-
 bool LinminBFGS::usesGradient() const
 {
   return true;

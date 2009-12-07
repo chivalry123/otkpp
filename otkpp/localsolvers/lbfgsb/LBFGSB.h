@@ -22,7 +22,7 @@ class LBFGSB : public GradientSolver
     bool isCompatibleWith(const Solver &s) const;
   };
   
-  struct State : public GradientSolver::State { };
+  struct State : public Cloneable< State, GradientSolver::State > { };
    
   /// Constructs a new L-BFGS-B solver with the given gradient evaluator type.
   LBFGSB(Function::DerivEvalType gEvalType = Function::DERIV_FDIFF_CENTRAL_2);
@@ -31,7 +31,6 @@ class LBFGSB : public GradientSolver
   std::string getName() const;
   const State &getState() const { return state_; }
   bool hasBuiltInStoppingCriterion() const;
-  bool isGSLSolver() const;
   bool supportsConstraints(const Constraints &C);
   bool usesGradient() const;
   bool usesHessian() const;

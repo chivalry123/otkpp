@@ -19,7 +19,7 @@ of alpha.
 	min_alpha_exp = -6
 	max_alpha_exp = 0
 	num_alpha_val = 25
-	max_num_iter = 1000
+	max_num_iter  = 1000
 	
 	alpha_val = logspace(min_alpha_exp, max_alpha_exp, num_alpha_val)
 	num_iter = zeros(len(alpha_val))
@@ -31,9 +31,11 @@ of alpha.
 		f = Function(f_expr)
 		x0 = (3.0/alpha, 2.0)
 		
-		results = minimize(s, DefaultSolverSetup(),
-                       f, XDistToMinTest((0, 0), 1/alpha*1e-8),
-                       x0, NoConstraints(), 0, False)
+		#results = minimize(s, DefaultSolverSetup(),
+                       #f, XDistToMinTest((0, 0), 1/alpha*1e-8),
+                       #x0, NoConstraints(), 0, False)
+		results = s.solve(f, x0, XDistToMinTest((0, 0), 1/alpha*1e-8), 
+                      Solver.DefaultSetup(), NoConstraints(), False)
 		num_iter[i] = results.num_iter
 		max_num_iter = max(max_num_iter, results.num_iter)
 		i = i + 1

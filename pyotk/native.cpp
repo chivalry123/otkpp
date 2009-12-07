@@ -1,45 +1,24 @@
 
 #include "constraints.hpp"
+#include "functions.hpp"
 #include "io_utils.hpp"
 #include "numpy_utils.hpp"
 #include "solver_utils.hpp"
+#include "solvers.hpp"
+#include "std_utils.hpp"
+#include "stop_crit.hpp"
+#include "test_functions.hpp"
 #include "time_utils.hpp"
-
-#include <otkpp/function/Function.h>
-#include <otkpp/localsolvers/ExternalSolver.h>
-#include <otkpp/localsolvers/native/ConjGradMT.h>
-#include <otkpp/localsolvers/native/HookeJeeves.h>
-#include <otkpp/localsolvers/native/LinminBFGS.h>
-#include <otkpp/localsolvers/native/SteihaugSR1.h>
-#include <otkpp/localsolvers/native/DoglegBFGS.h>
-#include <otkpp/localsolvers/native/NativeSolver.h>
-#include <otkpp/localsolvers/native/PARTAN.h>
-#include <otkpp/localsolvers/native/linmin/Fletcher.h>
-#include <otkpp/localsolvers/native/linmin/MoreThuente.h>
-#include <otkpp/stopcrit/CompoundStoppingCriterion.h>
-#include <otkpp/stopcrit/FDistToMinTest.h>
-#include <otkpp/stopcrit/GradNormTest.h>
-#include <otkpp/stopcrit/MaxNumIterTest.h>
-#include <otkpp/stopcrit/StoppingCriterion.h>
-#include <otkpp/stopcrit/XDistToMinTest.h>
-#include <otkpp/testproblems/MGHTestFunction.h>
-#ifdef WITH_GSL
-#include <otkpp/localsolvers/gslsolvers/GSLFSolver.h>
-#include <otkpp/localsolvers/gslsolvers/GSLFDFSolver.h>
-#endif
-#ifdef WITH_FORTRAN
-#include <otkpp/localsolvers/lbfgsb/LBFGSB.h>
-#endif
 
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/python.hpp>
+#include <boost/shared_ptr.hpp>
 #ifdef WITH_GSL
 #include <gsl/gsl_multimin.h>
 #endif
 #include <iostream>
 #include <string>
 
-#include <boost/shared_ptr.hpp>
 
 using namespace boost::python;
 
@@ -53,30 +32,31 @@ struct SolverInfo
 
 struct SolverInput
 {
-  boost::shared_ptr< Constraints > C;  // the constraints for the problem
-  Function objFunc;                    // the objective function
-  bool hasConstraints;                 // does the test problem have constraints
-  SolverInfo solverInfo;               // information about the used solver
-  // TODO: stopping criterion?
+  boost::shared_ptr< Constraints > C;               // the constraints for the problem
+  Function objFunc;                                 // the objective function
+  bool hasConstraints;                              // does the test problem have constraints
+  SolverInfo solverInfo;                            // information about the used solver
+  boost::shared_ptr< StoppingCriterion > stopCrit;  // the stopping criterion
 };
 
 struct SolverResults_Python
 {
-  SolverInput input;        // the used input parameters
-  bool converged;           // was the chosen stopping criterion satisfied
-  double f_final;           // the final estimate for the minimum function value
-  int n;                    // number of variables
-  int num_iter;             // number of used iterations
-  int num_func_eval;        // number of function evaluations
-  int num_grad_eval;        // number of gradient evaluations
-  list states;              // list of solver states for each iteration step
-  double time;              // used time
-  double term_val;          // the final termination test value
-  tuple x_final;            // the final estimate for the minimizer
+  SolverInput input;      // the used input parameters
+  bool converged;         // was the chosen stopping criterion satisfied
+  double f_final;         // the final estimate for the minimum function value
+  int n;                  // number of variables
+  int num_iter;           // number of used iterations
+  int num_func_eval;      // number of function evaluations
+  int num_grad_eval;      // number of gradient evaluations
+  list states;            // list of solver states for each iteration step
+  double time;            // used time
+  double term_val;        // the final termination test value
+  tuple x_final;          // the final estimate for the minimizer
 };
 
+// DEPRECATED
 SolverResults_Python minimize(NativeSolver &solver,
-                              const SolverSetup &solverSetup,
+                              const Solver::Setup &solverSetup,
                               Function &objFunc,
                               const StoppingCriterion &stopCrit,
                               const vector< double > &x0,
@@ -92,6 +72,9 @@ SolverResults_Python minimize(NativeSolver &solver,
   NativeSolver::IterationStatus status;
   unsigned long long totalTime = 0;
   const Constraints *C_;
+  /*with_custodian_and_ward_postcall<0, 1, reference_existing_object >::
+    apply< const NativeSolver::State & >::type solver_state_converter;*/
+  //return_by_value::apply< const NativeSolver::State & >::type solver_state_converter;
   
   array::set_module_and_type("numpy", "ndarray");
   
@@ -126,7 +109,8 @@ SolverResults_Python minimize(NativeSolver &solver,
           printResultsTableRow(k, solver, objFunc);
         
         if(timeTest == false)
-          results.states.append(solver);
+          results.states.append(boost::shared_ptr< NativeSolver::State >(solver.getState().clone()));
+          //results.states.append(handle<>(solver_state_converter(solver.getState())));
         
         if(status == NativeSolver::ITERATION_CONTINUE && converged)
           break;
@@ -134,7 +118,7 @@ SolverResults_Python minimize(NativeSolver &solver,
         status = solver.iterate();
         
         if(status != NativeSolver::ITERATION_CONTINUE && 
-          stopCrit.test(solver) == false)
+           stopCrit.test(solver) == false)
         {
           converged = false;
           break;
@@ -150,7 +134,7 @@ SolverResults_Python minimize(NativeSolver &solver,
       throw std::runtime_error("external solvers are not yet supported by the driver routine");
     
     if(timeTest == false)
-      results.states.append(solver);
+      results.states.append(boost::shared_ptr< NativeSolver::State >(solver.getState().clone())); /*results.states.append(handle<>(solver_state_converter(solver.getState())));*/
     else
     {
       totalTime += getTime() - startTime;
@@ -247,132 +231,20 @@ SolverResults_Python minimize(NativeSolver &solver,
   }
 };*/
 
-void init_functions()
+static void init_converters()
 {
-#ifdef WITH_LIBMATHEVAL
-  class_< Function >("Function",
-    init< const std::string &, optional< Function::DerivEvalType > >())
-    .def("get_n", &Function::getN)
-    .def("get_symbolic_expression", &Function::getSymbolicExpression)
-#else
-  class_< Function >("Function")
-    .def("get_n", &Function::getN)
-#endif
-    .def("has_symbolic_expression", &Function::hasSymbolicExpression);
-  enum_< Function::FuncEvalType >("FuncEvalType")
-#ifdef WITH_LIBMATHEVAL
-    .value("symbolic", Function::SYMBOLIC)
-#endif
-    .value("compiled", Function::COMPILED);
-  enum_< Function::DerivEvalType >("DerivEvalType")
-#ifdef WITH_LIBMATHEVAL
-    .value("symbolic", Function::DERIV_SYMBOLIC)
-#endif
-    .value("fdiff_central_2", Function::DERIV_FDIFF_CENTRAL_2)
-    .value("fdiff_central_4", Function::DERIV_FDIFF_CENTRAL_4)
-    .value("fdiff_forward", Function::DERIV_FDIFF_FORWARD);
-}
-
-void init_solvers()
-{
-  class_< SolverSetup, boost::noncopyable >("SolverSetup", no_init);
-  class_< NativeSolver, boost::noncopyable >("Solver", no_init)
-    .def("get_m", &NativeSolver::getM)
-    .def("get_name", &NativeSolver::getName)
-    .def("get_n", &NativeSolver::getN);
-  enum_< ConjGradMT::Type >("ConjGradType")
-    .value("FR", ConjGradMT::FLETCHER_REEVES)
-    .value("PR", ConjGradMT::POLAK_RIBIERE);
-  class_< ConjGradMT, bases< NativeSolver > >("ConjGradMT",
-    init< ConjGradMT::Type >());
-#ifdef WITH_GSL
-  class_< GSLFSolver, bases< NativeSolver > >("GSLfsolver",
-    init< const std::string & >());
-  class_< GSLFDFSolver, bases< NativeSolver > >("GSLfdfsolver",
-    init< const std::string &, optional< Function::DerivEvalType > >());
-#endif
-  class_< HookeJeeves, bases< NativeSolver > >("HookeJeeves");
-  class_< LinminSetup, boost::noncopyable >("LinminSetup", no_init);
-  class_< FletcherSetup, bases< LinminSetup > >(
-    "FletcherSetup", init< optional< double, double, double, double > >());
-  class_< MoreThuenteSetup, bases< LinminSetup > >(
-    "MoreThuenteSetup", init< optional< double, double, double, double > >());
-  enum_< LinminBFGS::LinMinType >("BFGSLmType")
-    .value("fletcher", LinminBFGS::FLETCHER)
-    .value("morethuente", LinminBFGS::MORE_THUENTE);
-  class_< LinminBFGSSetup, bases< SolverSetup > >("LinminBFGSSetup",
-    init< optional< const LinminSetup &, const matrix< double > & > >());
-  class_< LinminBFGS, bases< NativeSolver > >("LinminBFGS",
-    init< optional< LinminBFGS::LinMinType, int > >());
-  class_< DoglegBFGS, bases< NativeSolver > >("DoglegBFGS");
-  class_< PARTAN, bases< NativeSolver > >("PARTAN");
-  class_< SteihaugSR1, bases< NativeSolver > >("SteihaugSR1");
-  class_< SolverSetup, boost::noncopyable >("SolverSetup", no_init);
-  class_< DefaultSolverSetup, bases< SolverSetup > >("DefaultSolverSetup");
-#ifdef WITH_GSL
-  class_< GSLFSolver_setup, bases< SolverSetup > >("GSLFSolverSetup",
-    init< const vector< double > & >());
-  class_< GSLFDFSolver_setup, bases< SolverSetup > >("GSLFDFSolverSetup",
-    init< double, double >());
-#endif
-#ifdef WITH_FORTRAN
-  class_< LBFGSB, bases< NativeSolver > >("LBFGSB");
-#endif
-  //register_ptr_to_python< boost::shared_ptr< Solver > >();
-}
-
-void init_stop_crit()
-{
-  class_< StoppingCriterion, boost::noncopyable >("StoppingCriterion", no_init)
-    .def(self + self);
-  class_< CompoundStoppingCriterion, bases< StoppingCriterion > >("CompoundStoppingCriterion")
-    .def(self + self);
-  class_< FDistToMinTest, bases< StoppingCriterion > >("FDistToMinTest", 
-    init< double, double, bool >((arg("f_min"), arg("eps"), arg("relative") = false)));
-  class_< GradNormTest, bases< StoppingCriterion > >("GradNormTest", init< double >(arg("eps")));
-  class_< MaxNumIterTest, bases< StoppingCriterion > >("MaxNumIterTest", init< int >(arg("n")));
-  class_< XDistToMinTest, bases< StoppingCriterion > >("XDistToMinTest", 
-    init< const vector< double > &, double, bool >((arg("x_min"), arg("eps"), arg("relative") = false)));
-}
-
-void init_test_functions()
-{
-  class_< PowellBadlyScaled, bases< Function > >(
-    "PowellBadlyScaled", init< Function::DerivEvalType >());
-  class_< BrownBadlyScaled, bases< Function > >(
-    "BrownBadlyScaled", init< Function::DerivEvalType >());
-  class_< Beale, bases< Function > >(
-    "Beale", init< Function::DerivEvalType >());
-  class_< HelicalValley, bases< Function > >(
-    "HelicalValley", init< Function::DerivEvalType >());
-  class_< Gaussian, bases< Function > >(
-    "Gaussian", init< Function::DerivEvalType >());
-  class_< ExtendedRosenbrock, bases< Function > >(
-    "ExtendedRosenbrock", init< int, Function::DerivEvalType >());
-  class_< Gulf, bases< Function > >(
-    "Gulf", init< int, Function::DerivEvalType >());
-  class_< Box, bases< Function > >(
-    "Box", init< int, Function::DerivEvalType >());
-  class_< Wood, bases< Function > >(
-    "Wood", init< Function::DerivEvalType >());
-  class_< BrownDennis, bases< Function > >(
-    "BrownDennis", init< int, Function::DerivEvalType >());
-  class_< BiggsEXP6, bases< Function > >(
-    "BiggsEXP6", init< int, Function::DerivEvalType >());
-  class_< Watson, bases< Function > >(
-    "Watson", init< int, Function::DerivEvalType >());
-  class_< ExtendedPowellSingular, bases< Function > >(
-    "ExtendedPowellSingular", init< int, Function::DerivEvalType >());
-  class_< PenaltyFunctionI, bases< Function > >(
-    "PenaltyFunctionI", init< int, Function::DerivEvalType >());
-  class_< PenaltyFunctionII, bases< Function > >(
-    "PenaltyFunctionII", init< int, Function::DerivEvalType >());
-  class_< VariablyDimensioned, bases< Function > >(
-    "VariablyDimensioned", init< int, Function::DerivEvalType >());
-  class_< Trigonometric, bases< Function > >(
-    "Trigonometric", init< int, Function::DerivEvalType >());
-  class_< ChebyQuad, bases< Function > >(
-    "ChebyQuad", init< int, int, Function::DerivEvalType >());
+  to_python_converter< vector< double >, numpy_utils::vector_to_tuple >();
+  to_python_converter< matrix< double >, numpy_utils::matrix_to_ndarray >();
+  std_utils::tuple_to_vector< double >();
+  std_utils::tuple_to_vector< std::string >();
+  std_utils::tuple_to_vector< BoundConstraints::BoundType >();
+  to_python_converter< std::vector< double >, std_utils::vector_to_tuple< double > >();
+  to_python_converter< std::vector< std::string >, std_utils::vector_to_tuple< std::string > >();
+  to_python_converter< std::vector< boost::shared_ptr< NativeSolver::State > >,
+    std_utils::vector_to_tuple< boost::shared_ptr< NativeSolver::State > > >();
+  to_python_converter< std::vector< boost::shared_ptr< Solver::Results > >,
+    std_utils::vector_to_tuple< boost::shared_ptr< Solver::Results > > >();
+  to_python_converter< NativeSolver, solver_state_to_python >();
 }
 
 BOOST_PYTHON_MODULE(native)
@@ -383,18 +255,15 @@ BOOST_PYTHON_MODULE(native)
   init_stop_crit();
   init_test_functions();
   numpy_utils::tuple_to_vector();
-  to_python_converter< vector< double >, numpy_utils::vector_to_tuple >();
-  to_python_converter< matrix< double >, numpy_utils::matrix_to_ndarray >();
-  //std_utils::tuple_to_vector();
-  //to_python_converter< std::vector< double >, std_utils::vector_to_tuple >();
-  to_python_converter< NativeSolver, solver_state_to_python >();
+  
   class_< SolverInfo >("solver_info")
     .def_readonly("m", &SolverInfo::m);
   class_< SolverInput >("SolverInput")
     .def_readonly("C",               &SolverInput::C)
     .def_readonly("has_constraints", &SolverInput::hasConstraints)
     .def_readonly("objfunc",         &SolverInput::objFunc)
-    .def_readonly("solver_info",     &SolverInput::solverInfo);
+    .def_readonly("solver_info",     &SolverInput::solverInfo)
+    .def_readonly("stop_crit",       &SolverInput::stopCrit);
   class_< SolverResults_Python >("SolverResults")
     .def_readonly("input",         &SolverResults_Python::input)
     .def_readonly("f_final",       &SolverResults_Python::f_final)
@@ -408,7 +277,9 @@ BOOST_PYTHON_MODULE(native)
     .def_readonly("term_val",      &SolverResults_Python::term_val)
     .def_readonly("x_final",       &SolverResults_Python::x_final);
   def("minimize", minimize,
-      (boost::python::arg("C") = NoConstraints(),
-      boost::python::arg("verbosity") = 0,
-      boost::python::arg("timeTest") = false));
+    (boost::python::arg("C") = NoConstraints(),
+    boost::python::arg("verbosity") = 0,
+    boost::python::arg("timeTest") = false));
+  
+  init_converters();
 }

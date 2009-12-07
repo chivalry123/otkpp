@@ -20,7 +20,7 @@ class GSLFDFSolver : public GradientSolver
 {
  public:
   /// Defines the parameters of a GSLFDFSolver.
-  struct Setup : public Solver::Setup
+  struct Setup : public Cloneable< Setup, Solver::Setup >
   {
     double stepSize;  ///< initial step size for line searches
     double tol;       ///< tolerance for line search stopping criterion
@@ -30,7 +30,7 @@ class GSLFDFSolver : public GradientSolver
     Setup(double stepSize, double tol) : stepSize(stepSize), tol(tol) { }
   };
   
-  struct State : public GradientSolver::State { };
+  struct State : public Cloneable< State, GradientSolver::State > { };
   
   /// Constructs a new GSL solver with the given name.
   /**
@@ -77,7 +77,6 @@ class GSLFDFSolver : public GradientSolver
   const State &getState() const { return state_; }
   const vector< double > getX() const;
   bool hasBuiltInStoppingCriterion() const { return false; }
-  bool isGSLSolver() const { return true; }
   void restart();
   bool usesGradient() const;
   bool usesHessian() const;

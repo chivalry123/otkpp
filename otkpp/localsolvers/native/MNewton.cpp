@@ -20,11 +20,6 @@ std::string MNewton::getName() const
   return "MNewton";
 }
 
-bool MNewton::isGSLSolver() const
-{
-  return false;
-}
-
 bool MNewton::usesGradient() const
 {
   return true;

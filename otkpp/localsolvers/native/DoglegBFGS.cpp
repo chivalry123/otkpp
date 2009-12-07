@@ -21,11 +21,6 @@ std::string DoglegBFGS::getName() const
   return "BFGS/DLG";
 }
 
-bool DoglegBFGS::isGSLSolver() const
-{
-  return false;
-}
-
 bool DoglegBFGS::usesGradient() const
 {
   return true;

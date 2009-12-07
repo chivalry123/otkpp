@@ -38,10 +38,13 @@ a function of two variables, a ValueError is raised."""
 		for j in range(n):
 			x = x1 + 1.0*j/(n-1) * dx
 			
-			results = minimize(s, DefaultSolverSetup(),
-                         f, GradNormTest(eps=1e-6),
-                         (x, y), NoConstraints(), 0, False)
-			p_final = array(results.x_final)
+			#results = minimize(s, DefaultSolverSetup(),
+                         #f, GradNormTest(eps=1e-6),
+                         #(x, y), NoConstraints(), 0, False)
+			results = s.solve(f, (x, y), GradNormTest(eps=1e-6),
+                        Solver.DefaultSetup(), NoConstraints(), False)
+			
+			p_final = array(results.x_min)
 			
 			found_p_min = None
 			ci = 1

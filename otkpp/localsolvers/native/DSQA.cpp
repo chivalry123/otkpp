@@ -14,11 +14,6 @@ bool DSQA::hasBuiltInStoppingCriterion() const
   return false;
 }
 
-bool DSQA::isGSLSolver() const
-{
-  return false;
-}
-
 bool DSQA::usesGradient() const
 {
   return false;

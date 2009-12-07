@@ -11,7 +11,7 @@ GradNormTest::GradNormTest(double eps) : eps_(eps) { }
 
 double GradNormTest::getTestValue(const NativeSolver &s) const
 {
-  if(!s.isGSLSolver())
+  if(typeid(s) != typeid(GSLFDFSolver &))
     return norm_2(s.getGradient());
 #ifdef WITH_GSL
   else

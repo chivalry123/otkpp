@@ -13,7 +13,7 @@ class LinminBFGS : public GradientSolver
 {
  public:
   /// Defines the parameters of a LinminBFGS solver.
-  struct Setup : public Solver::Setup
+  struct Setup : public Cloneable< Setup, Solver::Setup >
   {
     const LineMinimizer::Setup *lmSetup;   ///< line minimizer parameters
     const matrix< double > *H0;            ///< initial Hessian or inverse Hessian approximation
@@ -24,7 +24,7 @@ class LinminBFGS : public GradientSolver
     bool isCompatibleWith(const Solver &s) const;
   };
 
-  struct State : public GradientSolver::State { };
+  struct State : public Cloneable< State, GradientSolver::State > { };
   
   /// Line search algorithm type.
   enum LinMinType
@@ -47,7 +47,6 @@ class LinminBFGS : public GradientSolver
   
   std::string getName() const;
   const State &getState() const { return state_; }
-  bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
  private:

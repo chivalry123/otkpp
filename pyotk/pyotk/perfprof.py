@@ -35,23 +35,26 @@ True, the results are also plotted."""
 	si = 0
 	for s in S:
 		print 'Algorithm:', s.get_name()
-		print "%-25s%-15s%-15s%-8s%-8s" % ('Test function', 
-					'Time', 'Term.val.', 'N.iter.', 'Time/iter.')
+		print "%-25s%-13s%-15s%-15s%-8s" % ('Test function', 
+					'Time', 'Term.val.', '#i   #f   #g', 'Time/iter.')
 		
 		pi = 0
 		for p in P:
-			results = minimize(s, DefaultSolverSetup(),
-			                   p.otk_instance, p.stopcrit,
-			                   p.x0, NoConstraints(), 0, True)
+			#results = minimize(s, DefaultSolverSetup(),
+			                   #p.otk_instance, p.stopcrit,
+			                   #p.x0, NoConstraints(), 0, True)
+			results = s.solve(p.otk_instance, p.x0, p.stopcrit, 
+                        Solver.DefaultSetup(), NoConstraints(), True)
 			
 			if results.converged == True:
-				print "%-25s%-15.2f%-15.4e%-8d%-8.2f" % (p.name, 
+				print "%-25s%-13.2f%-15.4e%-5d%-5d%-5d%-8.2f" % (p.name, 
           results.time, results.term_val, results.num_iter, 
+          results.num_func_eval, results.num_grad_eval, 
           1.0 * results.time / results.num_iter)
 				T[pi, si] = results.time
 			else:
-				print "%-25s%-15s%-15.4e%-8s%-8s" % (p.name,
-              'Failure', results.term_val, '-', '-')
+				print "%-25s%-13s%-15.4e%-5s%-5s%-5s%-8s" % (p.name,
+              'Failure', results.term_val, '-', '-', '-', '-')
 				T[pi, si] = nan
 			
 			pi = pi + 1
@@ -97,31 +100,51 @@ True, the results are also plotted."""
 	return (R, tau, rho)
 
 def main():
-	S = [ ConjGradMT(ConjGradType.FR),
-        ConjGradMT(ConjGradType.PR),
+	S = [ DSQA(),
         SteihaugSR1(),
+        #ConjGradMT(ConjGradType.FR),
+        #ConjGradMT(ConjGradType.PR),
         LinminBFGS(BFGSLmType.morethuente) ]
 	
-	P = [ PowellBadlyScaled(),
-				BrownBadlyScaled(),
-				Beale(),
-				HelicalValley(),
-				Gaussian(),
-				#Gulf(m=5), # TODO: some algorithms get stuck with this
-				Box(m=5),
-				Wood(),
-				BrownDennis(m=20),
-				BiggsEXP6(m=13),
-				Watson(n=6),
-				ExtendedRosenbrock(n=10),
-				ExtendedPowellSingular(n=12),
-				PenaltyFunctionI(n=10),
-				PenaltyFunctionII(n=10),
-				VariablyDimensioned(n=10),
-				Trigonometric(n=5),
-				ChebyQuad(n=8, m=8) ]
+	P1 = [ PowellBadlyScaled(),
+         BrownBadlyScaled(),
+         Beale(),
+         HelicalValley(),
+         Gaussian(),
+         Gulf(m=5),
+         Box(m=5),
+         Wood(),
+         BrownDennis(m=20),
+         BiggsEXP6(m=13),
+         Watson(n=6),
+         ExtendedRosenbrock(n=10),
+         ExtendedPowellSingular(n=12),
+         PenaltyFunctionI(n=10),
+         PenaltyFunctionII(n=10),
+         VariablyDimensioned(n=10),
+         Trigonometric(n=5),
+         ChebyQuad(n=8, m=8) ]
 	
-	performance_profile(S, P, True)
+	P2 = [ #PowellBadlyScaled(gEvalType=DerivEvalType.fdiff_central_2),
+         #BrownBadlyScaled(gEvalType=DerivEvalType.fdiff_central_2),
+         #Beale(gEvalType=DerivEvalType.fdiff_central_2),
+         #HelicalValley(gEvalType=DerivEvalType.fdiff_central_2),
+         #Gaussian(gEvalType=DerivEvalType.fdiff_central_2),
+         Gulf(m=5, gEvalType=DerivEvalType.fdiff_central_2),
+         Box(m=5, gEvalType=DerivEvalType.fdiff_central_2),
+         #Wood(gEvalType=DerivEvalType.fdiff_central_2),
+         BrownDennis(m=20, gEvalType=DerivEvalType.fdiff_central_2),
+         BiggsEXP6(m=13, gEvalType=DerivEvalType.fdiff_central_2),
+         Watson(n=6, gEvalType=DerivEvalType.fdiff_central_2),
+         ExtendedRosenbrock(n=32, gEvalType=DerivEvalType.fdiff_central_2),
+         ExtendedPowellSingular(n=16, gEvalType=DerivEvalType.fdiff_central_2),
+         PenaltyFunctionI(n=10, gEvalType=DerivEvalType.fdiff_central_2),
+         PenaltyFunctionII(n=10, gEvalType=DerivEvalType.fdiff_central_2),
+         VariablyDimensioned(n=20, gEvalType=DerivEvalType.fdiff_central_2),
+         Trigonometric(n=7, gEvalType=DerivEvalType.fdiff_central_2),
+         ChebyQuad(n=8, m=8, gEvalType=DerivEvalType.fdiff_central_2) ]
+	
+	performance_profile(S, P1, True)
 
 if __name__ == "__main__":
 	main()

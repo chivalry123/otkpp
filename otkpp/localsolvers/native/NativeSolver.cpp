@@ -6,6 +6,14 @@
 #include <typeinfo>
 
 static const unsigned int MAX_NUM_ITER = 50000;
+static const unsigned long long MIN_TOTAL_TIME = 1e9;
+
+static unsigned long long getTime()
+{
+  timespec tp;
+  clock_gettime(CLOCK_REALTIME, &tp);
+  return 1e9 * tp.tv_sec + tp.tv_nsec;
+}
 
 /*NativeSolver::State *NativeSolver::State::clone() const
 {
@@ -79,58 +87,102 @@ NativeSolver::IterationStatus NativeSolver::iterate()
   return status;
 }
 
-SolverResults NativeSolver::solve(const Function &objFunc,
-                                  const vector< double > &x0,
-                                  const Solver::Setup &solverSetup,
-                                  const Constraints &C,
-                                  const StoppingCriterion *stopCrit,
-                                  bool timeTest)
+boost::shared_ptr< Solver::Results > NativeSolver::solve(Function &objFunc,
+                                                         const vector< double > &x0,
+                                                         const StoppingCriterion &stopCrit,
+                                                         const Solver::Setup &solverSetup,
+                                                         const Constraints &C,
+                                                         bool timeTest)
 {
   bool converged = false;
-  std::list< vector< double > > iterates;
-  unsigned int k = 0;
-  SolverResults results;
+  unsigned int k;
+  unsigned int numRuns = 0;
+  NativeSolver::Results *results;
+  unsigned long long startTime = 0;
   IterationStatus status = ITERATION_CONTINUE;
+  unsigned long long totalTime = 0;
   
-  if(stopCrit == NULL)
-    throw std::invalid_argument("The solver requires a stopping criterion, but none given.");
-  
-  setup(objFunc, x0, solverSetup);
-  
-  objFunc_.resetEvalCounters();
+  results = new NativeSolver::Results();
   
   do
   {
-    if(timeTest == false)
-      iterates.push_back(getX());
-    if(status == ITERATION_CONTINUE && converged)
-      break;
+    k = 0;
+    converged = false;
+    status = NativeSolver::ITERATION_CONTINUE;
     
-    status = iterate();
+    setup(objFunc, x0, solverSetup, C);
     
-    if(status != ITERATION_CONTINUE && !stopCrit->test(*this))
+    if(timeTest == true)
+      startTime = getTime();
+    else
+      objFunc.resetEvalCounters();
+    
+    do
     {
-      converged = false;
-      break;
+      if(timeTest == false)
+      {
+        results->states.push_back(
+          boost::shared_ptr< NativeSolver::State >(getState().clone()));
+        results->states.back()->X = getXArray();
+      }
+      if(status == ITERATION_CONTINUE && converged)
+        break;
+      
+      status = iterate();
+      
+      if(status != ITERATION_CONTINUE && stopCrit.test(*this) == false)
+      {
+        converged = false;
+        break;
+      }
+      k++;
+      
+      converged = stopCrit.test(*this);
     }
-    k++;
+    while(status == ITERATION_CONTINUE && 
+          converged == false && k < MAX_NUM_ITER);
     
-    converged = stopCrit->test(*this);
+    if(timeTest == false)
+    {
+      results->states.push_back(
+        boost::shared_ptr< NativeSolver::State >(getState().clone()));
+      results->states.back()->X = getXArray();
+    }
+    else
+    {
+      totalTime += getTime() - startTime;
+      numRuns++;
+    }
   }
-  while(status == ITERATION_CONTINUE && 
-        converged == false && k < MAX_NUM_ITER);
+  while(timeTest == true && totalTime < MIN_TOTAL_TIME);
   
-  results.converged   = converged;
-  results.iterates    = iterates;
-  results.xMin        = getX();
-  results.fMin        = getFVal();
-  results.numIter     = k;
-  results.numFuncEval = getNumFuncEval();
-  results.numGradEval = getNumGradEval();
+  results->converged   = converged;
+  results->xMin        = getX();
+  results->fMin        = getFVal();
+  results->numIter     = std::min(k + 1, MAX_NUM_ITER);
+  results->numFuncEval = getNumFuncEval();
+  results->numGradEval = getNumGradEval();
   //results.numHessEval = getNumHessEval();
-  results.time = 0; // TODO: write a special time test mode.
+  results->setup = 
+    boost::shared_ptr< Solver::Setup >(solverSetup.clone());
+  results->termVal     = stopCrit.getTestValue(*this);
   
-  return results;
+  results->setup->C       = boost::shared_ptr< Constraints >(C.clone());
+  results->setup->m       = getM();
+  results->setup->n       = n_;
+  results->setup->objFunc = objFunc;
+  
+  if(timeTest == true)
+  {
+    if(converged)
+      results->time = ((double)totalTime) / numRuns / 1000.0;
+    else
+      results->time = 0;
+  }
+  else
+    results->time = 0;
+  
+  return boost::shared_ptr< NativeSolver::Results >(results);
 }
 
 /*void NativeSolver::allocateState_()
