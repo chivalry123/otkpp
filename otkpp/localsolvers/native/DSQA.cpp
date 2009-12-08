@@ -76,11 +76,11 @@ vector< double > &DSQA::computeTrsRegStep_(const vector< double > &g,
   
   double eps = 1e-16;
   
-  noalias(p) = zero_vector< double >(n_);
+  noalias(p) = zero_vector< double >(setup_->n);
   
   if(r0_norm < eps)
   {
-    p = zero_vector< double >(n_);
+    p = zero_vector< double >(setup_->n);
     return p;
   }
   
@@ -88,7 +88,7 @@ vector< double > &DSQA::computeTrsRegStep_(const vector< double > &g,
   d = -r;
   
   k = 0;
-  while(k < n_)
+  while(k < setup_->n)
   {
     Hd = prod(H, d);
     dHd = inner_prod(d, Hd);
@@ -127,7 +127,7 @@ NativeSolver::IterationStatus DSQA::iterate_()
 {
   double fXPlus;
   double distSq;
-  vector< double > dx(n_);
+  vector< double > dx(setup_->n);
   bool fImproved = false;
   int j;
   double maxDistSq = 0.0;
@@ -138,8 +138,8 @@ NativeSolver::IterationStatus DSQA::iterate_()
   
   computeTrsRegStep_(state_.model.getG(), state_.model.getH(), state_.delta, p_);
   xPlus_ = state_.x + p_;
-  fXPlus = objFunc_(xPlus_);
-  ratio = computeReduction_(state_.x, xPlus_, state_.f, fXPlus, p_);
+  fXPlus = setup_->f(xPlus_);
+  ratio = computeReduction_(state_.x, xPlus_, state_.fx, fXPlus, p_);
   
   t = -1;
   maxDistSq = 0.0;
@@ -169,7 +169,7 @@ NativeSolver::IterationStatus DSQA::iterate_()
     state_.model.setOrigin(state_.model.getLowestIndex());
   
   state_.x = state_.model.getLowestX();
-  state_.f = state_.model.getLowestF();
+  state_.fx = state_.model.getLowestF();
   
   //std::cout<<"niter: "<<nIter_<<" x: "<<x_<<" dx: "<<sqrt(maxDistSq)<<std::endl;
   /*if(nIter_ % 100 == 0)
@@ -178,30 +178,30 @@ NativeSolver::IterationStatus DSQA::iterate_()
     //delta_ = 1e-6;
   }*/
   
-  if(nIter_ < 10000 && state_.delta > 1e-12)
+  if(state_.nIter < 10000 && state_.delta > 1e-12)
     return NativeSolver::ITERATION_CONTINUE;
   else
     return NativeSolver::ITERATION_SUCCESS;
 }
 
-void DSQA::setup_(const Function &objFunc,
-                  const vector< double > &x0,
-                  const Solver::Setup &solverSetup,
-                  const Constraints &C)
+void DSQA::doSetup_(const Function &objFunc,
+                    const vector< double > &x0,
+                    const Solver::Setup &solverSetup,
+                    const Constraints &C)
 {
-  NativeSolver::setup_(objFunc, x0, solverSetup, C);
+  NativeSolver::doSetup_(objFunc, x0, solverSetup, C);
   
   state_.delta = 1e-2;
-  m_ = (n_+1)*(n_+2)/2;
+  m_ = (setup_->n+1)*(setup_->n+2)/2;
   
   state_.x = x0;
-  state_.f = objFunc_(x0);
+  state_.fx = setup_->f(x0);
   
   state_.model = QuadInterp(objFunc, x0, state_.delta);
   state_.model.setOrigin(state_.model.getLowestIndex());
-  p_.resize(n_);
-  xPlus_.resize(n_);
+  p_.resize(setup_->n);
+  xPlus_.resize(setup_->n);
   
-  p_.resize(n_);
-  xPlus_.resize(n_);
+  p_.resize(setup_->n);
+  xPlus_.resize(setup_->n);
 }

@@ -14,10 +14,10 @@ class GradientSolverBase : public NativeSolver
   Function::DerivEvalType gEvalType_;
   
   GradientSolverBase(Function::DerivEvalType gEvalType);
-  virtual void setup_(const Function &objFunc,
-                      const vector< double > &x0,
-                      const NativeSolver::Setup &solverSetup,
-                      const Constraints &C);
+  virtual void doSetup_(const Function &objFunc,
+                        const vector< double > &x0,
+                        const NativeSolver::Setup &solverSetup,
+                        const Constraints &C);
 };
 
 #define GRADIENTSOLVERBASE_H

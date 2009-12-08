@@ -8,18 +8,19 @@ void Solver::setup(const Function &objFunc,
                    const Solver::Setup &solverSetup,
                    const Constraints &C)
 {
-  n_ = objFunc.getN();
-  
   if(typeid(solverSetup) != typeid(const Solver::DefaultSetup &) && 
      !solverSetup.isCompatibleWith(*this))
     throw std::invalid_argument("the solver and its setup are incompatible");
   
-  if(n_ != x0.size())
+  if(objFunc.getN() != x0.size())
     throw std::runtime_error("dimension mismatch: f!=x0");
   
-  objFunc_ = objFunc;
-  objFunc_.resetEvalCounters();
-  objFunc_.enableEvalCounting();
+  setup_ = boost::shared_ptr< Solver::Setup >(solverSetup.clone());
+  setup_->n = objFunc.getN();
   
-  setup_(objFunc, x0, solverSetup, C);
+  setup_->f = objFunc;
+  setup_->f.resetEvalCounters();
+  setup_->f.enableEvalCounting();
+  
+  doSetup_(objFunc, x0, solverSetup, C);
 }

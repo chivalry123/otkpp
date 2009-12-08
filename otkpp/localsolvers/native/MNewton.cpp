@@ -34,7 +34,7 @@ NativeSolver::IterationStatus MNewton::iterate_()
 {
   double alpha;
   
-  objFunc_.H(state_.x, H_);
+  setup_->f.H(state_.x, H_);
   d_ = -state_.g;
   int r = cholesky_decompose(H_, H_chol_);
   /*while(r != 0)
@@ -45,24 +45,24 @@ NativeSolver::IterationStatus MNewton::iterate_()
   inplace_solve(H_chol_, d_, lower_tag());
   inplace_solve(trans(H_chol_), d_, upper_tag());
   
-  lineMinimizer_->minimize(state_.x, d_, 1.0, state_.f, state_.g,
+  lineMinimizer_->minimize(state_.x, d_, 1.0, state_.fx, state_.g,
                            alpha, xPlus_, fPlus_, gPlus_);
   
   state_.x = xPlus_;
-  state_.f = fPlus_;
+  state_.fx = fPlus_;
   state_.g = gPlus_;
   
   return NativeSolver::ITERATION_CONTINUE;
 }
 
-void MNewton::setup_(const Function &objFunc,
-                     const vector< double > &x0,
-                     const Solver::Setup &solverSetup,
-                     const Constraints &C)
+void MNewton::doSetup_(const Function &objFunc,
+                       const vector< double > &x0,
+                       const Solver::Setup &solverSetup,
+                       const Constraints &C)
 {
   const int N = objFunc.getN();
-  GradientSolver::setup_(objFunc, x0, solverSetup, C);
-  lineMinimizer_->setup(objFunc_, MoreThuente::Setup());
+  GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
+  lineMinimizer_->setup(setup_->f, MoreThuente::Setup());
   H_.resize(N, N);
   H_chol_.resize(N, N);
 }

@@ -64,6 +64,8 @@ SolverResults_Python minimize(NativeSolver &solver,
                               int verbosity,
                               bool timeTest)
 {
+  throw std::runtime_error("obsolete function called");
+  
   bool converged;
   unsigned int k;
   unsigned int numRuns = 0;
@@ -282,4 +284,6 @@ BOOST_PYTHON_MODULE(native)
     boost::python::arg("timeTest") = false));
   
   init_converters();
+  
+  array::set_module_and_type("numpy", "ndarray");
 }

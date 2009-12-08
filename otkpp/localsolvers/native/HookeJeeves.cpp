@@ -23,24 +23,24 @@ bool HookeJeeves::usesHessian() const
 
 NativeSolver::IterationStatus HookeJeeves::iterate_()
 {
-  vector< double > d = zero_vector< double >(n_);
+  vector< double > d = zero_vector< double >(setup_->n);
   double ft, fy;
   vector< double > yt;
   
-  for(int j = 0; j < n_; j++)
+  for(int j = 0; j < setup_->n; j++)
   {
     d[j] = 1.0;
     
-    fy = objFunc_(y_);
+    fy = setup_->f(y_);
     yt = y_ + delta_*d;
-    ft = objFunc_(yt);
+    ft = setup_->f(yt);
     
     if(!isnan(ft) && !isinf(ft) && ft < fy)
       y_ = yt;
     else
     {
       yt = y_ - delta_*d;
-      ft = objFunc_(yt);
+      ft = setup_->f(yt);
       if(ft < fy)
         y_ = yt;
     }
@@ -48,12 +48,12 @@ NativeSolver::IterationStatus HookeJeeves::iterate_()
     d[j] = 0.0;
   }
   
-  if(!isnan(fy) && !isinf(fy) && fy < state_.f)
+  if(!isnan(fy) && !isinf(fy) && fy < state_.fx)
   {
     xPlus_ = y_;
     y_ = xPlus_ + alpha_ * (xPlus_ - state_.x);
     state_.x = xPlus_;
-    state_.f = objFunc_(state_.x);
+    state_.fx = setup_->f(state_.x);
   }
   else
   {
@@ -69,14 +69,14 @@ NativeSolver::IterationStatus HookeJeeves::iterate_()
   return NativeSolver::ITERATION_CONTINUE;
 }
 
-void HookeJeeves::setup_(const Function &objFunc,
-                         const vector< double > &x0,
-                         const Solver::Setup &solverSetup,
-                         const Constraints &C)
+void HookeJeeves::doSetup_(const Function &objFunc,
+                           const vector< double > &x0,
+                           const Solver::Setup &solverSetup,
+                           const Constraints &C)
 {
-  NativeSolver::setup_(objFunc, x0, solverSetup, C);
+  NativeSolver::doSetup_(objFunc, x0, solverSetup, C);
   state_.x = x0;
-  state_.f = objFunc(x0);
+  state_.fx = objFunc(x0);
 
   delta_ = 1.0;
   eps_ = 1e-10;

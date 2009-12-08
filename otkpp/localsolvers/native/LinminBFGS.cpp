@@ -78,7 +78,7 @@ NativeSolver::IterationStatus LinminBFGS::iterate_()
   
   if(iterHistLen_ > 0)
   {
-    if(nIter_ >= 1)
+    if(state_.nIter >= 1)
       dirUpdater_.update(state_.g, d_);
     else
       d_ = -state_.g;
@@ -86,7 +86,7 @@ NativeSolver::IterationStatus LinminBFGS::iterate_()
   else
     d_ = -prod(S_, state_.g);
   
-  lineMinimizer_->minimize(state_.x, d_, 1.0, state_.f, state_.g,
+  lineMinimizer_->minimize(state_.x, d_, 1.0, state_.fx, state_.g,
                            alpha, xPlus_, fPlus_, gPlus_);
   
   p_ = xPlus_ - state_.x;
@@ -104,35 +104,35 @@ NativeSolver::IterationStatus LinminBFGS::iterate_()
   else
   {
     if(D <= 0.0)
-      S_ = identity_matrix< double >(n_);
+      S_ = identity_matrix< double >(setup_->n);
     else
       matrixUpdater_->update(p_, q_, S_);
   }
   
   state_.x = xPlus_;
-  state_.f = fPlus_;
+  state_.fx = fPlus_;
   state_.g = gPlus_;
   
   return NativeSolver::ITERATION_CONTINUE;
 }
 
-void LinminBFGS::setup_(const Function &objFunc,
-                        const vector< double > &x0,
-                        const Solver::Setup &solverSetup,
-                        const Constraints &C)
+void LinminBFGS::doSetup_(const Function &objFunc,
+                          const vector< double > &x0,
+                          const Solver::Setup &solverSetup,
+                          const Constraints &C)
 {
   const int n = objFunc.getN();
   
-  GradientSolver::setup_(objFunc, x0, solverSetup, C);
+  GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
   
   if(typeid(solverSetup) == typeid(const Solver::DefaultSetup &))
   {
     S_ = identity_matrix< double >(n);
     
     if(lmType_ == LinminBFGS::FLETCHER)
-      lineMinimizer_->setup(objFunc_, Fletcher::Setup());
+      lineMinimizer_->setup(setup_->f, Fletcher::Setup());
     else if(lmType_ == LinminBFGS::MORE_THUENTE)
-      lineMinimizer_->setup(objFunc_, MoreThuente::Setup());
+      lineMinimizer_->setup(setup_->f, MoreThuente::Setup());
   }
   else
   {
@@ -149,9 +149,9 @@ void LinminBFGS::setup_(const Function &objFunc,
       S_ = identity_matrix< double >(n);
     
     if(lmType_ == LinminBFGS::FLETCHER)
-      lineMinimizer_->setup(objFunc_, *setup.lmSetup);
+      lineMinimizer_->setup(setup_->f, *setup.lmSetup);
     else if(lmType_ == LinminBFGS::MORE_THUENTE)
-      lineMinimizer_->setup(objFunc_, *setup.lmSetup);
+      lineMinimizer_->setup(setup_->f, *setup.lmSetup);
   }
   
   if(iterHistLen_ > 0)

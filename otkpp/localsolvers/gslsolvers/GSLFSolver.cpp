@@ -57,7 +57,7 @@ const gsl_multimin_fminimizer *GSLFSolver::getGSLSolver() const
 
 unsigned int GSLFSolver::getM() const
 {
-  return n_ + 1;
+  return setup_->n + 1;
 }
 
 std::string GSLFSolver::getName() const
@@ -74,12 +74,12 @@ const vector< double > GSLFSolver::getX() const
 
 const matrix< double > GSLFSolver::getXArray() const
 {
-  matrix< double > X(n_, n_ + 1);
+  matrix< double > X(setup_->n, setup_->n + 1);
   
   nmsimplex_state_t *state = (nmsimplex_state_t *)gslSolver_->state;
   
-  for(int i = 0; i < n_; i++)
-    for(int j = 0; j < n_ + 1; j++)
+  for(int i = 0; i < setup_->n; i++)
+    for(int j = 0; j < setup_->n + 1; j++)
       X(i, j) = gsl_matrix_get(state->x1, j, i);
   
   return X;
@@ -88,7 +88,7 @@ const matrix< double > GSLFSolver::getXArray() const
 NativeSolver::IterationStatus GSLFSolver::iterate_()
 {
   int status = gsl_multimin_fminimizer_iterate(gslSolver_);
-  state_.f = gslSolver_->fval;
+  state_.fx = gslSolver_->fval;
   
   if(gsl_multimin_test_size(gslSolver_->size, 1e-12) == GSL_SUCCESS)
     return NativeSolver::ITERATION_SUCCESS;
@@ -99,15 +99,15 @@ NativeSolver::IterationStatus GSLFSolver::iterate_()
     return NativeSolver::ITERATION_CONTINUE;
 }
 
-void GSLFSolver::setup_(const Function &objFunc,
-                        const vector< double > &x0,
-                        const Solver::Setup &solverSetup,
-                        const Constraints &C)
+void GSLFSolver::doSetup_(const Function &objFunc,
+                          const vector< double > &x0,
+                          const Solver::Setup &solverSetup,
+                          const Constraints &C)
 {
   const int n = objFunc.getN();
   vector< double > stepSize;
   
-  NativeSolver::setup_(objFunc, x0, solverSetup);
+  NativeSolver::doSetup_(objFunc, x0, solverSetup);
   
   if(typeid(solverSetup) == typeid(Solver::DefaultSetup))
   {

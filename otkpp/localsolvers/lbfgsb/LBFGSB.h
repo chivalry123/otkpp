@@ -50,10 +50,10 @@ class LBFGSB : public GradientSolver
   std::vector< double > wa_;
   
   IterationStatus iterate_();
-  void setup_(const Function &objFunc,
-              const vector< double > &x0,
-              const Solver::Setup &solverSetup,
-              const Constraints &C);
+  void doSetup_(const Function &objFunc,
+                const vector< double > &x0,
+                const Solver::Setup &solverSetup,
+                const Constraints &C);
 };
 
 #define LBFGSB_H

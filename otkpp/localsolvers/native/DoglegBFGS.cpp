@@ -48,38 +48,38 @@ NativeSolver::IterationStatus DoglegBFGS::iterate_()
   /*std::cout<<"Hg: "<<Hg_<<std::endl;
   std::cout<<"Hg(correct): "<<prod(H_,g_)<<std::endl;*/
   
-  trSolver_.computeStep(state_.x, state_.f, state_.g, H_, p_, nonzeroStep, xPlus_, fPlus_);
+  trSolver_.computeStep(state_.x, state_.fx, state_.g, H_, p_, nonzeroStep, xPlus_, fPlus_);
   
   if(!nonzeroStep)
   {
-    H_ = identity_matrix< double >(n_);
+    H_ = identity_matrix< double >(setup_->n);
     return NativeSolver::ITERATION_SUCCESS;
   }
   
-  objFunc_.g(xPlus_, gPlus_);
+  setup_->f.g(xPlus_, gPlus_);
   q_ = gPlus_ - state_.g;
   
   matrixUpdater_.update(p_, q_, H_);
   //lmatrixUpdater_->updateVectors(p_, q_);
   
   state_.x = xPlus_;
-  state_.f = fPlus_;
+  state_.fx = fPlus_;
   state_.g = gPlus_;
   
   return NativeSolver::ITERATION_CONTINUE;
 }
 
-void DoglegBFGS::setup_(const Function &objFunc,
-                        const vector< double > &x0,
-                        const Solver::Setup &solverSetup,
-                        const Constraints &C)
+void DoglegBFGS::doSetup_(const Function &objFunc,
+                          const vector< double > &x0,
+                          const Solver::Setup &solverSetup,
+                          const Constraints &C)
 {
   const int n = objFunc.getN();
   
-  GradientSolver::setup_(objFunc, x0, solverSetup, C);
+  GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
   
   matrixUpdater_ = BFGSUpdater(BFGSUpdater::DIRECT);
-  trSolver_.setup(objFunc_);
+  trSolver_.setup(setup_->f);
   
   H_ = identity_matrix< double >(n);
   state_.g.resize(n);

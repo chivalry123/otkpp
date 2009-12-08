@@ -1,5 +1,5 @@
 
-#include "clone_ptr.hpp"
+//#include "clone_ptr.hpp"
 
 #include "CompoundStoppingCriterion.h"
 #include "ConjGradMT.h"
@@ -19,7 +19,7 @@
 #include "MGHTestFunction.h"
 #include "MNewton.h"
 #include "NativeSolver.h"
-#include "NEWUOA.h"
+//#include "NEWUOA.h"
 #include "SteihaugSR1.h"
 #include "PARTAN.h"
 #include "XDistToMinTest.h"

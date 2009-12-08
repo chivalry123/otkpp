@@ -68,10 +68,10 @@ class LMBM : public ExternalSolver
   bool usesGradient() const { return true; }
   bool usesHessian() const { return true; }
  private:
-  void setup_(const Function &objFunc,
-              const vector< double > &x0,
-              const Solver::Setup &solverSetup,
-              const Constraints &C) { }
+  void doSetup_(const Function &objFunc,
+                const vector< double > &x0,
+                const Solver::Setup &solverSetup,
+                const Constraints &C) { }
 };
 
 #define LMBMSOLVER_H

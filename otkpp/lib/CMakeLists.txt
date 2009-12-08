@@ -62,20 +62,21 @@ ENDIF(WITH_LIBMATHEVAL)
 SET(OTKPP_FORTRAN_SRCS "../localsolvers/lbfgsb/LBFGSB.cpp"
                        "../localsolvers/lmbm/func_wrapper.cpp"
                        "../localsolvers/lmbm/LMBM.cpp"
-                       "../localsolvers/newuoa/NEWUOA.cpp"
-                       "../localsolvers/newuoa/func_wrapper.cpp"
+                       #"../localsolvers/newuoa/NEWUOA.cpp"
+                       #"../localsolvers/newuoa/func_wrapper.cpp"
                        "../localsolvers/lbfgsb/routines.f"
                        "../localsolvers/lmbm/lmbm.f"
                        "../localsolvers/lmbm/lmsub.f"
                        "../localsolvers/lmbm/matcal.f"
                        "../localsolvers/lmbm/tlmbm.f"
                        "../localsolvers/lmbm/tnsunc.f"
-                       "../localsolvers/newuoa/bigden.f"
-                       "../localsolvers/newuoa/biglag.f"
-                       "../localsolvers/newuoa/newuoa.f"
-                       "../localsolvers/newuoa/newuob.f"
-                       "../localsolvers/newuoa/trsapp.f"
-                       "../localsolvers/newuoa/update.f")
+                       #"../localsolvers/newuoa/bigden.f"
+                       #"../localsolvers/newuoa/biglag.f"
+                       #"../localsolvers/newuoa/newuoa.f"
+                       #"../localsolvers/newuoa/newuob.f"
+                       #"../localsolvers/newuoa/trsapp.f"
+                       #"../localsolvers/newuoa/update.f"
+                       )
 
 INCLUDE_DIRECTORIES(${OTKPP_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIR})
 

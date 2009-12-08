@@ -41,10 +41,10 @@ class ConjGradMT : public GradientSolver
   Type type_;
   
   IterationStatus iterate_();
-  void setup_(const Function &objFunc,
-              const vector< double > &x0,
-              const Solver::Setup &solverSetup,
-              const Constraints &C);
+  void doSetup_(const Function &objFunc,
+                const vector< double > &x0,
+                const Solver::Setup &solverSetup,
+                const Constraints &C);
 };
 
 #define CONJGRADMT_H

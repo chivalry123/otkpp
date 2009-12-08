@@ -20,8 +20,9 @@ class Solver
   struct Setup
   {
     boost::shared_ptr< Constraints > C;
-    unsigned int m;
-    unsigned int n;
+    Function f;
+    int m;
+    int n;
     Function objFunc;
     
     virtual Setup *clone() const = 0;
@@ -29,7 +30,7 @@ class Solver
     /// Is this solver setup compatible with the given solver.
     virtual bool isCompatibleWith(const Solver &s) const = 0;
   };
-
+  
   /// Defines a default solver setup specifying that default parameters are used.
   struct DefaultSetup : public Cloneable< DefaultSetup, Setup >
   {
@@ -45,7 +46,6 @@ class Solver
   {
     bool converged;                         ///< was the chosen stopping criterion satisfied
     double fMin;                            ///< final function value
-    //std::list< vector< double > > iterates; ///< iteration points for each iteration step
     unsigned int numFuncEval;               ///< the number of used function evaluations
     unsigned int numGradEval;               ///< the number of used gradient evaluations
     unsigned int numIter;                   ///< the number of used iterations
@@ -63,12 +63,12 @@ class Solver
   virtual unsigned int getM() const { return 1; }
   
   /// Returns the number of dimensions of the problem associated with this solver.
-  unsigned int getN() const { return n_; }
+  unsigned int getN() const { return setup_->n; }
   
   /// Returns the name of this solver.
   virtual std::string getName() const = 0;
   
-  /// Is this solver a native or third-party implementation.
+  /// Is this solver implemented natively in C/C++, or does it call some external routine.
   virtual bool isExternalSolver() const { return false; }
   
   /// Initializes this solver.
@@ -110,13 +110,12 @@ class Solver
   /// Does this solver use Hessian information.
   virtual bool usesHessian() const = 0;
  protected:
-  int n_;
-  Function objFunc_;
+  boost::shared_ptr< Solver::Setup > setup_;
   
-  virtual void setup_(const Function &objFunc,
-                      const vector< double > &x0,
-                      const Setup &solverSetup,
-                      const Constraints &C) = 0;
+  virtual void doSetup_(const Function &objFunc,
+                        const vector< double > &x0,
+                        const Setup &solverSetup,
+                        const Constraints &C) = 0;
 };
 
 #define SOLVER_H

@@ -34,7 +34,7 @@ const vector< double > NativeSolver::getX() const
 
 const matrix< double > NativeSolver::getXArray() const
 {
-  matrix< double > X(n_, 1);
+  matrix< double > X(setup_->n, 1);
   matrix_column< matrix< double > >(X, 0) = getState().x;
   
   return X;
@@ -42,7 +42,7 @@ const matrix< double > NativeSolver::getXArray() const
 
 double NativeSolver::getFVal() const
 {
-  return getState().f;
+  return getState().fx;
 }
 
 const vector< double > NativeSolver::getGradient() const
@@ -57,22 +57,22 @@ const matrix< double > NativeSolver::getHessian() const
 
 unsigned int NativeSolver::getNumIter() const
 {
-  return nIter_;
+  return getState().nIter;
 }
 
 unsigned int NativeSolver::getNumFuncEval() const
 {
-  return objFunc_.getFuncEvalCounter();
+  return setup_->f.getFuncEvalCounter();
 }
 
 unsigned int NativeSolver::getNumGradEval() const
 {
-  return objFunc_.getGradEvalCounter();
+  return setup_->f.getGradEvalCounter();
 }
 
 unsigned int NativeSolver::getNumHessEval() const
 {
-  return objFunc_.getHessEvalCounter();
+  return setup_->f.getHessEvalCounter();
 }
 
 NativeSolver::State &NativeSolver::getState_()
@@ -83,7 +83,7 @@ NativeSolver::State &NativeSolver::getState_()
 NativeSolver::IterationStatus NativeSolver::iterate()
 {
   NativeSolver::IterationStatus status = iterate_();
-  nIter_++;
+  getState_().nIter++;
   return status;
 }
 
@@ -169,7 +169,7 @@ boost::shared_ptr< Solver::Results > NativeSolver::solve(Function &objFunc,
   
   results->setup->C       = boost::shared_ptr< Constraints >(C.clone());
   results->setup->m       = getM();
-  results->setup->n       = n_;
+  results->setup->n       = objFunc.getN();
   results->setup->objFunc = objFunc;
   
   if(timeTest == true)
@@ -190,12 +190,12 @@ boost::shared_ptr< Solver::Results > NativeSolver::solve(Function &objFunc,
   state_ = new NativeSolver::State();
 }*/
 
-void NativeSolver::setup_(const Function &objFunc,
-                          const vector< double > &x0,
-                          const Solver::Setup &solverSetup,
-                          const Constraints &C)
+void NativeSolver::doSetup_(const Function &objFunc,
+                            const vector< double > &x0,
+                            const Solver::Setup &solverSetup,
+                            const Constraints &C)
 {
   getState_().x = x0;
-  getState_().f = objFunc(x0);
-  nIter_ = 0;
+  getState_().fx = objFunc(x0);
+  getState_().nIter = 0;
 }

@@ -86,11 +86,11 @@ class GSLFDFSolver : public GradientSolver
   State state_;
   const gsl_multimin_fdfminimizer_type *type_;
   
-  NativeSolver::IterationStatus iterate_();
-  void setup_(const Function &objFunc,
+  void doSetup_(const Function &objFunc,
               const vector< double > &x0,
               const Solver::Setup &solverSetup = DefaultSetup(),
               const Constraints &C = NoConstraints());
+  NativeSolver::IterationStatus iterate_();
 };
 
 #define GSLFDFSOLVER_H

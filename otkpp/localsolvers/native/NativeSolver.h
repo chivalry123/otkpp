@@ -1,7 +1,7 @@
 
 #ifndef NATIVESOLVER_H
 
-#include <otkpp/lib/clone_ptr.hpp>
+//#include <otkpp/lib/clone_ptr.hpp>
 #include <otkpp/localsolvers/Solver.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
@@ -29,16 +29,25 @@ class NativeSolver : public Solver
     ITERATION_OUT_OF_CONTROL  ///< iteration diverges or has reached infinity
   };
   
+  /// Defines the state of the solver.
   struct State
   {
-    double f;
-    vector< double > x;
-    matrix< double > X;
+    double fx;            ///< the function value \f$f(\mathbf{x}_{k})\f$ at the current iterate
+    unsigned int nIter;   ///< the number of iterations used so far
+    vector< double > x;   ///< the current iterate \f$\mathbf{x}_{k}\f$
+    matrix< double > X;   ///< the current iterates \f$\mathbf{x}_{k}^{i}\f$, \f$i=1,\dots,m\f$ (if more than one point is used at each step)
     
     virtual ~State() { }
     virtual State *clone() const = 0;
   };
   
+  /// Defines the results produced by the solver.
+  /**
+   * In addition to the information produced by a 
+   * generic solver, this class of solvers also 
+   * stores the state of the solver after each 
+   * iteration step.
+   */
   struct Results : public Solver::Results
   {
     std::vector< boost::shared_ptr< State > > states;
@@ -100,14 +109,12 @@ class NativeSolver : public Solver
                                              const Constraints &C = NoConstraints(),
                                              bool timeTest = false);
  protected:
-  unsigned int nIter_;
-  
+  virtual void doSetup_(const Function &objFunc,
+                        const vector< double > &x0,
+                        const Setup &solverSetup = DefaultSetup(),
+                        const Constraints &C = NoConstraints());
   State &getState_();
   virtual IterationStatus iterate_() = 0;
-  virtual void setup_(const Function &objFunc,
-                      const vector< double > &x0,
-                      const Setup &solverSetup = DefaultSetup(),
-                      const Constraints &C = NoConstraints());
 };
 
 #define NATIVESOLVER_H

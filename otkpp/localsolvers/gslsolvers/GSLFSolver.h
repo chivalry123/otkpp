@@ -60,11 +60,11 @@ class GSLFSolver : public NativeSolver
   State state_;
   const gsl_multimin_fminimizer_type *type_;
   
+  void doSetup_(const Function &objFunc,
+                const vector< double > &x0,
+                const Solver::Setup &solverSetup = DefaultSetup(),
+                const Constraints &C = NoConstraints());
   NativeSolver::IterationStatus iterate_();
-  void setup_(const Function &objFunc,
-              const vector< double > &x0,
-              const Solver::Setup &solverSetup = DefaultSetup(),
-              const Constraints &C = NoConstraints());
 };
 
 #define GSLFSOLVER_H

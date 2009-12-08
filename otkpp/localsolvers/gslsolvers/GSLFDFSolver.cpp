@@ -78,7 +78,7 @@ const vector< double > GSLFDFSolver::getX() const
 NativeSolver::IterationStatus GSLFDFSolver::iterate_()
 {
   int status = gsl_multimin_fdfminimizer_iterate(gslSolver_);
-  state_.f = gslSolver_->f;
+  state_.fx = gslSolver_->f;
   
   // TODO: error codes
   if(status == GSL_ENOPROG)
@@ -87,15 +87,15 @@ NativeSolver::IterationStatus GSLFDFSolver::iterate_()
     return NativeSolver::ITERATION_CONTINUE;
 }
 
-void GSLFDFSolver::setup_(const Function &objFunc,
-                          const vector< double > &x0,
-                          const Solver::Setup &solverSetup,
-                          const Constraints &C)
+void GSLFDFSolver::doSetup_(const Function &objFunc,
+                            const vector< double > &x0,
+                            const Solver::Setup &solverSetup,
+                            const Constraints &C)
 {
   const int n = objFunc.getN();
   double stepSize, tol;
   
-  GradientSolver::setup_(objFunc, x0, solverSetup, C);
+  GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
   
   if(typeid(solverSetup) == typeid(Solver::DefaultSetup))
   {
@@ -137,7 +137,7 @@ void GSLFDFSolver::setup_(const Function &objFunc,
   gslFunction_.df     = &gslutils::df;
   gslFunction_.fdf    = &gslutils::fdf;
   
-  gslutils::setFunction(objFunc_);
+  gslutils::setFunction(setup_->f);
   gsl_vector *x0_ = gsl_vector_alloc(n);
   gslutils::BoostToGSLVector(x0, x0_);
   gsl_multimin_fdfminimizer_set(gslSolver_, &gslFunction_, x0_, stepSize, tol);

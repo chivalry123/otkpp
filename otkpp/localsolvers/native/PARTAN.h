@@ -29,11 +29,11 @@ class PARTAN : public GradientSolver
   State state_;
   vector< double > y_;
   
+  void doSetup_(const Function &objFunc,
+                const vector< double > &x0,
+                const Solver::Setup &solverSetup,
+                const Constraints &C);
   IterationStatus iterate_();
-  void setup_(const Function &objFunc,
-              const vector< double > &x0,
-              const Solver::Setup &solverSetup,
-              const Constraints &C);
 };
 
 #define PARTAN_H

@@ -8,7 +8,8 @@
 
 using namespace boost::python;
 
-struct BoundConstraints_Python : public Cloneable< BoundConstraints_Python, Constraints >
+// DEPRECATED
+/*struct BoundConstraints_Python : public Cloneable< BoundConstraints_Python, Constraints >
 {
   list types;
   list L;
@@ -38,12 +39,12 @@ struct BoundConstraints_Python : public Cloneable< BoundConstraints_Python, Cons
     }
     return BC;
   }
-};
+};*/
 
 // DEPRECATED
 const Constraints *getOTKConstraintsInstance(const Constraints &C)
 {
-  if(typeid(C) == typeid(BoundConstraints_Python &))
+  /*if(typeid(C) == typeid(BoundConstraints_Python &))
   {
     const BoundConstraints_Python &BC = 
       dynamic_cast< const BoundConstraints_Python & >(C);
@@ -52,7 +53,7 @@ const Constraints *getOTKConstraintsInstance(const Constraints &C)
   else if(typeid(C) == typeid(NoConstraints &))
     return new NoConstraints();
   else
-    throw std::invalid_argument("Unsupported constraints type.");
+    throw std::invalid_argument("Unsupported constraints type.");*/
 }
 
 void init_constraints()

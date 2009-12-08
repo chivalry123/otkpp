@@ -57,7 +57,7 @@ void init_solvers()
   {
     scope nativesolver_scope(class_< NativeSolver, bases< Solver >, boost::noncopyable >("NativeSolver", no_init));
     class_< NativeSolver::State, boost::noncopyable >("State", no_init)
-      .def_readonly("f", &NativeSolver::State::f)
+      .def_readonly("fx", &NativeSolver::State::fx)
       .add_property("x", make_getter(&NativeSolver::State::x, return_value_policy< return_by_value >()))
       .add_property("X", make_getter(&NativeSolver::State::X, return_value_policy< return_by_value >()));
     class_< NativeSolver::Results, bases< Solver::Results > >("Results")

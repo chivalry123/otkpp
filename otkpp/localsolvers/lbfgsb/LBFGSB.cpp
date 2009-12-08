@@ -49,26 +49,26 @@ NativeSolver::IterationStatus LBFGSB::iterate_()
 {
   int iprint = -1;
   
-  setulb_(&n_, &m_, &state_.x[0], &constraints_.L[0], &constraints_.U[0],
-          &nbd_[0], &state_.f, &state_.g[0], &factr_, &pgtol_, &wa_[0],
+  setulb_(&setup_->n, &m_, &state_.x[0], &constraints_.L[0], &constraints_.U[0],
+          &nbd_[0], &state_.fx, &state_.g[0], &factr_, &pgtol_, &wa_[0],
           &iwa_[0], task_, &iprint, csave_, lsave_, isave_,
           dsave_, 60, 60);
   
   if(task_[0] == 'F' && task_[1] == 'G')
   {
-    state_.f = objFunc_(state_.x);
-    objFunc_.g(state_.x, state_.g);
+    state_.fx = setup_->f(state_.x);
+    setup_->f.g(state_.x, state_.g);
   }
   
   return NativeSolver::ITERATION_CONTINUE;
 }
 
-void LBFGSB::setup_(const Function &objFunc,
-                    const vector< double > &x0,
-                    const Solver::Setup &solverSetup,
-                    const Constraints &C)
+void LBFGSB::doSetup_(const Function &objFunc,
+                      const vector< double > &x0,
+                      const Solver::Setup &solverSetup,
+                      const Constraints &C)
 {
-  GradientSolverBase::setup_(objFunc, x0, solverSetup, C);
+  GradientSolverBase::doSetup_(objFunc, x0, solverSetup, C);
   
   if(typeid(solverSetup) == typeid(const Solver::DefaultSetup &))
   {
@@ -81,12 +81,12 @@ void LBFGSB::setup_(const Function &objFunc,
     m_ = setup.m;
   }
   
-  state_.g.resize(n_);
+  state_.g.resize(setup_->n);
   
-  nbd_.resize(n_);
+  nbd_.resize(setup_->n);
   if(typeid(C) == typeid(const NoConstraints &))
   {
-    for(int i = 0; i < n_; i++)
+    for(int i = 0; i < setup_->n; i++)
       nbd_[i] = 0;
   }
   else if(typeid(C) == typeid(const BoundConstraints &))
@@ -94,7 +94,7 @@ void LBFGSB::setup_(const Function &objFunc,
     const BoundConstraints &BC = 
       dynamic_cast< const BoundConstraints & >(C);
     constraints_ = BC;
-    for(int i = 0; i < n_; i++)
+    for(int i = 0; i < setup_->n; i++)
     {
       if(BC.types[i] == BoundConstraints::NONE)
         nbd_[i] = 0;
@@ -111,13 +111,13 @@ void LBFGSB::setup_(const Function &objFunc,
   
   factr_ = 0.0; //1e6;
   pgtol_ = 0.0; //1e-5;
-  wa_.resize((2*m_ + 4)*n_ + 12*m_*m_ + 12*m_);
-  iwa_.resize(3*n_);
+  wa_.resize((2*m_ + 4)*setup_->n + 12*m_*m_ + 12*m_);
+  iwa_.resize(3*setup_->n);
   
   csave_[0] = '\0';
   strcpy(task_, "START");
   for(int i = 5; i < 60; i++)
     task_[i] = ' ';
   
-  objFunc_.g(state_.x, state_.g);
+  setup_->f.g(state_.x, state_.g);
 }

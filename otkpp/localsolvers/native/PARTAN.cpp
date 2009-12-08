@@ -34,13 +34,13 @@ NativeSolver::IterationStatus PARTAN::iterate_()
   if(iterState_ == 1 || iterState_ == 2)
   {
     d_ = -state_.g;
-    lineMinimizer_->minimize(state_.x, d_, 1.0, state_.f, state_.g,
+    lineMinimizer_->minimize(state_.x, d_, 1.0, state_.fx, state_.g,
                              alpha, xPlus_, fPlus_, gPlus_);
     
     if(iterState_ == 1)
     {
       xMinus_ = state_.x;
-      fMinus_ = state_.f;
+      fMinus_ = state_.fx;
       gMinus_ = state_.g;
     }
   }
@@ -50,7 +50,7 @@ NativeSolver::IterationStatus PARTAN::iterate_()
     lineMinimizer_->minimize(xMinus_, d_, 1.0, fMinus_, gMinus_,
                              alpha, xPlus_, fPlus_, gPlus_);
     j_++;
-    if(j_ == n_)
+    if(j_ == setup_->n)
     {
       j_ = 1;
       iterState_ = 0;
@@ -68,19 +68,19 @@ NativeSolver::IterationStatus PARTAN::iterate_()
     iterState_ = 1;
 
   state_.x = xPlus_;
-  state_.f = fPlus_;
+  state_.fx = fPlus_;
   state_.g = gPlus_;
   
   return NativeSolver::ITERATION_CONTINUE;
 }
 
-void PARTAN::setup_(const Function &objFunc,
-                    const vector< double > &x0,
-                    const Solver::Setup &solverSetup,
-                    const Constraints &C)
+void PARTAN::doSetup_(const Function &objFunc,
+                      const vector< double > &x0,
+                      const Solver::Setup &solverSetup,
+                      const Constraints &C)
 {
-  GradientSolver::setup_(objFunc, x0, solverSetup, C);
-  lineMinimizer_->setup(objFunc_, MoreThuente::Setup());
+  GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
+  lineMinimizer_->setup(setup_->f, MoreThuente::Setup());
   
   j_ = 1;
   d_ = -state_.g;

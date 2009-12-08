@@ -40,13 +40,13 @@ NativeSolver::IterationStatus ConjGradMT::iterate_()
   }
   
   alpha0 = LineMinimizer::fletcherInitStep(gd, deltaF_);
-  lineMinimizer_.minimize(state_.x, d_, alpha0, state_.f, state_.g,
+  lineMinimizer_.minimize(state_.x, d_, alpha0, state_.fx, state_.g,
                           alpha, xPlus_, fPlus_, gPlus_);
   
   if(type_ == FLETCHER_REEVES)
   {
     i_++;
-    if(i_ == n_ + 1)
+    if(i_ == setup_->n + 1)
     {
       gamma = 0.0;
       i_ = 0;
@@ -61,22 +61,22 @@ NativeSolver::IterationStatus ConjGradMT::iterate_()
   }
   d_ = -gPlus_ + gamma*d_;
   
-  deltaF_ = state_.f - fPlus_;
+  deltaF_ = state_.fx - fPlus_;
   
   state_.x = xPlus_;
-  state_.f = fPlus_;
+  state_.fx = fPlus_;
   state_.g = gPlus_;
   
   return NativeSolver::ITERATION_CONTINUE;
 }
 
-void ConjGradMT::setup_(const Function &objFunc,
-                        const vector< double > &x0,
-                        const Solver::Setup &solverSetup,
-                        const Constraints &C)
+void ConjGradMT::doSetup_(const Function &objFunc,
+                          const vector< double > &x0,
+                          const Solver::Setup &solverSetup,
+                          const Constraints &C)
 {
-  GradientSolver::setup_(objFunc, x0, solverSetup, C);
-  lineMinimizer_.setup(objFunc_, MoreThuente::Setup());
+  GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
+  lineMinimizer_.setup(setup_->f, MoreThuente::Setup());
   d_ = -state_.g;
   deltaF_ = 0.0;
   i_ = 0;

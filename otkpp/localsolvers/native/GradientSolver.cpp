@@ -24,12 +24,12 @@ bool GradientSolver::hasBuiltInStoppingCriterion() const
   return false;
 }
 
-void GradientSolver::setup_(const Function &objFunc,
-                            const vector< double > &x0,
-                            const Solver::Setup &solverSetup,
-                            const Constraints &C)
+void GradientSolver::doSetup_(const Function &objFunc,
+                              const vector< double > &x0,
+                              const Solver::Setup &solverSetup,
+                              const Constraints &C)
 {
-  GradientSolverBase::setup_(objFunc, x0, solverSetup, C);
+  GradientSolverBase::doSetup_(objFunc, x0, solverSetup, C);
   getState_().g.resize(objFunc.getN());
   objFunc.g(x0, getState_().g);
 }

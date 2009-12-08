@@ -28,11 +28,11 @@ class GradientSolver : public GradientSolverBase
    
   GradientSolver(bool useFDiffGradient = false);
   
+  virtual void doSetup_(const Function &objFunc,
+                        const vector< double > &x0,
+                        const Solver::Setup &solverSetup,
+                        const Constraints &C);
   State &getState_();
-  virtual void setup_(const Function &objFunc,
-                      const vector< double > &x0,
-                      const Solver::Setup &solverSetup,
-                      const Constraints &C);
 };
 
 #define GRADIENTSOLVER_H
