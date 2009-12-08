@@ -25,7 +25,7 @@ class LinInterp
   bool updatePoint(const vector< double > &x, int j);
   bool updatePoint(const vector< double > &x, double fx, int j);
  private:
-  Function f_;
+  const Function *f_;
   int n_, m_;
   
   std::vector< vector< double > > X_;

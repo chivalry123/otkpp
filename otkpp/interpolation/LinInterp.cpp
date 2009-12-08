@@ -9,7 +9,7 @@ LinInterp::LinInterp(const Function &f, const vector< double > &xb, double delta
 {
   int i;
   
-  f_ = f;
+  f_ = &f;
   n_ = f.getN();
   m_ = n_+1;
   
@@ -87,9 +87,9 @@ void LinInterp::testInvariants()
   
   for(i = 0; i < m_; i++)
   {
-    if(f_(X_[i]) != F_[i])
+    if((*f_)(X_[i]) != F_[i])
       throw std::runtime_error("invalid function value");
-    if(f_(X_[i]) < F_[xiLowest_])
+    if((*f_)(X_[i]) < F_[xiLowest_])
       throw std::runtime_error("invalid best point");
     if(fabs(eval(X_[i] - xb_) - F_[i]) > 1e-3)
     {
@@ -130,7 +130,7 @@ bool LinInterp::updatePoint(const vector< double > &x, double fx, int j)
   double m;
   
   if(isnan(fx))
-    fx = f_(x);
+    fx = (*f_)(x);
   
   c2 = evalLagrangian(j, dx);
   
@@ -169,7 +169,7 @@ bool LinInterp::updatePoint(const vector< double > &x, double fx, int j)
 
 void LinInterp::initialize_(const vector< double > &xb, double delta)
 {
-  double fxb = f_(xb);
+  double fxb = (*f_)(xb);
   int i, j;
   
   xb_ = xb;
@@ -180,7 +180,7 @@ void LinInterp::initialize_(const vector< double > &xb, double delta)
   {
     X_[i] = xb;
     X_[i][i-1] += delta;
-    F_[i] = f_(X_[i]);
+    F_[i] = (*f_)(X_[i]);
   }
   
   c_ = fxb;

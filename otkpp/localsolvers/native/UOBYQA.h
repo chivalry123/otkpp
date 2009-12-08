@@ -12,7 +12,6 @@ class UOBYQA : public NativeSolver
  public:
   std::string getName() const;
   bool hasBuiltInStoppingCriterion() const;
-  bool isGSLSolver() const;
   bool usesGradient() const;
   bool usesHessian() const;
  private:
