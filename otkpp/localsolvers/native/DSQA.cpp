@@ -168,7 +168,7 @@ NativeSolver::IterationStatus DSQA::iterate_()
   if(fImproved)
     state_.model.setOrigin(state_.model.getLowestIndex());
   
-  state_.x = state_.model.getLowestX();
+  state_.x  = state_.model.getLowestX();
   state_.fx = state_.model.getLowestF();
   
   //std::cout<<"niter: "<<nIter_<<" x: "<<x_<<" dx: "<<sqrt(maxDistSq)<<std::endl;

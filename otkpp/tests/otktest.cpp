@@ -15,6 +15,7 @@
 #endif
 #include "HookeJeeves.h"
 #include "LinminBFGS.h"
+#include "LRWWSimplex.h"
 #include "MaxNumIterTest.h"
 #include "MGHTestFunction.h"
 #include "MNewton.h"
@@ -49,6 +50,7 @@ static void initAlgorithmList(std::list< NativeSolver * > &algoList)
 #endif
   algoList.push_back(new DSQA());
   //algoList.push_back(new DSLA());
+  algoList.push_back(new LRWWSimplex());
   algoList.push_back(new DoglegBFGS());
   algoList.push_back(new SteihaugSR1());
   algoList.push_back(new LinminBFGS(LinminBFGS::FLETCHER));
