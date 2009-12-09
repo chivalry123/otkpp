@@ -7,7 +7,7 @@
 class Fletcher : public LineMinimizer
 {
  public:
-  struct Setup : public LineMinimizer::Setup
+  struct Setup : public Cloneable< Setup, LineMinimizer::Setup >
   {
     double eta;
     double mu;
@@ -15,7 +15,6 @@ class Fletcher : public LineMinimizer
     double tau;
   
     Setup(double eta = 0.1, double mu = 0.01, double chi = 9.0, double tau = 0.05);
-    const LineMinimizer::Setup *clone() const;
     bool isCompatibleWith(const LineMinimizer &s) const;
   };
 

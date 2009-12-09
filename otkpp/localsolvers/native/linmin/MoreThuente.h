@@ -7,7 +7,7 @@
 class MoreThuente : public LineMinimizer
 {
  public:
-  struct Setup : public LineMinimizer::Setup
+   struct Setup : public Cloneable< Setup, LineMinimizer::Setup >
   {
     double eta;
     double mu;
@@ -15,7 +15,6 @@ class MoreThuente : public LineMinimizer
     double chi;
     
     Setup(double eta = 0.1, double mu = 0.001, double gamma = 0.0, double chi = 1e-2);
-    const LineMinimizer::Setup *clone() const;
     bool isCompatibleWith(const LineMinimizer &s) const;
   };
 

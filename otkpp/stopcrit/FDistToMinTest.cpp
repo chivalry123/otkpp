@@ -4,6 +4,16 @@
 FDistToMinTest::FDistToMinTest(double fMin, double eps, bool relative) : 
   fMin_(fMin), eps_(eps), relative_(relative) { }
 
+double FDistToMinTest::getEps() const
+{
+  return eps_;
+}
+
+double FDistToMinTest::getFMin() const
+{
+  return fMin_;
+}
+
 double FDistToMinTest::getTestValue(const NativeSolver &s) const
 {
   if(relative_ == false)
@@ -13,6 +23,11 @@ double FDistToMinTest::getTestValue(const NativeSolver &s) const
     double v = (s.getFVal() - fMin_) / fabs(fMin_);
     return v > 0.0 ? v : NAN;
   }
+}
+
+bool FDistToMinTest::isRelative() const
+{
+  return relative_;
 }
 
 bool FDistToMinTest::test(const NativeSolver &s) const

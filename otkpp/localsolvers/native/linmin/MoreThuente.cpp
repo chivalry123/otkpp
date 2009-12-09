@@ -8,11 +8,6 @@
 MoreThuente::Setup::Setup(double eta, double mu, double gamma, double chi) : 
   eta(eta), mu(mu), gamma(gamma), chi(chi) { }
 
-const LineMinimizer::Setup *MoreThuente::Setup::clone() const
-{
-  return new MoreThuente::Setup(*this);
-}
-
 bool MoreThuente::Setup::isCompatibleWith(const LineMinimizer &s) const
 {
   return (typeid(s) == typeid(const MoreThuente &));

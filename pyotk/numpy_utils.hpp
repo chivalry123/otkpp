@@ -4,6 +4,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/python.hpp>
+#include <numpy/ndarrayobject.h>
 
 using namespace boost::numeric::ublas;
 using namespace boost::python;
@@ -27,6 +28,44 @@ namespace numpy_utils
   {
     return make_array(m, n, 0.0);
   }
+  
+  struct ndarray_to_matrix
+  {
+    ndarray_to_matrix()
+    {
+      boost::python::converter::registry::push_back(
+        &convertible, &construct,
+        boost::python::type_id< matrix< double > >());
+    }
+    
+    static void *convertible(PyObject *obj_ptr)
+    {
+      /*if(!PyArray_Check(obj_ptr))
+        return NULL;*/
+      // TODO: check that the number of dimensions is two
+      return obj_ptr;
+    }
+    
+    static void construct(
+      PyObject *obj_ptr,
+      boost::python::converter::rvalue_from_python_stage1_data *data)
+    {
+      const int m = PyArray_DIM(obj_ptr, 0);
+      const int n = PyArray_DIM(obj_ptr, 1);
+      
+      void *storage = (
+        (boost::python::converter::rvalue_from_python_storage< matrix< double > > *)
+        data)->storage.bytes;
+      new (storage) matrix< double >(m, n);
+      matrix< double > *M = (matrix< double > *)storage;
+      double *array_data = (double *)PyArray_DATA(obj_ptr);
+      
+      for(int i = 0; i < m; i++)
+        for(int j = 0; j < n; j++)
+          (*M)(i, j) = array_data[j + i*n];
+      data->convertible = storage;
+    }
+  };
   
   struct matrix_to_ndarray
   {

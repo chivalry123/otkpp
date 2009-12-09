@@ -2,6 +2,7 @@
 #ifndef LINEMINIMIZER_H
 
 #include <otkpp/function/Function.h>
+#include <otkpp/lib/Cloneable.h>
 
 #include <boost/numeric/ublas/vector.hpp>
 
@@ -18,14 +19,13 @@ class LineMinimizer
   {
     virtual ~Setup() { }
   
-    virtual const Setup *clone() const = 0;
+    virtual Setup *clone() const = 0;
     virtual bool isCompatibleWith(const LineMinimizer &s) const = 0;
   };
 
   /// Defines the default parameters for a line minimizer.
-  struct DefaultSetup : public Setup
+  struct DefaultSetup : public Cloneable< DefaultSetup, Setup >
   {
-    const Setup *clone() const { return new DefaultSetup(); }
     bool isCompatibleWith(const LineMinimizer &s) const { return true; }
   };
   

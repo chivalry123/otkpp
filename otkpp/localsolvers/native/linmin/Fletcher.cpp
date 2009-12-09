@@ -11,11 +11,6 @@ static const int J = 10;
 Fletcher::Setup::Setup(double eta, double mu, double chi, double tau) : 
   eta(eta), mu(mu), chi(chi), tau(tau) { }
 
-const LineMinimizer::Setup *Fletcher::Setup::clone() const
-{
-  return new Fletcher::Setup(*this);
-}
-
 bool Fletcher::Setup::isCompatibleWith(const LineMinimizer &s) const
 {
   return (typeid(s) == typeid(const Fletcher &));

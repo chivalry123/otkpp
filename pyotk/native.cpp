@@ -237,6 +237,8 @@ static void init_converters()
 {
   to_python_converter< vector< double >, numpy_utils::vector_to_tuple >();
   to_python_converter< matrix< double >, numpy_utils::matrix_to_ndarray >();
+  numpy_utils::tuple_to_vector();
+  numpy_utils::ndarray_to_matrix();
   std_utils::tuple_to_vector< double >();
   std_utils::tuple_to_vector< std::string >();
   std_utils::tuple_to_vector< BoundConstraints::BoundType >();
@@ -256,7 +258,6 @@ BOOST_PYTHON_MODULE(native)
   init_solvers();
   init_stop_crit();
   init_test_functions();
-  numpy_utils::tuple_to_vector();
   
   class_< SolverInfo >("solver_info")
     .def_readonly("m", &SolverInfo::m);

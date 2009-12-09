@@ -18,11 +18,14 @@ class ConjGradMT : public GradientSolver
   /// Defines the type of the algorithm.
   enum Type
   {
-    FLETCHER_REEVES, ///< Fletcher-Reeves
-    POLAK_RIBIERE    ///< Polak-Ribiere
+    FLETCHER_REEVES,
+    POLAK_RIBIERE
   };
   
-  struct State : public Cloneable< State, GradientSolver::State > { };
+  struct State : public Cloneable< State, GradientSolver::State >
+  {
+    vector< double > d;
+  };
   
   /// Constructs a new conjugate gradient solver of the given type.
   ConjGradMT(Type type);
@@ -33,7 +36,6 @@ class ConjGradMT : public GradientSolver
   bool usesHessian() const;
  private:
   int c_;
-  vector< double > d_;
   double deltaF_;
   int i_;
   MoreThuente lineMinimizer_;

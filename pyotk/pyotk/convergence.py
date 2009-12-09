@@ -36,10 +36,7 @@ Otherwise, a ValueError is raised."""
 		max_used_iter = 0
 		si = 0
 		for s in S:
-			#results = minimize(s, DefaultSolverSetup(),
-			                   #p.otk_instance, stopcrit,
-			                   #p.x0, NoConstraints(), 0, False)
-			results = s.solve(p.otk_instance, p.x0, stopcrit, Solver.DefaultSetup(), NoConstraints(), False)
+			results = s.solve(p.f, p.x0, stopcrit, Solver.DefaultSetup(), NoConstraints(), False)
 			
 			for i in range(0, results.num_iter):
 				R[i, si] = norm(array(results.states[i].x) - p.x_min)
@@ -86,9 +83,9 @@ name strings:
 			if q == 'disttominimizer':
 				Y[si, qi] = norm(s.x - results.x_min)
 			elif q == 'funcval':
-				Y[si, qi] = s.f
+				Y[si, qi] = s.fx
 			elif q == 'gradnorm':
-				Y[si, qi] = norm(s.g)
+				Y[si, qi] = norm(s.gx)
 			elif q == 'simplexvolume':
 				Y[si, qi] = s.V
 		qi = qi + 1

@@ -15,6 +15,7 @@ class GradientSolver : public GradientSolverBase
  public:
   struct State : public NativeSolver::State
   {
+    double alpha;
     vector< double > g;
   };
   

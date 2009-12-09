@@ -32,15 +32,15 @@ NativeSolver::IterationStatus ConjGradMT::iterate_()
   double gg;
   
   gg = inner_prod(state_.g, state_.g);
-  gd = inner_prod(state_.g, d_);
+  gd = inner_prod(state_.g, state_.d);
   if(gd >= 0.0)
   {
-    d_ = -state_.g;
+    state_.d = -state_.g;
     gd = -gg;
   }
   
   alpha0 = LineMinimizer::fletcherInitStep(gd, deltaF_);
-  lineMinimizer_.minimize(state_.x, d_, alpha0, state_.fx, state_.g,
+  lineMinimizer_.minimize(state_.x, state_.d, alpha0, state_.fx, state_.g,
                           alpha, xPlus_, fPlus_, gPlus_);
   
   if(type_ == FLETCHER_REEVES)
@@ -59,7 +59,7 @@ NativeSolver::IterationStatus ConjGradMT::iterate_()
     gamma = std::max(inner_prod(gPlus_, gPlus_ - state_.g) / gg, 0.0);
     lineMinimizer_.setGamma(gamma);
   }
-  d_ = -gPlus_ + gamma*d_;
+  state_.d = -gPlus_ + gamma*state_.d;
   
   deltaF_ = state_.fx - fPlus_;
   
@@ -77,7 +77,7 @@ void ConjGradMT::doSetup_(const Function &objFunc,
 {
   GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
   lineMinimizer_.setup(setup_->f, MoreThuente::Setup());
-  d_ = -state_.g;
+  state_.d = -state_.g;
   deltaF_ = 0.0;
   i_ = 0;
 }

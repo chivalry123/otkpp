@@ -40,10 +40,7 @@ True, the results are also plotted."""
 		
 		pi = 0
 		for p in P:
-			#results = minimize(s, DefaultSolverSetup(),
-			                   #p.otk_instance, p.stopcrit,
-			                   #p.x0, NoConstraints(), 0, True)
-			results = s.solve(p.otk_instance, p.x0, p.stopcrit, 
+			results = s.solve(p.f, p.x0, p.stopcrit, 
                         Solver.DefaultSetup(), NoConstraints(), True)
 			
 			if results.converged == True:
@@ -100,7 +97,8 @@ True, the results are also plotted."""
 	return (R, tau, rho)
 
 def main():
-	S = [ DSQA(),
+	S = [ LRWWSimplex(),
+        DSQA(),
         SteihaugSR1(),
         #ConjGradMT(ConjGradType.FR),
         #ConjGradMT(ConjGradType.PR),

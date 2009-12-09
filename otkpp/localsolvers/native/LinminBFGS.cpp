@@ -9,17 +9,8 @@
 LinminBFGS::Setup::Setup(const LineMinimizer::Setup &lmSetup,
                          const matrix< double > &H0)
 {
-  this->lmSetup = lmSetup.clone();
-  if(H0.size1() > 0)
-    this->H0 = new matrix< double >(H0);
-  else
-    this->H0 = NULL;
-}
-
-LinminBFGS::Setup::~Setup()
-{
-  delete lmSetup;
-  delete H0;
+  this->lmSetup = boost::shared_ptr< LineMinimizer::Setup >(lmSetup.clone());
+  this->H0 = H0;
 }
 
 bool LinminBFGS::Setup::isCompatibleWith(const Solver &s) const
@@ -73,7 +64,6 @@ bool LinminBFGS::usesHessian() const
 
 NativeSolver::IterationStatus LinminBFGS::iterate_()
 {
-  double alpha;
   double D;
   
   if(iterHistLen_ > 0)
@@ -84,10 +74,10 @@ NativeSolver::IterationStatus LinminBFGS::iterate_()
       d_ = -state_.g;
   }
   else
-    d_ = -prod(S_, state_.g);
+    d_ = -prod(state_.H, state_.g);
   
   lineMinimizer_->minimize(state_.x, d_, 1.0, state_.fx, state_.g,
-                           alpha, xPlus_, fPlus_, gPlus_);
+                           state_.alpha, xPlus_, fPlus_, gPlus_);
   
   p_ = xPlus_ - state_.x;
   q_ = gPlus_ - state_.g;
@@ -104,9 +94,9 @@ NativeSolver::IterationStatus LinminBFGS::iterate_()
   else
   {
     if(D <= 0.0)
-      S_ = identity_matrix< double >(setup_->n);
+      state_.H = identity_matrix< double >(setup_->n);
     else
-      matrixUpdater_->update(p_, q_, S_);
+      matrixUpdater_->update(p_, q_, state_.H);
   }
   
   state_.x = xPlus_;
@@ -127,7 +117,7 @@ void LinminBFGS::doSetup_(const Function &objFunc,
   
   if(typeid(solverSetup) == typeid(const Solver::DefaultSetup &))
   {
-    S_ = identity_matrix< double >(n);
+    state_.H = identity_matrix< double >(n);
     
     if(lmType_ == LinminBFGS::FLETCHER)
       lineMinimizer_->setup(setup_->f, Fletcher::Setup());
@@ -138,15 +128,13 @@ void LinminBFGS::doSetup_(const Function &objFunc,
   {
     const LinminBFGS::Setup &setup = 
       dynamic_cast< const LinminBFGS::Setup & >(solverSetup);
-    if(setup.H0 != NULL)
-    {
-      if(setup.H0->size1() == n && setup.H0->size2() == n)
-        S_ = *setup.H0;
-      else
-        throw std::invalid_argument("dimension mismatch");
-    }
+    
+    if(setup.H0.size1() == n && setup.H0.size2() == n)
+      state_.H = setup.H0;
+    else if(setup.H0.size1() == 0 && setup.H0.size2() == 0)
+      state_.H = identity_matrix< double >(n);
     else
-      S_ = identity_matrix< double >(n);
+      throw std::invalid_argument("dimension mismatch");
     
     if(lmType_ == LinminBFGS::FLETCHER)
       lineMinimizer_->setup(setup_->f, *setup.lmSetup);

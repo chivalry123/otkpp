@@ -54,7 +54,7 @@ class LMBM : public ExternalSolver
   ~LMBM();
   
   std::string getName() const { return "LMBM"; }
-  bool hasBuiltInStoppingCriterion() const { return true; }
+  bool hasBuiltInStoppingCriterion() const { return false; }
   bool isExternalSolver() const { return true; }
   /*void setup(const Function &objFunc,
              const vector< double > &x0,

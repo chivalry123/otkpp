@@ -3,10 +3,10 @@
 
 #include <otkpp/localsolvers/ExternalSolver.h>
 #include <otkpp/localsolvers/native/ConjGradMT.h>
-//#include <otkpp/localsolvers/native/DSLA.h>
 #include <otkpp/localsolvers/native/DSQA.h>
 #include <otkpp/localsolvers/native/HookeJeeves.h>
 #include <otkpp/localsolvers/native/LinminBFGS.h>
+#include <otkpp/localsolvers/native/LRWWSimplex.h>
 #include <otkpp/localsolvers/native/SteihaugSR1.h>
 #include <otkpp/localsolvers/native/DoglegBFGS.h>
 #include <otkpp/localsolvers/native/NativeSolver.h>
@@ -19,6 +19,7 @@
 #endif
 #ifdef WITH_FORTRAN
 #include <otkpp/localsolvers/lbfgsb/LBFGSB.h>
+#include <otkpp/localsolvers/lmbm/LMBM.h>
 #endif
 
 #include <boost/python.hpp>
@@ -67,7 +68,8 @@ void init_solvers()
   {
     scope gradientsolver_scope(class_< GradientSolver, boost::noncopyable >("GradientSolver", no_init));
     class_< GradientSolver::State, bases< NativeSolver::State >, boost::noncopyable >("State", no_init)
-      .add_property("g", make_getter(&GradientSolver::State::g, return_value_policy< return_by_value >()));
+      .def_readonly("alpha", &GradientSolver::State::alpha)
+      .add_property("gx", make_getter(&GradientSolver::State::g, return_value_policy< return_by_value >()));
   }
   
   enum_< ConjGradMT::Type >("ConjGradType")
@@ -83,22 +85,29 @@ void init_solvers()
       .def_readonly("model", &DSQA::State::model);
   }
   
-  //class_< DSLA, bases< NativeSolver > >("DSLA");
   class_< HookeJeeves, bases< NativeSolver > >("HookeJeeves");
-  enum_< LinminBFGS::LinMinType >("BFGSLmType")
-    .value("fletcher", LinminBFGS::FLETCHER)
-    .value("morethuente", LinminBFGS::MORE_THUENTE);
-  class_< LinminBFGS::Setup, bases< Solver::Setup > >("LinminBFGSSetup",
-    init< optional< const LineMinimizer::Setup &, const matrix< double > & > >());
-  class_< LinminBFGS, bases< NativeSolver > >("LinminBFGS",
-    init< optional< LinminBFGS::LinMinType, int > >());
-    class_< DoglegBFGS, bases< NativeSolver > >("DoglegBFGS");
-    class_< PARTAN, bases< NativeSolver > >("PARTAN");
-    class_< SteihaugSR1, bases< NativeSolver > >("SteihaugSR1");
+  class_< DoglegBFGS, bases< NativeSolver > >("DoglegBFGS");
+  
+  {
+    scope linminbfgs_scope(class_< LinminBFGS, bases< NativeSolver > >("LinminBFGS",
+      init< optional< LinminBFGS::LinMinType, int > >()));
+    enum_< LinminBFGS::LinMinType >("LinminType")
+      .value("fletcher", LinminBFGS::FLETCHER)
+      .value("morethuente", LinminBFGS::MORE_THUENTE);
+    class_< LinminBFGS::Setup, bases< Solver::Setup > >("Setup",
+      init< optional< const LineMinimizer::Setup &, const matrix< double > & > >());
+    class_< LinminBFGS::State, bases< GradientSolver::State > >("State")
+      .add_property("H", make_getter(&LinminBFGS::State::H, return_value_policy< return_by_value >()));
+  }
+  
+  class_< LRWWSimplex, bases< NativeSolver > >("LRWWSimplex");
+  class_< PARTAN, bases< NativeSolver > >("PARTAN");
+  class_< SteihaugSR1, bases< NativeSolver > >("SteihaugSR1");
 
   {
     scope lineminimizer_scope(class_< LineMinimizer, boost::noncopyable >("LineMinimizer", no_init));
     class_< LineMinimizer::Setup, boost::noncopyable >("Setup", no_init);
+    class_< LineMinimizer::DefaultSetup, bases< LineMinimizer::Setup > >("DefaultSetup");
   }
   
   {
@@ -133,6 +142,7 @@ void init_solvers()
 
 #ifdef WITH_FORTRAN
   class_< LBFGSB, bases< NativeSolver > >("LBFGSB");
+  //class_< LMBM, bases< Solver > >("LMBM");
 #endif
   register_ptr_to_python< boost::shared_ptr< Solver::Results > >();
   register_ptr_to_python< boost::shared_ptr< Solver::Setup > >();

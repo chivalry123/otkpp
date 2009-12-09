@@ -44,8 +44,10 @@ class LRWWSimplex : public NativeSolver
     Simplex S;
   };
   
+  unsigned int getM() const;
   std::string getName() const;
   const State &getState() const { return state_; }
+  const matrix< double > getXArray() const;
   bool hasBuiltInStoppingCriterion() const { return false; }
   bool usesGradient() const;
   bool usesHessian() const;

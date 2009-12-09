@@ -19,7 +19,10 @@ class FDistToMinTest : public Cloneable< FDistToMinTest, StoppingCriterion >
    */
   FDistToMinTest(double fMin, double eps, bool relative);
   
+  double getEps() const;
+  double getFMin() const;
   double getTestValue(const NativeSolver &s) const;
+  bool isRelative() const;
   bool test(const NativeSolver &s) const;
  private:
   double eps_;

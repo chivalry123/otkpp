@@ -134,9 +134,25 @@ void LRWWSimplex::Simplex::sortVertices()
   }
 }
 
+unsigned int LRWWSimplex::getM() const
+{
+  return setup_->n + 1;
+}
+
 std::string LRWWSimplex::getName() const
 {
   return "LRWWSimplex";
+}
+
+const matrix< double > LRWWSimplex::getXArray() const
+{
+  matrix< double > X(setup_->n, setup_->n + 1);
+  
+  for(int i = 0; i < setup_->n; i++)
+    for(int j = 0; j < setup_->n + 1; j++)
+      X(i, j) = state_.S.getx(j)[i];
+  
+  return X;
 }
 
 bool LRWWSimplex::usesGradient() const

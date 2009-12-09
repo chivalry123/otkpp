@@ -15,16 +15,19 @@ class LinminBFGS : public GradientSolver
   /// Defines the parameters of a LinminBFGS solver.
   struct Setup : public Cloneable< Setup, Solver::Setup >
   {
-    const LineMinimizer::Setup *lmSetup;   ///< line minimizer parameters
-    const matrix< double > *H0;            ///< initial Hessian or inverse Hessian approximation
+    boost::shared_ptr< LineMinimizer::Setup > lmSetup; ///< line minimizer parameters
+    matrix< double > H0;                               ///< initial Hessian or inverse Hessian approximation
   
     Setup(const LineMinimizer::Setup &lmSetup = LineMinimizer::DefaultSetup(),
           const matrix< double > &H0 = zero_matrix< double >(0, 0));
-    ~Setup();
+    
     bool isCompatibleWith(const Solver &s) const;
   };
 
-  struct State : public Cloneable< State, GradientSolver::State > { };
+  struct State : public Cloneable< State, GradientSolver::State >
+  {
+    matrix< double > H;
+  };
   
   /// Line search algorithm type.
   enum LinMinType
@@ -58,7 +61,6 @@ class LinminBFGS : public GradientSolver
   QuasiNewtonUpdater *matrixUpdater_;
   vector< double > p_;
   vector< double > q_;
-  matrix< double > S_;
   State state_;
   
   void doSetup_(const Function &objFunc,

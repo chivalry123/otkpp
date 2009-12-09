@@ -1,8 +1,10 @@
 
-#include "LMBM.h"
-
 #include "func_wrapper.h"
 #include "lmbm_utils.h"
+#include "LMBM.h"
+#include "FDistToMinTest.h"
+
+static const unsigned long long MIN_TOTAL_TIME = 1e9;
 
 LMBM::Setup::Setup()
 {
@@ -40,6 +42,9 @@ boost::shared_ptr< Solver::Results > LMBM::solve(Function &objFunc,
   std::list< vector< double > > iterates;
   Solver::Results *results = new Solver::Results();
   
+  unsigned long long startTime = 0;
+  unsigned long long totalTime = 0;
+  
   //Solver::setup(objFunc, x0, solverSetup);
   //const LMBM_setup &setup = dynamic_cast< const LMBM_setup & >(solverSetup);
   
@@ -67,6 +72,15 @@ boost::shared_ptr< Solver::Results > LMBM::solve(Function &objFunc,
   rpar[3] = 1e-5;
   rpar[5] = .5;
   
+  if(typeid(stopCrit) == typeid(const FDistToMinTest &))
+  {
+    const FDistToMinTest &sc = dynamic_cast< const FDistToMinTest & >(stopCrit);
+    if(sc.isRelative() == false)
+      rpar[2] = sc.getFMin() + sc.getEps();
+    else
+      rpar[2] = sc.getFMin() + sc.getEps() * sc.getFMin();
+  }
+  
   double *x = new double[x0.size()];
   for(int i = 0; i < x0.size(); i++)
     x[i] = x0[i];
@@ -80,8 +94,13 @@ boost::shared_ptr< Solver::Results > LMBM::solve(Function &objFunc,
   
   set_obj_func(&objFunc);
   
-  lmbmu_(&n, &na, &mcu, &mc, &nw, x, xr, &f, rpar, ipar,
-         iout, &time, rtim, w);
+  /*do
+  {*/
+    lmbmu_(&n, &na, &mcu, &mc, &nw, x, xr, &f, rpar, ipar,
+          iout, &time, rtim, w);
+  /*}
+  while(timeTest == true && totalTime < MIN_TOTAL_TIME);*/
+  // TODO: time test mode
   
   vector< double > xi(n);
   vector< double > xMin(n);
@@ -95,12 +114,12 @@ boost::shared_ptr< Solver::Results > LMBM::solve(Function &objFunc,
   }
   
   results->fMin        = f;
-  //results.iterates    = iterates;
   results->numIter     = iout[0];
-  results->numFuncEval = /*objFunc.getFuncEvalCounter()*/iout[1];
+  results->numFuncEval = objFunc.getFuncEvalCounter()/*iout[1]*/;
   results->numGradEval = 0;
   results->time        = rtim[0];
   results->xMin        = xMin;
+  // TODO: store the iterates
   
   delete[] w;
   delete[] xr;

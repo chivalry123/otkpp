@@ -12,16 +12,9 @@ definitions:
   - known minimizers and minimum function values, if any
   - plotting ranges for two-variable functions
 
-Note: Each test function has the otk_instance attribute that 
-should be used when passing test functions as arguments to 
-other PyOTK functions. Most functions implemented in PyOTK 
-require the OTK++ instance instead of a wrapped instance of 
-a test function class defined in this module.
+Note: Each test problem has the "f" attribute that 
+is the actual function associated with the problem.
 """
-
-# TODO: Implement an automatic mechanism for 
-# converting a test function to otk_instance when it 
-# is required.
 
 from inspect import getargspec
 import native
@@ -31,7 +24,7 @@ class TestFunction:
 	"""The base class for test functions."""
 	def __init__(self, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic, n=0, m=0):
 		if fEvalType == FuncEvalType.symbolic:
-			self.otk_instance = Function(self.generate_expression(), gEvalType)
+			self.f = Function(self.generate_expression(), gEvalType)
 		else:
 			argspec = getargspec(self.__init__)[0]
 			if not 'n' in argspec and not 'm' in argspec:
@@ -43,7 +36,7 @@ class TestFunction:
 			else:
 				eval_str = 'libpyotk_driver.' + self.__class__.__name__ + '(' + str(n) + ',' + str(m) + ',gEvalType)'
 			
-			self.otk_instance = eval(eval_str)
+			self.f = eval(eval_str)
 
 class PlotSpec:
 	"""Defines plotting ranges and axis scales."""
@@ -56,6 +49,7 @@ class PlotSpec:
 class PowellBadlyScaled(TestFunction):
 	name = 'Powell badly scaled'
 	x0 = (0, 1)
+	f_min = 0
 	stopcrit = FDistToMinTest(f_min=0, eps=1e-14, relative=False);
 	plot_spec = PlotSpec((-5e-5, 2e-4), (-1, 10), (1e-6, 1000), True)
 	
@@ -69,6 +63,7 @@ class BrownBadlyScaled(TestFunction):
 	name = 'Brown badly scaled'
 	x0 = (1, 1)
 	x_min = (1e6, 2e-6)
+	f_min = 0
 	stopcrit = XDistToMinTest(x_min=(1e6, 2e-6), eps=1e-6, relative=False)
 	plot_spec = PlotSpec((1e6-1e-4, 1e6+1e-4),
 	                     (2e-6-1e-10, 2e-6+1e-10),
@@ -84,6 +79,7 @@ class Beale(TestFunction):
 	name = 'Beale'
 	x0 = (1, 1)
 	x_min = (3, 0.5)
+	f_min = 0
 	stopcrit = XDistToMinTest(x_min=(3, 0.5), eps=1e-6, relative=False)
 	plot_spec = PlotSpec((0.25, 4.25), (-1, 1.5), (1e-3, 500), True)
 	
@@ -97,6 +93,7 @@ class HelicalValley(TestFunction):
 	name = 'Helical valley'
 	x0 = (-1, 0, 0)
 	x_min = (1, 0, 0)
+	f_min = 0
 	stopcrit = XDistToMinTest(x_min=(1, 0, 0), eps=1e-6, relative=False)
 	plot_spec = None
 	
@@ -142,6 +139,7 @@ class Gulf(TestFunction):
 	name = 'Gulf'
 	x0 = (5, 2.5, 0.15)
 	x_min = (50, 25, 1.5)
+	f_min = 0
 	stopcrit = XDistToMinTest(x_min=(50, 25, 1.5), eps=1e-6)
 	plot_spec = None
 
@@ -167,6 +165,7 @@ class Gulf(TestFunction):
 class Box(TestFunction):
 	name = 'Box'
 	x0 = (0, 10, 20)
+	f_min = 0
 	stopcrit = FDistToMinTest(f_min=0, eps=1e-6, relative=False)
 	plot_spec = None
 
@@ -191,6 +190,7 @@ class Wood(TestFunction):
 	name = 'Wood'
 	x0 = (-3, -1, -3, -1)
 	x_min = (1, 1, 1, 1)
+	f_min = 0
 	stopcrit = XDistToMinTest(x_min=(1, 1, 1, 1), eps=1e-6, relative=False)
 	plot_spec = None
 	
@@ -296,6 +296,7 @@ class Watson(TestFunction):
 
 class ExtendedRosenbrock(TestFunction):
 	name = 'Extended Rosenbrock'
+	f_min = 0
 	plot_spec = PlotSpec((-1.5, 1.4), (-0.25, 1.25), (1e-3, 1000), True)
 
 	def __init__(self, n, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
@@ -336,6 +337,7 @@ class ExtendedRosenbrock(TestFunction):
 
 class ExtendedPowellSingular(TestFunction):
 	name = 'Extended Powell singular'
+	f_min = 0
 	plot_spec = None
 	
 	def __init__(self, n, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
@@ -458,6 +460,7 @@ class PenaltyFunctionII(TestFunction):
 		
 class VariablyDimensioned(TestFunction):
 	name = 'Variably dimensioned'
+	f_min = 0
 	plot_spec = PlotSpec((0, 2), (0, 2), (1e-4, 100), True)
 	
 	def __init__(self, n, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
@@ -492,6 +495,7 @@ class VariablyDimensioned(TestFunction):
 
 class Trigonometric(TestFunction):
 	name = 'Trigonometric'
+	f_min = 0
 	stopcrit = FDistToMinTest(f_min=0, eps=1e-5, relative=False)
 	plot_spec = PlotSpec((-10, 10), (-10, 10), (1e-5, 140), False)
 	
