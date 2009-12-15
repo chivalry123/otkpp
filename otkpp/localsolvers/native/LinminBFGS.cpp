@@ -113,7 +113,7 @@ void LinminBFGS::doSetup_(const Function &objFunc,
 {
   const int n = objFunc.getN();
   
-  GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
+  NativeGradientSolver::doSetup_(objFunc, x0, solverSetup, C);
   
   if(typeid(solverSetup) == typeid(const Solver::DefaultSetup &))
   {

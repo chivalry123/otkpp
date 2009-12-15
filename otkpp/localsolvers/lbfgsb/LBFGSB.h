@@ -1,11 +1,11 @@
 
 #ifndef LBFGSB_H
 
-#include <otkpp/localsolvers/native/GradientSolver.h>
+#include <otkpp/localsolvers/native/NativeGradientSolver.h>
 #include <otkpp/constraints/BoundConstraints.h>
 
 /// A wrapper class for Nocedal's L-BFGS-B Fortran implementation.
-class LBFGSB : public GradientSolver
+class LBFGSB : public NativeGradientSolver
 {
  public:
   /// Defines parameters for L-BFGS-B.
@@ -22,7 +22,7 @@ class LBFGSB : public GradientSolver
     bool isCompatibleWith(const Solver &s) const;
   };
   
-  struct State : public Cloneable< State, GradientSolver::State > { };
+  struct State : public Cloneable< State, NativeGradientSolver::State > { };
    
   /// Constructs a new L-BFGS-B solver with the given gradient evaluator type.
   LBFGSB(Function::DerivEvalType gEvalType = Function::DERIV_FDIFF_CENTRAL_2);

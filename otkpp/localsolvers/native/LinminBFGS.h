@@ -3,13 +3,13 @@
 
 #include <otkpp/linalg/InvLBFGSUpdater.h>
 #include <otkpp/linalg/QuasiNewtonUpdater.h>
-#include <otkpp/localsolvers/native/GradientSolver.h>
+#include <otkpp/localsolvers/native/NativeGradientSolver.h>
 #include <otkpp/localsolvers/native/linmin/LineMinimizer.h>
 
 class LineMinimizer;
 
 /// Implements the BFGS algorithm with line searches.
-class LinminBFGS : public GradientSolver
+class LinminBFGS : public NativeGradientSolver
 {
  public:
   /// Defines the parameters of a LinminBFGS solver.
@@ -24,7 +24,7 @@ class LinminBFGS : public GradientSolver
     bool isCompatibleWith(const Solver &s) const;
   };
 
-  struct State : public Cloneable< State, GradientSolver::State >
+  struct State : public Cloneable< State, NativeGradientSolver::State >
   {
     matrix< double > H;
   };

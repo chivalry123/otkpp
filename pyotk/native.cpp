@@ -286,5 +286,6 @@ BOOST_PYTHON_MODULE(native)
   
   init_converters();
   
+  import_array();
   array::set_module_and_type("numpy", "ndarray");
 }

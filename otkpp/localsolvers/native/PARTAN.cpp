@@ -79,7 +79,7 @@ void PARTAN::doSetup_(const Function &objFunc,
                       const Solver::Setup &solverSetup,
                       const Constraints &C)
 {
-  GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
+  NativeGradientSolver::doSetup_(objFunc, x0, solverSetup, C);
   lineMinimizer_->setup(setup_->f, MoreThuente::Setup());
   
   j_ = 1;

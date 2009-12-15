@@ -11,7 +11,7 @@ bool GSLFDFSolver::Setup::isCompatibleWith(const Solver &s) const
 }
 
 GSLFDFSolver::GSLFDFSolver(const std::string &gslName, Function::DerivEvalType gEvalType) : 
-  GradientSolver(gEvalType)
+  NativeGradientSolver(gEvalType)
 {
   if(gslName == "conjugate_fr")
     type_ = gsl_multimin_fdfminimizer_conjugate_fr;
@@ -30,7 +30,7 @@ GSLFDFSolver::GSLFDFSolver(const std::string &gslName, Function::DerivEvalType g
 }
 
 GSLFDFSolver::GSLFDFSolver(const gsl_multimin_fdfminimizer_type *type, Function::DerivEvalType gEvalType) : 
-  GradientSolver(gEvalType)
+  NativeGradientSolver(gEvalType)
 {
   type_ = type;
   gslSolver_ = NULL;
@@ -95,7 +95,7 @@ void GSLFDFSolver::doSetup_(const Function &objFunc,
   const int n = objFunc.getN();
   double stepSize, tol;
   
-  GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
+  NativeGradientSolver::doSetup_(objFunc, x0, solverSetup, C);
   
   if(typeid(solverSetup) == typeid(Solver::DefaultSetup))
   {

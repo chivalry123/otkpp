@@ -4,17 +4,17 @@
 #include <otkpp/linalg/BFGSUpdater.h>
 #include <otkpp/linalg/LBFGSUpdater.h>
 #include <otkpp/localsolvers/native/trsreg/DoglegSolver.h>
-#include <otkpp/localsolvers/native/GradientSolver.h>
+#include <otkpp/localsolvers/native/NativeGradientSolver.h>
 
 /// Implements the BFGS algorithm with the "dogleg" strategy.
-class DoglegBFGS : public GradientSolver
+class DoglegBFGS : public NativeGradientSolver
 {
  public:
-  struct State : public Cloneable< State, GradientSolver::State > { };
+  struct State : public Cloneable< State, NativeGradientSolver::State > { };
   
   DoglegBFGS();
   ~DoglegBFGS();
-
+  
   std::string getName() const;
   const State &getState() const { return state_; }
   bool usesGradient() const;

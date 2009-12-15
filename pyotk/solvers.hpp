@@ -1,7 +1,7 @@
 
 #ifndef SOLVERS_HPP
 
-#include <otkpp/localsolvers/ExternalSolver.h>
+#include <otkpp/localsolvers/Solver.h>
 #include <otkpp/localsolvers/native/ConjGradMT.h>
 #include <otkpp/localsolvers/native/DSQA.h>
 #include <otkpp/localsolvers/native/HookeJeeves.h>
@@ -39,9 +39,9 @@ void init_solvers()
       .def("solve", make_function(&Solver::solve, return_value_policy< return_by_value >())));
     class_< Solver::Setup, boost::noncopyable >("Setup", no_init)
       .def_readonly("C", &Solver::Setup::C)
+      .def_readonly("f", &Solver::Setup::f)
       .def_readonly("m", &Solver::Setup::m)
-      .def_readonly("n", &Solver::Setup::n)
-      .def_readonly("objfunc", &Solver::Setup::objFunc);
+      .def_readonly("n", &Solver::Setup::n);
     class_< Solver::DefaultSetup, bases< Solver::Setup > >("DefaultSetup");
     class_< Solver::Results >("Results")
       .def_readonly("converged", &Solver::Results::converged)
@@ -66,16 +66,16 @@ void init_solvers()
   }
   
   {
-    scope gradientsolver_scope(class_< GradientSolver, boost::noncopyable >("GradientSolver", no_init));
-    class_< GradientSolver::State, bases< NativeSolver::State >, boost::noncopyable >("State", no_init)
-      .def_readonly("alpha", &GradientSolver::State::alpha)
-      .add_property("gx", make_getter(&GradientSolver::State::g, return_value_policy< return_by_value >()));
+    scope nativegradientsolver_scope(class_< NativeGradientSolver, boost::noncopyable >("NativeGradientSolver", no_init));
+    class_< NativeGradientSolver::State, bases< NativeSolver::State >, boost::noncopyable >("State", no_init)
+      .def_readonly("alpha", &NativeGradientSolver::State::alpha)
+      .add_property("gx", make_getter(&NativeGradientSolver::State::g, return_value_policy< return_by_value >()));
   }
   
   enum_< ConjGradMT::Type >("ConjGradType")
     .value("FR", ConjGradMT::FLETCHER_REEVES)
     .value("PR", ConjGradMT::POLAK_RIBIERE);
-  class_< ConjGradMT, bases< NativeSolver > >("ConjGradMT",
+  class_< ConjGradMT, bases< NativeGradientSolver > >("ConjGradMT",
     init< ConjGradMT::Type >());
   
   {
@@ -89,20 +89,20 @@ void init_solvers()
   class_< DoglegBFGS, bases< NativeSolver > >("DoglegBFGS");
   
   {
-    scope linminbfgs_scope(class_< LinminBFGS, bases< NativeSolver > >("LinminBFGS",
+    scope linminbfgs_scope(class_< LinminBFGS, bases< NativeGradientSolver > >("LinminBFGS",
       init< optional< LinminBFGS::LinMinType, int > >()));
     enum_< LinminBFGS::LinMinType >("LinminType")
       .value("fletcher", LinminBFGS::FLETCHER)
       .value("morethuente", LinminBFGS::MORE_THUENTE);
     class_< LinminBFGS::Setup, bases< Solver::Setup > >("Setup",
       init< optional< const LineMinimizer::Setup &, const matrix< double > & > >());
-    class_< LinminBFGS::State, bases< GradientSolver::State > >("State")
+    class_< LinminBFGS::State, bases< NativeGradientSolver::State > >("State")
       .add_property("H", make_getter(&LinminBFGS::State::H, return_value_policy< return_by_value >()));
   }
   
   class_< LRWWSimplex, bases< NativeSolver > >("LRWWSimplex");
-  class_< PARTAN, bases< NativeSolver > >("PARTAN");
-  class_< SteihaugSR1, bases< NativeSolver > >("SteihaugSR1");
+  class_< PARTAN, bases< NativeGradientSolver > >("PARTAN");
+  class_< SteihaugSR1, bases< NativeGradientSolver > >("SteihaugSR1");
 
   {
     scope lineminimizer_scope(class_< LineMinimizer, boost::noncopyable >("LineMinimizer", no_init));
@@ -125,18 +125,18 @@ void init_solvers()
 #ifdef WITH_GSL
   {
     scope gslfsolver_scope(class_< GSLFSolver, bases< NativeSolver > >("GSLfsolver",
-        init< const std::string & >()));
+      init< const std::string & >()));
     class_< GSLFSolver::Setup, bases< Solver::Setup > >("Setup",
-        init< const vector< double > & >());
+      init< const vector< double > & >());
     class_< GSLFSolver::State, bases< NativeSolver::State > >("State");
   }
   
   {
-    scope gslfdfsolver_scope(class_< GSLFDFSolver, bases< NativeSolver > >("GSLfdfsolver",
-        init< const std::string &, optional< Function::DerivEvalType > >()));
+    scope gslfdfsolver_scope(class_< GSLFDFSolver, bases< NativeGradientSolver > >("GSLfdfsolver",
+      init< const std::string &, optional< Function::DerivEvalType > >()));
     class_< GSLFDFSolver::Setup, bases< Solver::Setup > >("Setup",
-        init< double, double >());
-    class_< GSLFDFSolver::State, bases< GradientSolver::State > >("State");
+      init< double, double >());
+    class_< GSLFDFSolver::State, bases< NativeGradientSolver::State > >("State");
   }
 #endif
 

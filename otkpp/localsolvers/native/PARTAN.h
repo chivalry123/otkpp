@@ -1,15 +1,15 @@
 
 #ifndef PARTAN_H
 
-#include <otkpp/localsolvers/native/GradientSolver.h>
+#include <otkpp/localsolvers/native/NativeGradientSolver.h>
 
 class LineMinimizer;
 
 /// Implements the PARTAN (parallel tangents) algorithm.
-class PARTAN : public GradientSolver
+class PARTAN : public NativeGradientSolver
 {
  public:
-  struct State : public Cloneable< State, GradientSolver::State > { };
+  struct State : public Cloneable< State, NativeGradientSolver::State > { };
   
   PARTAN();
   ~PARTAN();

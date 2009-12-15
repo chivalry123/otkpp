@@ -13,7 +13,7 @@ bool LBFGSB::Setup::isCompatibleWith(const Solver &s) const
 }
 
 LBFGSB::LBFGSB(Function::DerivEvalType gEvalType) : 
-  GradientSolver(gEvalType) { }
+  NativeGradientSolver(gEvalType) { }
 
 const vector< double > LBFGSB::getGradient() const
 {

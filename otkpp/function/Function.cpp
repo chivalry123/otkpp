@@ -139,21 +139,21 @@ void Function::constructSymbolicFunction_(const std::string &expr,
 
 double *Function::g(const double *x, double *g) const
 {
-  gEvaluator_->eval(x, g);
+  (*gEvaluator_)(x, g);
   return g;
 }
 
 vector< double > &Function::g(const vector< double > &x, 
                               vector< double > &g) const
 {
-  gEvaluator_->eval(x, g);
+  (*gEvaluator_)(x, g);
   return g;
 }
 
 matrix< double > &Function::H(const vector< double > &x, 
                               matrix< double > &H) const
 {
-  HEvaluator_->eval(x, H);
+  (*HEvaluator_)(x, H);
   return H;
 }
 

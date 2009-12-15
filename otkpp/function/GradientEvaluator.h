@@ -28,7 +28,7 @@ class GradientEvaluator : public EvalCountable
    * @param g a gradient vector, where the result is assigned to.
    * @return the computed gradient vector.
    */
-  double *eval(const double *x, double *g) const;
+  double *operator()(const double *x, double *g) const;
   
   /// Evaluates the gradient.
   /**
@@ -37,8 +37,8 @@ class GradientEvaluator : public EvalCountable
    * @param g a gradient vector, where the result is assigned to.
    * @return the computed gradient vector.
    */
-  vector< double > &eval(const vector< double > &x,
-                         vector< double > &g) const;
+  vector< double > &operator()(const vector< double > &x,
+                               vector< double > &g) const;
   
   /// Returns the number of variables.
   virtual int getN() const = 0;

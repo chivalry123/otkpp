@@ -35,6 +35,8 @@ struct BoundConstraints : public Cloneable< BoundConstraints, Constraints >
   
   /// Constructs bound constraints for n-dimensional problem.
   BoundConstraints(int n);
+  
+  bool isFeasible(const vector< double > &x) const;
 };
 
 #define BOUNDCONSTRAINTS_H

@@ -8,8 +8,8 @@
 class GradientSolverBase : public NativeSolver
 {
  public:
-  /// Returns the current gradient vector \f$\nabla f(\mathbf{x}_{k})\f$.
-  virtual const vector< double > getGradient() const = 0;
+  /*/// Returns the current gradient vector \f$\nabla f(\mathbf{x}_{k})\f$.
+  virtual const vector< double > getGradient() const = 0;*/
  protected:
   Function::DerivEvalType gEvalType_;
   

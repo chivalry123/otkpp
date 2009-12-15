@@ -40,8 +40,8 @@ namespace numpy_utils
     
     static void *convertible(PyObject *obj_ptr)
     {
-      /*if(!PyArray_Check(obj_ptr))
-        return NULL;*/
+      if(!PyArray_Check(obj_ptr))
+        return NULL;
       // TODO: check that the number of dimensions is two
       return obj_ptr;
     }

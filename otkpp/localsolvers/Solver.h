@@ -13,6 +13,7 @@ class Function;
 class Solver;
 class StoppingCriterion;
 
+/// The base class for all solvers.
 class Solver
 {
  public:
@@ -23,7 +24,6 @@ class Solver
     Function f;
     int m;
     int n;
-    Function objFunc;
     
     virtual Setup *clone() const = 0;
     
@@ -44,15 +44,15 @@ class Solver
    */
   struct Results
   {
-    bool converged;                         ///< was the chosen stopping criterion satisfied
-    double fMin;                            ///< final function value
-    unsigned int numFuncEval;               ///< the number of used function evaluations
-    unsigned int numGradEval;               ///< the number of used gradient evaluations
-    unsigned int numIter;                   ///< the number of used iterations
-    boost::shared_ptr< Setup > setup;       ///< the used input parameters
-    double termVal;                         ///< the final termination test value
-    double time;                            ///< used time
-    vector< double > xMin;                  ///< the final iterate
+    bool converged;                     ///< was the chosen stopping criterion satisfied
+    double fMin;                        ///< final function value
+    unsigned int numFuncEval;           ///< the number of used function evaluations
+    unsigned int numGradEval;           ///< the number of used gradient evaluations
+    unsigned int numIter;               ///< the number of used iterations
+    boost::shared_ptr< Setup > setup;   ///< the used input parameters
+    double termVal;                     ///< the final termination test value
+    double time;                        ///< used time
+    vector< double > xMin;              ///< the final iterate
     
     virtual ~Results() { };
   };

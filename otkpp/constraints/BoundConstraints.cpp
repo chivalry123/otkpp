@@ -9,3 +9,8 @@ BoundConstraints::BoundConstraints(int n)
   for(int i = 0; i < n; i++)
     types[i] = BoundConstraints::NONE;
 }
+
+bool BoundConstraints::isFeasible(const vector< double > &x) const
+{
+  return false; // TODO
+}

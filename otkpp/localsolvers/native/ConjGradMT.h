@@ -1,7 +1,7 @@
 
 #ifndef CONJGRADMT_H
 
-#include <otkpp/localsolvers/native/GradientSolver.h>
+#include <otkpp/localsolvers/native/NativeGradientSolver.h>
 #include <otkpp/localsolvers/native/linmin/MoreThuente.h>
 
 class MoreThuente;
@@ -12,7 +12,7 @@ class MoreThuente;
  * conjugate gradient algorithms with the More and 
  * Thuente line search.
  */
-class ConjGradMT : public GradientSolver
+class ConjGradMT : public NativeGradientSolver
 {
  public:
   /// Defines the type of the algorithm.
@@ -22,7 +22,7 @@ class ConjGradMT : public GradientSolver
     POLAK_RIBIERE
   };
   
-  struct State : public Cloneable< State, GradientSolver::State >
+  struct State : public Cloneable< State, NativeGradientSolver::State >
   {
     vector< double > d;
   };

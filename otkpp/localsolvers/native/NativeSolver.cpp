@@ -167,10 +167,10 @@ boost::shared_ptr< Solver::Results > NativeSolver::solve(Function &objFunc,
     boost::shared_ptr< Solver::Setup >(solverSetup.clone());
   results->termVal     = stopCrit.getTestValue(*this);
   
-  results->setup->C       = boost::shared_ptr< Constraints >(C.clone());
-  results->setup->m       = getM();
-  results->setup->n       = objFunc.getN();
-  results->setup->objFunc = objFunc;
+  results->setup->C = boost::shared_ptr< Constraints >(C.clone());
+  results->setup->f = objFunc;
+  results->setup->m = getM();
+  results->setup->n = objFunc.getN();
   
   if(timeTest == true)
   {

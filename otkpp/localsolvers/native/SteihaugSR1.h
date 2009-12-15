@@ -2,14 +2,14 @@
 #ifndef STEIHAUGSR1_H
 
 #include <otkpp/linalg/SR1Updater.h>
-#include <otkpp/localsolvers/native/GradientSolver.h>
+#include <otkpp/localsolvers/native/NativeGradientSolver.h>
 #include <otkpp/localsolvers/native/trsreg/SteihaugSolver.h>
 
 /// Implements the BFGS algorithm with Steihaug's trust region method.
-class SteihaugSR1 : public GradientSolver
+class SteihaugSR1 : public NativeGradientSolver
 {
  public:
-  struct State : public Cloneable< State, GradientSolver::State > { };
+  struct State : public Cloneable< State, NativeGradientSolver::State > { };
   
   SteihaugSR1();
   ~SteihaugSR1();

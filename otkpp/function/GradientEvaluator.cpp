@@ -1,8 +1,8 @@
 
 #include "GradientEvaluator.h"
 
-double *GradientEvaluator::eval(const double *x,
-                                double *g) const
+double *GradientEvaluator::operator()(const double *x,
+                                      double *g) const
 {
   if(evalCounting_ && !usesFiniteDifference())
     evalCounter_++;
@@ -11,8 +11,8 @@ double *GradientEvaluator::eval(const double *x,
   return g;
 }
 
-vector< double > &GradientEvaluator::eval(const vector< double > &x,
-                                          vector< double > &g) const
+vector< double > &GradientEvaluator::operator()(const vector< double > &x,
+                                                vector< double > &g) const
 {
   if(evalCounting_ && !usesFiniteDifference())
     evalCounter_++;

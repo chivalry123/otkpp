@@ -1,15 +1,15 @@
 
 #ifndef MNEWTON_H
 
-#include <otkpp/localsolvers/native/GradientSolver.h>
+#include <otkpp/localsolvers/native/NativeGradientSolver.h>
 
 class Solver;
 
 /// Implements the Newton method with line searches.
-class MNewton : public GradientSolver
+class MNewton : public NativeGradientSolver
 {
  public:
-  struct State : public Cloneable< State, GradientSolver::State > { };
+   struct State : public Cloneable< State, NativeGradientSolver::State > { };
   
   MNewton();
   ~MNewton();

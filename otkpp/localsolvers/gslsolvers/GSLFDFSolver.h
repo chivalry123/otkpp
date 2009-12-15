@@ -1,7 +1,7 @@
 
 #ifndef GSLFDFSOLVER_H
 
-#include <otkpp/localsolvers/native/GradientSolver.h>
+#include <otkpp/localsolvers/native/NativeGradientSolver.h>
 #include <otkpp/localsolvers/gslsolvers/GSLUtils.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
@@ -16,7 +16,7 @@ using namespace boost::numeric::ublas;
  * This class is a wrapper class for gsl_multimin_fdfminimizer. 
  * It conforms to GSL version 1.11.
  */
-class GSLFDFSolver : public GradientSolver
+class GSLFDFSolver : public NativeGradientSolver
 {
  public:
   /// Defines the parameters of a GSLFDFSolver.
@@ -30,7 +30,7 @@ class GSLFDFSolver : public GradientSolver
     Setup(double stepSize, double tol) : stepSize(stepSize), tol(tol) { }
   };
   
-  struct State : public Cloneable< State, GradientSolver::State > { };
+  struct State : public Cloneable< State, NativeGradientSolver::State > { };
   
   /// Constructs a new GSL solver with the given name.
   /**

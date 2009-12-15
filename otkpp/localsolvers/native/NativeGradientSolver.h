@@ -1,5 +1,5 @@
 
-#ifndef GRADIENTSOLVER_H
+#ifndef NATIVEGRADIENTSOLVER_H
 
 #include <otkpp/localsolvers/GradientSolverBase.h>
 
@@ -10,7 +10,7 @@ class LineMinimizer;
  * This class defines additional methods and attributes 
  * used by all native gradient-based solvers.
  */
-class GradientSolver : public GradientSolverBase
+class NativeGradientSolver : public GradientSolverBase
 {
  public:
   struct State : public NativeSolver::State
@@ -19,15 +19,17 @@ class GradientSolver : public GradientSolverBase
     vector< double > g;
   };
   
+  /// Returns the current gradient vector \f$\nabla f(\mathbf{x}_{k})\f$.
   virtual const vector< double > getGradient() const;
+  
   virtual const State &getState() const = 0;
   bool hasBuiltInStoppingCriterion() const;
  protected:
   double fPlus_;
   vector< double > gPlus_;
   vector< double > xPlus_;
-   
-  GradientSolver(bool useFDiffGradient = false);
+  
+  NativeGradientSolver(bool useFDiffGradient = false);
   
   virtual void doSetup_(const Function &objFunc,
                         const vector< double > &x0,
@@ -36,6 +38,6 @@ class GradientSolver : public GradientSolverBase
   State &getState_();
 };
 
-#define GRADIENTSOLVER_H
+#define NATIVEGRADIENTSOLVER_H
 
 #endif

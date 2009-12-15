@@ -28,8 +28,8 @@ class HessianEvaluator : public EvalCountable
    * @param H an nxn -matrix, where the result is assigned to.
    * @return the computed Hessian matrix.
    */
-  matrix< double > &eval(const vector< double > &x,
-                         matrix< double > &H) const;
+  matrix< double > &operator()(const vector< double > &x,
+                               matrix< double > &H) const;
   
   /// Returns the number of variables.
   virtual int getN() const = 0;

@@ -61,7 +61,7 @@ void MNewton::doSetup_(const Function &objFunc,
                        const Constraints &C)
 {
   const int N = objFunc.getN();
-  GradientSolver::doSetup_(objFunc, x0, solverSetup, C);
+  NativeGradientSolver::doSetup_(objFunc, x0, solverSetup, C);
   lineMinimizer_->setup(setup_->f, MoreThuente::Setup());
   H_.resize(N, N);
   H_chol_.resize(N, N);

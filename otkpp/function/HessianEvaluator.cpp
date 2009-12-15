@@ -1,8 +1,8 @@
 
 #include "HessianEvaluator.h"
 
-matrix< double > &HessianEvaluator::eval(const vector< double > &x,
-                                         matrix< double > &H) const
+matrix< double > &HessianEvaluator::operator()(const vector< double > &x,
+                                               matrix< double > &H) const
 {
   if(evalCounting_ && !usesFiniteDifference())
     evalCounter_++;
