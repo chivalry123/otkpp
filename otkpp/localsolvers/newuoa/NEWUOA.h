@@ -1,9 +1,9 @@
 
 #ifndef NEWUOA_H
 
-#include <otkpp/localsolvers/ExternalSolver.h>
+#include <otkpp/localsolvers/Solver.h>
 
-class NEWUOA : public ExternalSolver
+class NEWUOA : public Solver
 {
  public:
   NEWUOA() { }
