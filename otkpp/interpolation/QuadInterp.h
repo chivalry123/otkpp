@@ -39,7 +39,6 @@ class QuadInterp
   const Function *f_;
   int n_, m_;
   
-  //std::vector< vector< double > > X_;
   matrix< double > X_;
   std::vector< double > F_;
   

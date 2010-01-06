@@ -36,8 +36,7 @@ class Function
     DERIV_FDIFF_CENTRAL_4  ///< four-point central difference approximation
   };
   
-  /// Default constructor.
-  Function();
+  Function() { }
 
 #ifdef WITH_LIBMATHEVAL
   /// Constructs a new function with the given expression.
@@ -45,27 +44,17 @@ class Function
            DerivEvalType gEvalType = DERIV_SYMBOLIC);
 #endif
   
-  /*/// Constructs a new function with a function pointer.
-  /**
-   * Because a symbolic expression is not available, 
-   * function must be constructed with finite-difference 
-   * gradient and Hessian evaluators.
-   */
-  /*Function(double (*f)(const vector< double > &x),
-           DerivEvalType gEvalType = DERIV_FDIFF_CENTRAL_2);*/
-  
   /// Constructs a new function from an existing evaluator.
   Function(const FunctionEvaluator &fEval,
            DerivEvalType gEvalType);
-    
-  /// Copies this function from an existing function.
-  Function(const Function &f);
   
-  /// Frees the memory associated with this function.
-  virtual ~Function();
+  /// Constructs a projection of an existing function.
+  Function(const Function &f,
+           const std::list< int > &idx,
+           const vector< double > &x,
+           DerivEvalType gEvalType = DERIV_SYMBOLIC);
   
-  /// Assigns another function to this function.
-  Function &operator=(const Function &f);
+  virtual ~Function() { }
   
   /// Returns a copy of this function.
   /**
@@ -74,6 +63,9 @@ class Function
    * instance.
    */
   Function createCopy(DerivEvalType gEvalType) const;
+  
+  // TODO: this is a temporary hack
+  const FunctionEvaluator &getEvaluator() const;
   
   /// Returns the number of variables.
   int getN() const;
@@ -99,7 +91,7 @@ class Function
   /// Evaluates this function at a given point.
   /**
    * Evaluates this function at a given point.
-   * @param x a n-dimensional vector, where n is the dimension of this function
+   * @param x an n-dimensional vector, where n is the dimension of this function
    */
   double operator()(const vector< double > &x) const;
   
@@ -150,9 +142,23 @@ class Function
   /// Resets all evaluation counters. 
   void resetEvalCounters();
  protected:
-  FunctionEvaluator *evaluator_;
+  struct Evaluators
+  {
+    FunctionEvaluator *f;
+    GradientEvaluator *g;
+    HessianEvaluator  *H;
+    
+    Evaluators();
+    Evaluators(const Evaluators &e);
+    Evaluators &operator=(const Evaluators &e);
+    ~Evaluators();
+  };
+  
+  Evaluators eval_;
+  
+  /*FunctionEvaluator *evaluator_;
   GradientEvaluator *gEvaluator_;
-  HessianEvaluator  *HEvaluator_;
+  HessianEvaluator  *HEvaluator_;*/
   
 #ifdef WITH_LIBMATHEVAL
   void constructSymbolicFunction_(const std::string &expr,

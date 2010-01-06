@@ -279,8 +279,8 @@ void OTKGui::initSolverComboBox_()
   widgets_->algorithmComboBox->insertItem(15, "gsl_vector_bfgs2");
 #endif
 #ifdef WITH_FORTRAN
-  widgets_->algorithmComboBox->insertItem(16, "LMBM");
-  widgets_->algorithmComboBox->insertItem(17, "L-BFGS-B");
+  //widgets_->algorithmComboBox->insertItem(16, "LMBM");
+  widgets_->algorithmComboBox->insertItem(16, "L-BFGS-B");
 #endif
 }
 

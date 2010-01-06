@@ -50,7 +50,7 @@ class GSLFSolver : public NativeSolver
   const State &getState() const { return state_; }
   const vector< double > getX() const;
   const matrix< double > getXArray() const;
-  bool hasBuiltInStoppingCriterion() const { return true; }
+  bool hasBuiltInStoppingCriterion() const { return false; }
   void restart();
   bool usesGradient() const;
   bool usesHessian() const;

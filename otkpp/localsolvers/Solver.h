@@ -68,6 +68,9 @@ class Solver
   /// Returns the name of this solver.
   virtual std::string getName() const = 0;
   
+  /// Returns the objective function associated with this solver.
+  const Function &getObjFunc() const { setup_->f; }
+  
   /// Is this solver implemented natively in C/C++, or does it call some external routine.
   virtual bool isExternalSolver() const { return false; }
   

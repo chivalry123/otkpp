@@ -6,6 +6,7 @@
 #include "DoglegBFGS.h"
 //#include "DSLA.h"
 #include "DSQA.h"
+//#include "DFQAS.h"
 #include "FDistToMinTest.h"
 #include "Function.h"
 #include "GradNormTest.h"
@@ -20,14 +21,16 @@
 #include "MGHTestFunction.h"
 #include "MNewton.h"
 #include "NativeSolver.h"
-//#include "NEWUOA.h"
 #include "SteihaugSR1.h"
 #include "PARTAN.h"
 #include "XDistToMinTest.h"
 #ifdef WITH_FORTRAN
 #include "LBFGSB.h"
-#include "LMBM.h"
+//#include "LMBM.h"
+//#include "NEWUOA.h"
 #endif
+
+//#include "VariableSeparator.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -49,6 +52,7 @@ static void initAlgorithmList(std::list< NativeSolver * > &algoList)
   algoList.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2));
 #endif
   algoList.push_back(new DSQA());
+  //algoList.push_back(new DFQAS());
   //algoList.push_back(new DSLA());
   algoList.push_back(new LRWWSimplex());
   algoList.push_back(new DoglegBFGS());
@@ -56,7 +60,7 @@ static void initAlgorithmList(std::list< NativeSolver * > &algoList)
   algoList.push_back(new LinminBFGS(LinminBFGS::FLETCHER));
   algoList.push_back(new LinminBFGS(LinminBFGS::MORE_THUENTE));
   algoList.push_back(new LinminBFGS(LinminBFGS::MORE_THUENTE, 8));
-  algoList.push_back(new MNewton());
+  //algoList.push_back(new MNewton());
   algoList.push_back(new PARTAN());
   algoList.push_back(new HookeJeeves());
   algoList.push_back(new ConjGradMT(ConjGradMT::FLETCHER_REEVES));
@@ -129,9 +133,9 @@ static void testLMBM()
   x0[1] = 1.0;
   
   solver.solve(f, x0);
-}
+}*/
 
-static void testNEWUOA()
+/*static void testNEWUOA()
 {
   NEWUOA solver;
   
@@ -150,12 +154,28 @@ static void testNEWUOA()
   x0[1] = 2.5;
   x0[2] = 0.15;*/
   
-  /*solver.solve(f, x0);
-}
-#endif*/
+  /*solver.solve(f, x0, MaxNumIterTest(10000));
+}*/
+//#endif
 
 int main(int argc, char **argv)
 {
+  /*ExtendedPowellSingular ff(20, Function::DERIV_FDIFF_CENTRAL_2);
+  vector< double > xx(20);
+  matrix< double > I(20, 20);
+  std::list< std::list< int > > S;
+  for(int i = 0; i < 20; i++)
+    xx[i] = 0.5;
+  VariableSeparator::computeInteractionMatrix(ff, xx, I);
+  VariableSeparator::computeMinInteractingSets(I, S);
+  for(std::list< std::list< int > >::iterator i = S.begin(); i != S.end(); i++)
+  {
+    std::cout<<"Set: ";
+    for(std::list< int >::iterator j = i->begin(); j != i->end(); j++)
+      std::cout<<*j<<" ";
+    std::cout<<std::endl;
+  }*/
+  
   std::list< NativeSolver * > algoList;
   std::list< Function * > funcList;
   vector< double > x0(2);
@@ -168,17 +188,12 @@ int main(int argc, char **argv)
   initAlgorithmList(algoList);
   initFuncList(funcList);
   vector< double > xMin(2);
-  xMin[0] = 1.0;
-  xMin[1] = 1.0;
+  xMin[0] = xMin[1] = 1.0;
   stopCrit = new CompoundStoppingCriterion(XDistToMinTest(
     xMin, 1e-6, false) + MaxNumIterTest(MAX_NUM_ITER));
   
   x0[0] = -1.2;
   x0[1] = 1.0;
-  
-  /*Function ff(F_EXPR, Function::DERIV_SYMBOLIC);
-  GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2).solve(ff, x0, *stopCrit, Solver::DefaultSetup(), NoConstraints(), false);
-  return EXIT_SUCCESS;*/
   
   int fi = 0;
   for(f = funcList.begin(); f != funcList.end(); f++)

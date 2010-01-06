@@ -14,7 +14,7 @@
 #include "HookeJeeves.h"
 #ifdef WITH_FORTRAN
 #include "LBFGSB.h"
-#include "LMBM.h"
+//#include "LMBM.h"
 #endif
 #include "LinminBFGS.h"
 #include "MGHTestFunction.h"
@@ -122,9 +122,9 @@ Solver *OTKGuiModel::getSolverInstance_(int index)
     return new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2, derivEvalType);
 #endif
 #ifdef WITH_FORTRAN
+  /*else if(index == 10 + i)
+    return new LMBM();*/
   else if(index == 10 + i)
-    return new LMBM();
-  else if(index == 11 + i)
     return new LBFGSB(derivEvalType);
 #endif
   else
