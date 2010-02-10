@@ -20,7 +20,7 @@ from inspect import getargspec
 import native
 from native import *
 
-class TestFunction:
+class TestProblem:
 	"""The base class for test functions."""
 	def __init__(self, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic, n=0, m=0):
 		if fEvalType == FuncEvalType.symbolic:
@@ -28,13 +28,13 @@ class TestFunction:
 		else:
 			argspec = getargspec(self.__init__)[0]
 			if not 'n' in argspec and not 'm' in argspec:
-				eval_str = 'libpyotk_driver.' + self.__class__.__name__ + '(gEvalType)'
+				eval_str = 'native.' + self.__class__.__name__ + '(gEvalType)'
 			elif 'm' not in argspec:
-				eval_str = 'libpyotk_driver.' + self.__class__.__name__ + '(' + str(n) + ',gEvalType)'
+				eval_str = 'native.' + self.__class__.__name__ + '(' + str(n) + ',gEvalType)'
 			elif 'n' not in argspec:
-				eval_str = 'libpyotk_driver.' + self.__class__.__name__ + '(' + str(m) + ',gEvalType)'
+				eval_str = 'native.' + self.__class__.__name__ + '(' + str(m) + ',gEvalType)'
 			else:
-				eval_str = 'libpyotk_driver.' + self.__class__.__name__ + '(' + str(n) + ',' + str(m) + ',gEvalType)'
+				eval_str = 'native.' + self.__class__.__name__ + '(' + str(n) + ',' + str(m) + ',gEvalType)'
 			
 			self.f = eval(eval_str)
 
@@ -46,7 +46,7 @@ class PlotSpec:
 		self.z_range = z_range
 		self.z_logscale = z_logscale
 
-class PowellBadlyScaled(TestFunction):
+class PowellBadlyScaled(TestProblem):
 	name = 'Powell badly scaled'
 	x0 = (0, 1)
 	f_min = 0
@@ -54,12 +54,12 @@ class PowellBadlyScaled(TestFunction):
 	plot_spec = PlotSpec((-5e-5, 2e-4), (-1, 10), (1e-6, 1000), True)
 	
 	def __init__(self, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
-		TestFunction.__init__(self, fEvalType, gEvalType)
+		TestProblem.__init__(self, fEvalType, gEvalType)
 	
 	def generate_expression(self):
 		return "(1e4*x*y-1)^2+(exp(-x)+exp(-y)-1.0001)^2"
 	
-class BrownBadlyScaled(TestFunction):
+class BrownBadlyScaled(TestProblem):
 	name = 'Brown badly scaled'
 	x0 = (1, 1)
 	x_min = (1e6, 2e-6)
@@ -70,12 +70,12 @@ class BrownBadlyScaled(TestFunction):
 	                     (1e-16, 1e-6), True)
 	
 	def __init__(self, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
-		TestFunction.__init__(self, fEvalType, gEvalType)
+		TestProblem.__init__(self, fEvalType, gEvalType)
 	
 	def generate_expression(self):
 		return '(x-1e6)^2+(y-2e-6)^2+(x*y-2)^2'
 
-class Beale(TestFunction):
+class Beale(TestProblem):
 	name = 'Beale'
 	x0 = (1, 1)
 	x_min = (3, 0.5)
@@ -84,12 +84,12 @@ class Beale(TestFunction):
 	plot_spec = PlotSpec((0.25, 4.25), (-1, 1.5), (1e-3, 500), True)
 	
 	def __init__(self, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
-		TestFunction.__init__(self, fEvalType, gEvalType)
+		TestProblem.__init__(self, fEvalType, gEvalType)
 	
 	def generate_expression(self):
 		return '(1.5-x*(1-y))^2+(2.25-x*(1-y^2))^2+(2.625-x*(1-y^3))^2'
 
-class HelicalValley(TestFunction):
+class HelicalValley(TestProblem):
 	name = 'Helical valley'
 	x0 = (-1, 0, 0)
 	x_min = (1, 0, 0)
@@ -98,7 +98,7 @@ class HelicalValley(TestFunction):
 	plot_spec = None
 	
 	def __init__(self, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
-		TestFunction.__init__(self, fEvalType, gEvalType)
+		TestProblem.__init__(self, fEvalType, gEvalType)
 	
 	def generate_expression(self):
 		e = ''
@@ -110,14 +110,14 @@ class HelicalValley(TestFunction):
 		
 		return e
 
-class Gaussian(TestFunction):
+class Gaussian(TestProblem):
 	name = 'Gaussian'
 	x0 = (0.4, 1, 0)
 	stopcrit = FDistToMinTest(f_min=1.12793e-8, eps=1e-4, relative=True)
 	plot_spec = None
 	
 	def __init__(self, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
-		TestFunction.__init__(self, fEvalType, gEvalType)
+		TestProblem.__init__(self, fEvalType, gEvalType)
 	
 	def generate_expression(self):
 		y = (0.0009, 0.0044, 0.0175, 0.0540, 0.1295, 0.2420, 0.3521, 0.3989, 
@@ -135,7 +135,7 @@ class Gaussian(TestFunction):
 		return e
 			
 
-class Gulf(TestFunction):
+class Gulf(TestProblem):
 	name = 'Gulf'
 	x0 = (5, 2.5, 0.15)
 	x_min = (50, 25, 1.5)
@@ -147,7 +147,7 @@ class Gulf(TestFunction):
 		if m < 3 or m > 100:
 			raise ValueError('must be 3<=m<=100')
 		self.m = m
-		TestFunction.__init__(self, fEvalType, gEvalType, m=m)
+		TestProblem.__init__(self, fEvalType, gEvalType, m=m)
 		
 	def generate_expression(self):
 		e = ''
@@ -162,7 +162,7 @@ class Gulf(TestFunction):
 		
 		return e
 
-class Box(TestFunction):
+class Box(TestProblem):
 	name = 'Box'
 	x0 = (0, 10, 20)
 	f_min = 0
@@ -173,7 +173,7 @@ class Box(TestFunction):
 		if m < 3:
 			raise ValueError('must be m>=3')
 		self.m = m
-		TestFunction.__init__(self, fEvalType, gEvalType, m=m)
+		TestProblem.__init__(self, fEvalType, gEvalType, m=m)
 		
 	def generate_expression(self):
 		e = ''
@@ -186,7 +186,7 @@ class Box(TestFunction):
 		
 		return e
 
-class Wood(TestFunction):
+class Wood(TestProblem):
 	name = 'Wood'
 	x0 = (-3, -1, -3, -1)
 	x_min = (1, 1, 1, 1)
@@ -195,7 +195,7 @@ class Wood(TestFunction):
 	plot_spec = None
 	
 	def __init__(self, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
-		TestFunction.__init__(self, fEvalType, gEvalType)
+		TestProblem.__init__(self, fEvalType, gEvalType)
 		
 	def generate_expression(self):
 		e = ''
@@ -208,7 +208,7 @@ class Wood(TestFunction):
 		
 		return e
   
-class BrownDennis(TestFunction):
+class BrownDennis(TestProblem):
 	name = 'Brown and Dennis'
 	x0 = (25, 5, -5, -1)
 	stopcrit = FDistToMinTest(f_min=85822.2, eps=0.1, relative=False)
@@ -218,7 +218,7 @@ class BrownDennis(TestFunction):
 		if m < 4:
 			raise ValueError('must be m>=4')
 		self.m = m
-		TestFunction.__init__(self, fEvalType, gEvalType, m=m)
+		TestProblem.__init__(self, fEvalType, gEvalType, m=m)
 		
 	def generate_expression(self):
 		e = ''
@@ -230,7 +230,7 @@ class BrownDennis(TestFunction):
 		
 		return e
 
-class BiggsEXP6(TestFunction):
+class BiggsEXP6(TestProblem):
 	name = 'Biggs EXP6'
 	x0 = (1, 2, 1, 1, 1, 1)
 	x_min = (1, 10, 1, 5, 4, 3)
@@ -241,7 +241,7 @@ class BiggsEXP6(TestFunction):
 		if m < 6:
 			raise ValueError('must be m>=6')
 		self.m = m
-		TestFunction.__init__(self, fEvalType, gEvalType, m=m)
+		TestProblem.__init__(self, fEvalType, gEvalType, m=m)
 		
 	def generate_expression(self):
 		e = ''
@@ -254,7 +254,7 @@ class BiggsEXP6(TestFunction):
 			
 		return e
 
-class Watson(TestFunction):
+class Watson(TestProblem):
 	name = 'Watson'
 	stopcrit = FDistToMinTest(f_min=2.28767e-3, eps=1e-4, relative=True)
 	plot_spec = PlotSpec((-1.5, 0.4), (0, 2), (0.25, 500), True)
@@ -263,7 +263,7 @@ class Watson(TestFunction):
 		if n < 2 or n > 31:
 			raise ValueError('must be 2<=n<=31')
 		self.n = n
-		TestFunction.__init__(self, fEvalType, gEvalType, n=n)
+		TestProblem.__init__(self, fEvalType, gEvalType, n=n)
 		
 		x0 = []
 		for i in range(n):
@@ -294,7 +294,7 @@ class Watson(TestFunction):
 		
 		return e
 
-class ExtendedRosenbrock(TestFunction):
+class ExtendedRosenbrock(TestProblem):
 	name = 'Extended Rosenbrock'
 	f_min = 0
 	plot_spec = PlotSpec((-1.5, 1.4), (-0.25, 1.25), (1e-3, 1000), True)
@@ -304,7 +304,7 @@ class ExtendedRosenbrock(TestFunction):
 			raise ValueError("n must be even")
 		
 		self.n = n
-		TestFunction.__init__(self, fEvalType, gEvalType, n=n)
+		TestProblem.__init__(self, fEvalType, gEvalType, n=n)
 		
 		x0 = []
 		for i in range(n):
@@ -335,7 +335,7 @@ class ExtendedRosenbrock(TestFunction):
 		
 		return e
 
-class ExtendedPowellSingular(TestFunction):
+class ExtendedPowellSingular(TestProblem):
 	name = 'Extended Powell singular'
 	f_min = 0
 	plot_spec = None
@@ -345,7 +345,7 @@ class ExtendedPowellSingular(TestFunction):
 			raise ValueError("n must be a multiple of 4")
 		self.n = n
 		
-		TestFunction.__init__(self, fEvalType, gEvalType, n=n)
+		TestProblem.__init__(self, fEvalType, gEvalType, n=n)
 		
 		x0 = []
 		for i in range(n):
@@ -386,7 +386,7 @@ class ExtendedPowellSingular(TestFunction):
 		return e
 		
 
-class PenaltyFunctionI(TestFunction):
+class PenaltyFunctionI(TestProblem):
 	name = 'Penalty function I'
 	stopcrit = FDistToMinTest(f_min=7.08765e-5, eps=1e-4, relative=True)
 	plot_spec = PlotSpec((-1, 1), (-1, 1), (1e-6, 10), True)
@@ -394,7 +394,7 @@ class PenaltyFunctionI(TestFunction):
 	def __init__(self, n, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
 		self.n = n
 		
-		TestFunction.__init__(self, fEvalType, gEvalType, n=n)
+		TestProblem.__init__(self, fEvalType, gEvalType, n=n)
 		
 		x0 = []
 		for i in range(n):
@@ -416,7 +416,7 @@ class PenaltyFunctionI(TestFunction):
     
 		return e;
 
-class PenaltyFunctionII(TestFunction):
+class PenaltyFunctionII(TestProblem):
 	name = 'Penalty function II'
 	stopcrit = FDistToMinTest(f_min=2.93660e-4, eps=1e-4, relative=True)
 	plot_spec = PlotSpec((-1, 1.25), (-2, 2), (1e-4, 50), True)
@@ -424,7 +424,7 @@ class PenaltyFunctionII(TestFunction):
 	def __init__(self, n, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
 		self.n = n
 		
-		TestFunction.__init__(self, fEvalType, gEvalType, n=n)
+		TestProblem.__init__(self, fEvalType, gEvalType, n=n)
 		
 		x0 = []
 		for i in range(n):
@@ -458,7 +458,7 @@ class PenaltyFunctionII(TestFunction):
     
 		return e
 		
-class VariablyDimensioned(TestFunction):
+class VariablyDimensioned(TestProblem):
 	name = 'Variably dimensioned'
 	f_min = 0
 	plot_spec = PlotSpec((0, 2), (0, 2), (1e-4, 100), True)
@@ -466,7 +466,7 @@ class VariablyDimensioned(TestFunction):
 	def __init__(self, n, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
 		self.n = n
 		
-		TestFunction.__init__(self, fEvalType, gEvalType, n=n)
+		TestProblem.__init__(self, fEvalType, gEvalType, n=n)
 		
 		x0 = []
 		for i in range(n):
@@ -493,7 +493,7 @@ class VariablyDimensioned(TestFunction):
 		
 		return e
 
-class Trigonometric(TestFunction):
+class Trigonometric(TestProblem):
 	name = 'Trigonometric'
 	f_min = 0
 	stopcrit = FDistToMinTest(f_min=0, eps=1e-5, relative=False)
@@ -502,7 +502,7 @@ class Trigonometric(TestFunction):
 	def __init__(self, n, fEvalType=FuncEvalType.symbolic, gEvalType=DerivEvalType.symbolic):
 		self.n = n
 		
-		TestFunction.__init__(self, fEvalType, gEvalType, n=n)
+		TestProblem.__init__(self, fEvalType, gEvalType, n=n)
 		
 		x0 = []
 		for i in range(n):
@@ -528,7 +528,7 @@ class Trigonometric(TestFunction):
     
 		return e
 
-class ChebyQuad(TestFunction):
+class ChebyQuad(TestProblem):
 	name = 'Chebyquad'
 	stopcrit = FDistToMinTest(f_min=3.51687e-3, eps=1e-5, relative=True)
 	plot_spec = PlotSpec((0, 1), (0, 1), (1, 10), False)
@@ -540,7 +540,7 @@ class ChebyQuad(TestFunction):
 		self.n = n
 		self.m = m
 		
-		TestFunction.__init__(self, fEvalType, gEvalType, n=n, m=m)
+		TestProblem.__init__(self, fEvalType, gEvalType, n=n, m=m)
 		
 		x0 = []
 		for i in range(n):

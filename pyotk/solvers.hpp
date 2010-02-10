@@ -3,6 +3,7 @@
 
 #include <otkpp/localsolvers/Solver.h>
 #include <otkpp/localsolvers/native/ConjGradMT.h>
+//#include <otkpp/localsolvers/native/DFQAS.h>
 #include <otkpp/localsolvers/native/DSQA.h>
 #include <otkpp/localsolvers/native/HookeJeeves.h>
 #include <otkpp/localsolvers/native/LinminBFGS.h>
@@ -65,8 +66,10 @@ void init_solvers()
       .add_property("states", make_getter(&NativeSolver::Results::states, return_value_policy< return_by_value >()));
   }
   
+  class_< GradientSolverBase, bases< NativeSolver >, boost::noncopyable >("GradientSolverBase", no_init);
+  
   {
-    scope nativegradientsolver_scope(class_< NativeGradientSolver, boost::noncopyable >("NativeGradientSolver", no_init));
+    scope nativegradientsolver_scope(class_< NativeGradientSolver, bases< GradientSolverBase >, boost::noncopyable >("NativeGradientSolver", no_init));
     class_< NativeGradientSolver::State, bases< NativeSolver::State >, boost::noncopyable >("State", no_init)
       .def_readonly("alpha", &NativeGradientSolver::State::alpha)
       .add_property("gx", make_getter(&NativeGradientSolver::State::g, return_value_policy< return_by_value >()));
@@ -77,6 +80,11 @@ void init_solvers()
     .value("PR", ConjGradMT::POLAK_RIBIERE);
   class_< ConjGradMT, bases< NativeGradientSolver > >("ConjGradMT",
     init< ConjGradMT::Type >());
+  
+  /*{
+    scope dfqas_scope(class_< DFQAS, bases< NativeSolver > >("DFQAS"));
+    class_< DFQAS::State, bases< NativeSolver::State > >("State");
+  }*/
   
   {
     scope dsqa_scope(class_< DSQA, bases< NativeSolver > >("DSQA"));

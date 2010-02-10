@@ -19,7 +19,6 @@
 #include <iostream>
 #include <string>
 
-
 using namespace boost::python;
 
 static const unsigned int MAX_NUM_ITER = 50000;

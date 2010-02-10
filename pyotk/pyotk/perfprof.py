@@ -99,10 +99,11 @@ True, the results are also plotted."""
 def main():
 	S = [ LRWWSimplex(),
         DSQA(),
+        #DFQAS(),
         SteihaugSR1(),
         #ConjGradMT(ConjGradType.FR),
         #ConjGradMT(ConjGradType.PR),
-        LinminBFGS(BFGSLmType.morethuente) ]
+        LinminBFGS(LinminBFGS.LinminType.morethuente) ]
 	
 	P1 = [ PowellBadlyScaled(),
          BrownBadlyScaled(),
