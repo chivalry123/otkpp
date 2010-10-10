@@ -2,8 +2,6 @@
 #ifndef CHOLESKY_HPP
 #define CHOLESKY_HPP
 
-//#include <cassert>
-
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_proxy.hpp>
 
@@ -44,9 +42,10 @@ template < class MATRIX, class TRIA >
     double qL_kk = A(k,k) - inner_prod( project( row(L, k), range(0, k) ),
                                         project( row(L, k), range(0, k) ) );
     
-    if (qL_kk <= 0) {
+    if (qL_kk <= 0)
       return 1 + k;
-    } else {
+    else
+    {
       double L_kk = sqrt( qL_kk );
       L(k,k) = L_kk;
       

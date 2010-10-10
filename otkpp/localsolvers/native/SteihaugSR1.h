@@ -36,3 +36,4 @@ class SteihaugSR1 : public NativeGradientSolver
 #define STEIHAUGSR1_H
 
 #endif
+

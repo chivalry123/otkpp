@@ -48,11 +48,11 @@ class Function
   Function(const FunctionEvaluator &fEval,
            DerivEvalType gEvalType);
   
-  /// Constructs a projection of an existing function.
+  /*/// Constructs a projection of an existing function.
   Function(const Function &f,
            const std::list< int > &idx,
            const vector< double > &x,
-           DerivEvalType gEvalType = DERIV_SYMBOLIC);
+           DerivEvalType gEvalType = DERIV_SYMBOLIC);*/
   
   virtual ~Function() { }
   

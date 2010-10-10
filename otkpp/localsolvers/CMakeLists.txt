@@ -1,6 +1,5 @@
 
-SET(INST_HEADERS "AbstractGradientSolver.h"
-                 "ExternalSolver.h"
+SET(INST_HEADERS "GradientSolverBase.h"
                  "Solver.h")
 
 INSTALL(FILES ${INST_HEADERS} DESTINATION include/otkpp/localsolvers)

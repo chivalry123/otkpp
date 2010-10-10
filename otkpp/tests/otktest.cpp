@@ -60,7 +60,7 @@ static void initAlgorithmList(std::list< NativeSolver * > &algoList)
   algoList.push_back(new LinminBFGS(LinminBFGS::FLETCHER));
   algoList.push_back(new LinminBFGS(LinminBFGS::MORE_THUENTE));
   algoList.push_back(new LinminBFGS(LinminBFGS::MORE_THUENTE, 8));
-  //algoList.push_back(new MNewton());
+  algoList.push_back(new MNewton());
   algoList.push_back(new PARTAN());
   algoList.push_back(new HookeJeeves());
   algoList.push_back(new ConjGradMT(ConjGradMT::FLETCHER_REEVES));

@@ -1,10 +1,12 @@
 
 SET(INST_HEADERS "ConjGradMT.h"
                  "DoglegBFGS.h"
-                 "GradientSolver.h"
+                 "DSQA.h"
                  "HookeJeeves.h"
                  "LinminBFGS.h"
+                 "LRWWSimplex.h"
                  "MNewton.h"
+                 "NativeGradientSolver.h"
                  "NativeSolver.h"
                  "PARTAN.h"
                  "SteihaugSR1.h")
@@ -13,3 +15,4 @@ INSTALL(FILES ${INST_HEADERS} DESTINATION include/otkpp/localsolvers/native)
 
 ADD_SUBDIRECTORY(linmin)
 ADD_SUBDIRECTORY(trsreg)
+

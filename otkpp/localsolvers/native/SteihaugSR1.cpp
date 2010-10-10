@@ -59,3 +59,4 @@ void SteihaugSR1::doSetup_(const Function &objFunc,
   p_.resize(n);
   H_ = identity_matrix< double >(n, n);
 }
+

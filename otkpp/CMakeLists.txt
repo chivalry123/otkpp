@@ -8,9 +8,11 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 #add definitions, compiler switches, etc.
 ADD_DEFINITIONS(-Wall -O2 -DNDEBUG)
 
-SET(OTKPP_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
+SET(OTKPP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../"
+                       ${CMAKE_CURRENT_SOURCE_DIR}
                        "${CMAKE_CURRENT_SOURCE_DIR}/constraints"
                        "${CMAKE_CURRENT_SOURCE_DIR}/function"
+                       "${CMAKE_CURRENT_SOURCE_DIR}/interpolation"
                        "${CMAKE_CURRENT_SOURCE_DIR}/lib"
                        "${CMAKE_CURRENT_SOURCE_DIR}/linalg"
                        "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers"
@@ -38,7 +40,6 @@ ENDIF(NOT QWTPLOT3D_INCLUDE_DIR)
 OPTION(WITH_FORTRAN "compile additional algorithms implemented in Fortran" ON)
 OPTION(WITH_GSL "compile with additional GSL algorithms" ON)
 OPTION(WITH_LIBMATHEVAL "compile with symbolic evaluation support" ON)
-#OPTION(WITH_PYTHON "compile with Python support" ON)
 OPTION(WITH_QT "compile with Qt-based gui" ON)
 SET(QT_UIC_EXECUTABLE "" uic-qt4)
 SET(QT_MOC_EXECUTABLE "" moc-qt4)
@@ -57,7 +58,7 @@ ENDIF(WITH_LIBMATHEVAL)
 
 ADD_SUBDIRECTORY(constraints)
 ADD_SUBDIRECTORY(function)
-#ADD_SUBDIRECTORY(globalsolvers)
+ADD_SUBDIRECTORY(interpolation)
 ADD_SUBDIRECTORY(lib)
 ADD_SUBDIRECTORY(linalg)
 ADD_SUBDIRECTORY(localsolvers)

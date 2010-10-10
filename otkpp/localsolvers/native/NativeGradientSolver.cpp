@@ -33,3 +33,4 @@ void NativeGradientSolver::doSetup_(const Function &objFunc,
   getState_().g.resize(objFunc.getN());
   objFunc.g(x0, getState_().g);
 }
+

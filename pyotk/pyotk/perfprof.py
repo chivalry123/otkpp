@@ -1,10 +1,10 @@
 """Implements tools for computing performance profiles.
 
-This module implements an utility for computing 
-the Dolan and More performance profiles for a 
-set of solvers given set on a given set of test 
-problems. For the definition of a performance 
-profile, see
+This module implements tools for computing 
+the Dolan and More performance profiles for 
+a set of solvers on a given set of test 
+problems. For the definition of performance 
+profiles, see
 
 E.D. Dolan and J.J. More, Benchmarking optimization 
 software with performance profiles, Mathematical 

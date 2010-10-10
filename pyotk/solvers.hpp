@@ -20,7 +20,7 @@
 #endif
 #ifdef WITH_FORTRAN
 #include <otkpp/localsolvers/lbfgsb/LBFGSB.h>
-#include <otkpp/localsolvers/lmbm/LMBM.h>
+//#include <otkpp/localsolvers/lmbm/LMBM.h>
 #endif
 
 #include <boost/python.hpp>

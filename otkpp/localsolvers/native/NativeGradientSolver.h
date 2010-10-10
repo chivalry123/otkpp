@@ -41,3 +41,4 @@ class NativeGradientSolver : public GradientSolverBase
 #define NATIVEGRADIENTSOLVER_H
 
 #endif
+

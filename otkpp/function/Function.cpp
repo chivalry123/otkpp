@@ -50,7 +50,7 @@ Function::Function(const FunctionEvaluator &fEval,
     throw std::runtime_error("unsupported gradient evaluator type");
 }
 
-Function::Function(const Function &f,
+/*Function::Function(const Function &f,
                    const std::list< int > &idx,
                    const vector< double > &x,
                    DerivEvalType gEvalType)
@@ -61,7 +61,7 @@ Function::Function(const Function &f,
   eval_.g = NULL;
   eval_.H = NULL;*/
   // TODO: gradient and Hessian evaluators
-}
+//}
 
 double Function::operator()(const double *x) const
 {
