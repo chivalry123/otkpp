@@ -23,7 +23,7 @@ class SymbolicHessianEvaluator : public Cloneable< SymbolicHessianEvaluator, Hes
    */
   SymbolicHessianEvaluator(SymbolicFunctionEvaluator *fe, SymbolicGradientEvaluator *ge);
   
-  /// Constructs a symbolic gradient evaluator from an existing symbolic gradient evaluator.
+  /// Constructs a new evaluator as a copy of an existing symbolic Hessian evaluator.
   /**
    * This constructor generates a copy of en existing symbolic 
    * Hessian evaluator. The reference count of the source Hessian 

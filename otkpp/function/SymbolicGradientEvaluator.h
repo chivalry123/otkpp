@@ -22,10 +22,10 @@ class SymbolicGradientEvaluator : public Cloneable< SymbolicGradientEvaluator, G
    */
   SymbolicGradientEvaluator(SymbolicFunctionEvaluator *fe);
   
-  /// Constructs a symbolic gradient evaluator from an existing symbolic gradient evaluator.
+  /// Constructs a new evaluator as a copy of an existing symbolic gradient evaluator.
   /**
    * This constructor generates a copy of en existing symbolic 
-   * gradient evaluator. The reference count of the souce 
+   * gradient evaluator. The reference count of the source 
    * gradient evaluator is incremented.
    */
   SymbolicGradientEvaluator(const SymbolicGradientEvaluator &eval);
@@ -36,14 +36,10 @@ class SymbolicGradientEvaluator : public Cloneable< SymbolicGradientEvaluator, G
   /// Assigns an existing evaluator to this evaluator.
   SymbolicGradientEvaluator &operator=(const SymbolicGradientEvaluator &eval);
   
-  /// Returns the ith libmatheval partial derivative evaluator.
+  /// Returns the libmatheval evaluator for the ith partial derivative.
   const void *getEvalPtr(int i);
   
-  /// Returns the number of variables.
-  /**
-   * Returns the number of variables in the function evaluator 
-   * this gradient evaluator is associated with.
-   */
+  /// Returns the number of variables in the function expression.
   int getN() const { return n_; }
   
   bool usesFiniteDifference() const { return false; }
@@ -53,8 +49,7 @@ class SymbolicGradientEvaluator : public Cloneable< SymbolicGradientEvaluator, G
   int n_;
   int *refCount_;
   
-  double *eval_(const double *x,
-                double *g) const;
+  double *eval_(const double *x, double *g) const;
 };
 
 #define SYMBOLICGRADIENTEVALUATOR_H

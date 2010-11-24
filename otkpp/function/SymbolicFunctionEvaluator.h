@@ -21,7 +21,7 @@ class SymbolicFunctionEvaluator : public Cloneable< SymbolicFunctionEvaluator, F
   /// Constructs a new symbolic function evaluator from the given function expression.
   SymbolicFunctionEvaluator(const std::string &expr);
   
-  /// Copies this valuator from an existing evaluator.
+  /// Constructs a new evaluator as a copy of an existing symbolic function evaluator.
   SymbolicFunctionEvaluator(const SymbolicFunctionEvaluator &eval);
   
   /// Destroys this evaluator and deallocates memory associated with it.
@@ -30,16 +30,16 @@ class SymbolicFunctionEvaluator : public Cloneable< SymbolicFunctionEvaluator, F
   /// Assigns an existing evaluator to this evaluator.
   SymbolicFunctionEvaluator &operator=(const SymbolicFunctionEvaluator &eval);
   
-  /// Returns the symbolic function expression.
+  /// Returns the symbolic function expression of this evaluator.
   std::string getExpression() const;
   
-  /// Returns the allocated libmatheval object.
+  /// Returns the libmatheval object allocated by this evaluator.
   const void *getEvaluator() const { return fEval_; }
   
   /// Returns the variable names parsed by libmatheval.
   const char **getVarNames() const { return (const char **)varNames_; }
   
-  /// Returns the number of variable names parsed by libmatheval.
+  /// Returns the number of variables parsed by libmatheval.
   int getN() const;
   
   bool hasSymbolicExpression() const;

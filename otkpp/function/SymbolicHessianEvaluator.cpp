@@ -70,7 +70,6 @@ matrix< double > &SymbolicHessianEvaluator::eval_(const vector< double > &x,
                                                   matrix< double > &H) const
 {
   const int n = fEval_->getN();
-  
   int i, j;
   
   for(i = 0; i < n; i++)
@@ -78,8 +77,8 @@ matrix< double > &SymbolicHessianEvaluator::eval_(const vector< double > &x,
     for(j = 0; j <= i; j++)
     {
       H(i, j) = evaluator_evaluate(HEval_[i][j], n,
-                                   const_cast< char ** >(fEval_->getVarNames()),
-                                   const_cast< double * >(&x[0]));
+        const_cast< char ** >(fEval_->getVarNames()),
+        const_cast< double * >(&x[0]));
     }
   }
   

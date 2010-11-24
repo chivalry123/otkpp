@@ -54,13 +54,11 @@ const void *SymbolicGradientEvaluator::getEvalPtr(int i)
   return gEval_[i];
 }
 
-double *SymbolicGradientEvaluator::eval_(const double *x,
-                                         double *g) const
+double *SymbolicGradientEvaluator::eval_(const double *x, double *g) const
 {
   for(int i = 0; i < getN(); i++)
     g[i] = evaluator_evaluate(gEval_[i], getN(),
-                              const_cast< char ** >(fEval_->getVarNames()),
-                              (double *)x);
+      const_cast< char ** >(fEval_->getVarNames()), (double *)x);
   
   return g;
 }
