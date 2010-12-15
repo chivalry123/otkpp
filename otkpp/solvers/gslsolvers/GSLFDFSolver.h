@@ -1,8 +1,8 @@
 
 #ifndef GSLFDFSOLVER_H
 
-#include <otkpp/localsolvers/native/NativeGradientSolver.h>
-#include <otkpp/localsolvers/gslsolvers/GSLUtils.h>
+#include <otkpp/solvers/native/NativeGradientSolver.h>
+#include <otkpp/solvers/gslsolvers/GSLUtils.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>

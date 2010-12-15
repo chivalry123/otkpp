@@ -1,8 +1,7 @@
 
 #ifndef NATIVESOLVER_H
 
-//#include <otkpp/lib/clone_ptr.hpp>
-#include <otkpp/localsolvers/Solver.h>
+#include <otkpp/solvers/Solver.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>

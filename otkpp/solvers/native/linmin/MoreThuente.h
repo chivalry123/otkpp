@@ -1,7 +1,7 @@
 
 #ifndef MORETHUENTE_H
 
-#include <otkpp/localsolvers/native/linmin/LineMinimizer.h>
+#include <otkpp/solvers/native/linmin/LineMinimizer.h>
 
 /// Implements the More and Thuente line search algorithm.
 class MoreThuente : public LineMinimizer

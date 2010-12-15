@@ -1,7 +1,7 @@
 
 #ifndef NATIVEGRADIENTSOLVER_H
 
-#include <otkpp/localsolvers/GradientSolverBase.h>
+#include <otkpp/solvers/GradientSolverBase.h>
 
 class LineMinimizer;
 

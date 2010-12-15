@@ -1,33 +1,30 @@
 
-#ifndef PARTAN_H
+#ifndef STEIHAUGSR1_H
 
-#include <otkpp/localsolvers/native/NativeGradientSolver.h>
+#include <otkpp/linalg/SR1Updater.h>
+#include <otkpp/solvers/native/NativeGradientSolver.h>
+#include <otkpp/solvers/native/trsreg/SteihaugSolver.h>
 
-class LineMinimizer;
-
-/// Implements the PARTAN (parallel tangents) algorithm.
-class PARTAN : public NativeGradientSolver
+/// Implements the BFGS algorithm with Steihaug's trust region method.
+class SteihaugSR1 : public NativeGradientSolver
 {
  public:
   struct State : public Cloneable< State, NativeGradientSolver::State > { };
   
-  PARTAN();
-  ~PARTAN();
-  
+  SteihaugSR1();
+  ~SteihaugSR1();
+
   std::string getName() const;
   const State &getState() const { return state_; }
   bool usesGradient() const;
   bool usesHessian() const;
  private:
-  vector< double > d_;
-  LineMinimizer *lineMinimizer_;
-  int j_;
-  int iterState_;
-  vector< double > xMinus_;
-  double fMinus_;
-  vector< double > gMinus_;
+  matrix< double > H_;
+  SR1Updater matrixUpdater_;
+  vector< double > p_;
+  vector< double > q_;
   State state_;
-  vector< double > y_;
+  SteihaugSolver trSolver_;
   
   void doSetup_(const Function &objFunc,
                 const vector< double > &x0,
@@ -36,6 +33,7 @@ class PARTAN : public NativeGradientSolver
   IterationStatus iterate_();
 };
 
-#define PARTAN_H
+#define STEIHAUGSR1_H
 
 #endif
+

@@ -1,14 +1,15 @@
 
-#ifndef DOGLEGSOLVER_H
+#ifndef STEIHAUGSOLVER_H
 
-#include <otkpp/localsolvers/native/trsreg/TrustRegionSolver.h>
+#include <otkpp/function/Function.h>
+#include <otkpp/solvers/native/trsreg/TrustRegionSolver.h>
 
-/// Implements the dogleg trust region algorithm.
-class DoglegSolver : public TrustRegionSolver
+/// Implements Steihaug's trust region algorithm.
+class SteihaugSolver : public TrustRegionSolver
 {
  public:
-   DoglegSolver();
-   
+  SteihaugSolver();
+  
   vector< double > &computeStep(const vector< double > &x,
                                 double fx,
                                 const vector< double > &g,
@@ -19,12 +20,13 @@ class DoglegSolver : public TrustRegionSolver
                                 double &fxPlus,
                                 const vector< double > *Hg = NULL);
  private:
-  double computeTau_(const vector< double > &pB,
-                     const vector< double > &pU);
+  double computeTau_(const vector< double > &d,
+                     const vector< double > &p);
   
   void doSetup_();
 };
 
-#define DOGLEGSOLVER_H
+#define STEIHAUGSOLVER_H
 
 #endif
+

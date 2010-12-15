@@ -1,7 +1,7 @@
 
 #ifndef HOOKEJEEVES_H
 
-#include <otkpp/localsolvers/native/NativeSolver.h>
+#include <otkpp/solvers/native/NativeSolver.h>
 
 /// Implements the derivative-free Hooke-Jeeves algorithm.
 class HookeJeeves : public NativeSolver

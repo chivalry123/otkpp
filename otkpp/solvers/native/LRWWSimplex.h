@@ -1,7 +1,7 @@
 
 #ifndef LRWWSIMPLEX_H
 
-#include <otkpp/localsolvers/native/NativeSolver.h>
+#include <otkpp/solvers/native/NativeSolver.h>
 
 class LRWWSimplex : public NativeSolver
 {

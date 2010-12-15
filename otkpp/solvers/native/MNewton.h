@@ -1,7 +1,7 @@
 
 #ifndef MNEWTON_H
 
-#include <otkpp/localsolvers/native/NativeGradientSolver.h>
+#include <otkpp/solvers/native/NativeGradientSolver.h>
 
 class Solver;
 

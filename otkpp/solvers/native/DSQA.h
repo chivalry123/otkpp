@@ -2,7 +2,7 @@
 #ifndef DSQA_H
 
 #include <otkpp/interpolation/QuadInterp.h>
-#include <otkpp/localsolvers/native/NativeSolver.h>
+#include <otkpp/solvers/native/NativeSolver.h>
 
 /// An experimental direct search algorithm with quadratic interpolation (similar to Powell's UOBYQA).
 class DSQA : public NativeSolver

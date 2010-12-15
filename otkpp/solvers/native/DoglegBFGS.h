@@ -3,8 +3,8 @@
 
 #include <otkpp/linalg/BFGSUpdater.h>
 #include <otkpp/linalg/LBFGSUpdater.h>
-#include <otkpp/localsolvers/native/trsreg/DoglegSolver.h>
-#include <otkpp/localsolvers/native/NativeGradientSolver.h>
+#include <otkpp/solvers/native/trsreg/DoglegSolver.h>
+#include <otkpp/solvers/native/NativeGradientSolver.h>
 
 /// Implements the BFGS algorithm with the "dogleg" strategy.
 class DoglegBFGS : public NativeGradientSolver

@@ -15,14 +15,14 @@ SET(OTKPP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../"
                        "${CMAKE_CURRENT_SOURCE_DIR}/interpolation"
                        "${CMAKE_CURRENT_SOURCE_DIR}/lib"
                        "${CMAKE_CURRENT_SOURCE_DIR}/linalg"
-                       "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers"
-                       "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/gslsolvers"
-                       "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/lbfgsb"
-                       #"${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/lmbm"
-                       "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/native"
-                       "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/native/linmin"
-                       "${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/native/trsreg"
-                       #"${CMAKE_CURRENT_SOURCE_DIR}/localsolvers/newuoa"
+                       "${CMAKE_CURRENT_SOURCE_DIR}/solvers"
+                       "${CMAKE_CURRENT_SOURCE_DIR}/solvers/gslsolvers"
+                       "${CMAKE_CURRENT_SOURCE_DIR}/solvers/lbfgsb"
+                       #"${CMAKE_CURRENT_SOURCE_DIR}/solvers/lmbm"
+                       "${CMAKE_CURRENT_SOURCE_DIR}/solvers/native"
+                       "${CMAKE_CURRENT_SOURCE_DIR}/solvers/native/linmin"
+                       "${CMAKE_CURRENT_SOURCE_DIR}/solvers/native/trsreg"
+                       #"${CMAKE_CURRENT_SOURCE_DIR}/solvers/newuoa"
                        "${CMAKE_CURRENT_SOURCE_DIR}/stopcrit"
                        "${CMAKE_CURRENT_SOURCE_DIR}/testproblems"
                        "${CMAKE_CURRENT_SOURCE_DIR}/tests")
@@ -61,7 +61,7 @@ ADD_SUBDIRECTORY(function)
 ADD_SUBDIRECTORY(interpolation)
 ADD_SUBDIRECTORY(lib)
 ADD_SUBDIRECTORY(linalg)
-ADD_SUBDIRECTORY(localsolvers)
+ADD_SUBDIRECTORY(solvers)
 #IF(WITH_PYTHON)
 #  ADD_SUBDIRECTORY(python)
 #ENDIF(WITH_PYTHON)

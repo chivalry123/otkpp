@@ -2,7 +2,7 @@
 #ifndef FDISTTOMINTEST_H
 
 #include <otkpp/lib/Cloneable.h>
-#include <otkpp/localsolvers/native/NativeSolver.h>
+#include <otkpp/solvers/native/NativeSolver.h>
 #include <otkpp/stopcrit/StoppingCriterion.h>
 
 /// Implements stopping criterion for \f$f(\mathbf{x}_{k})-f(\mathbf{x}^*)\f$.

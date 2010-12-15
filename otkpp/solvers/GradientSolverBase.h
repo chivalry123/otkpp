@@ -2,7 +2,7 @@
 #ifndef GRADIENTSOLVERBASE_H
 
 #include <otkpp/function/Function.h>
-#include <otkpp/localsolvers/native/NativeSolver.h>
+#include <otkpp/solvers/native/NativeSolver.h>
 
 /// Defines the interface for gradient-based solvers.
 class GradientSolverBase : public NativeSolver

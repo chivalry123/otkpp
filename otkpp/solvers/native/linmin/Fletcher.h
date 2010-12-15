@@ -1,7 +1,7 @@
 
 #ifndef FLETCHER_H
 
-#include <otkpp/localsolvers/native/linmin/LineMinimizer.h>
+#include <otkpp/solvers/native/linmin/LineMinimizer.h>
 
 /// Implements Fletcher's line search algorithm.
 class Fletcher : public LineMinimizer

@@ -3,8 +3,8 @@
 
 #include <otkpp/linalg/InvLBFGSUpdater.h>
 #include <otkpp/linalg/QuasiNewtonUpdater.h>
-#include <otkpp/localsolvers/native/NativeGradientSolver.h>
-#include <otkpp/localsolvers/native/linmin/LineMinimizer.h>
+#include <otkpp/solvers/native/NativeGradientSolver.h>
+#include <otkpp/solvers/native/linmin/LineMinimizer.h>
 
 class LineMinimizer;
 

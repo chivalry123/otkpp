@@ -1,7 +1,7 @@
 
 #ifndef LBFGSB_H
 
-#include <otkpp/localsolvers/native/NativeGradientSolver.h>
+#include <otkpp/solvers/native/NativeGradientSolver.h>
 #include <otkpp/constraints/BoundConstraints.h>
 
 /// A wrapper class for Nocedal's L-BFGS-B Fortran implementation.

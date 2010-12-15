@@ -1,8 +1,8 @@
 
 #ifndef CONJGRADMT_H
 
-#include <otkpp/localsolvers/native/NativeGradientSolver.h>
-#include <otkpp/localsolvers/native/linmin/MoreThuente.h>
+#include <otkpp/solvers/native/NativeGradientSolver.h>
+#include <otkpp/solvers/native/linmin/MoreThuente.h>
 
 class MoreThuente;
 
