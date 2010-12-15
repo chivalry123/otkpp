@@ -6,9 +6,9 @@
 #include <list>
 #include <string>
 
-#include <otkpp/function/FunctionEvaluator.h>
-#include <otkpp/function/GradientEvaluator.h>
-#include <otkpp/function/HessianEvaluator.h>
+#include <otkpp/objfunc/FunctionEvaluator.h>
+#include <otkpp/objfunc/GradientEvaluator.h>
+#include <otkpp/objfunc/HessianEvaluator.h>
 
 using namespace boost::numeric::ublas;
 

@@ -3,13 +3,13 @@ SET(INST_HEADERS "Cloneable.h"
                  "OTK.h")
 
 SET(OTKPP_SRCS "../constraints/BoundConstraints.cpp"
-               "../function/EvalCountable.cpp"
-               "../function/FDiffGradientEvaluator.cpp"
-               "../function/FDiffHessianEvaluator.cpp"
-               "../function/Function.cpp"
-               "../function/FunctionEvaluator.cpp"
-               "../function/GradientEvaluator.cpp"
-               "../function/HessianEvaluator.cpp"
+               "../objfunc/EvalCountable.cpp"
+               "../objfunc/FDiffGradientEvaluator.cpp"
+               "../objfunc/FDiffHessianEvaluator.cpp"
+               "../objfunc/Function.cpp"
+               "../objfunc/FunctionEvaluator.cpp"
+               "../objfunc/GradientEvaluator.cpp"
+               "../objfunc/HessianEvaluator.cpp"
                "../interpolation/QuadInterp.cpp"
                "../linalg/BFGSUpdater.cpp"
                "../linalg/LBFGSUpdater.cpp"
@@ -34,6 +34,7 @@ SET(OTKPP_SRCS "../constraints/BoundConstraints.cpp"
                "../solvers/native/NativeGradientSolver.cpp"
                "../solvers/native/NativeSolver.cpp"
                "../solvers/native/PARTAN.cpp"
+               "../solvers/native/Rosenbrock.cpp"
                "../solvers/native/SteihaugSR1.cpp"
                "../stopcrit/CompoundStoppingCriterion.cpp"
                "../stopcrit/FDistToMinTest.cpp"
@@ -51,9 +52,9 @@ IF(WITH_GSL)
   SET(OTKPP_SRCS ${OTKPP_SRCS} ${OTKPP_GSL_SRCS})
 ENDIF(WITH_GSL)
 
-SET(OTKPP_MATHEVAL_SRCS "../function/SymbolicFunctionEvaluator.cpp"
-                        "../function/SymbolicGradientEvaluator.cpp"
-                        "../function/SymbolicHessianEvaluator.cpp")
+SET(OTKPP_MATHEVAL_SRCS "../objfunc/SymbolicFunctionEvaluator.cpp"
+                        "../objfunc/SymbolicGradientEvaluator.cpp"
+                        "../objfunc/SymbolicHessianEvaluator.cpp")
 
 IF(WITH_LIBMATHEVAL)
   SET(OTKPP_SRCS ${OTKPP_SRCS} ${OTKPP_MATHEVAL_SRCS})

@@ -1,7 +1,7 @@
 
 #ifndef LINEMINIMIZER_H
 
-#include <otkpp/function/Function.h>
+#include <otkpp/objfunc/Function.h>
 #include <otkpp/lib/Cloneable.h>
 
 #include <boost/numeric/ublas/vector.hpp>

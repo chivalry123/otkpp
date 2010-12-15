@@ -6,7 +6,7 @@ ADD_EXECUTABLE(otktest otktest.cpp)
 TARGET_LINK_LIBRARIES(otktest otkpp rt)
 
 IF(WITH_FORTRAN)
-  TARGET_LINK_LIBRARIES(otktest otkpp_fortran gfortran)
+  TARGET_LINK_LIBRARIES(otktest otkpp_fortran)
 ENDIF(WITH_FORTRAN)
 
 IF(WITH_GSL)

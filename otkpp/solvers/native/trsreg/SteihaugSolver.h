@@ -1,7 +1,6 @@
 
 #ifndef STEIHAUGSOLVER_H
 
-#include <otkpp/function/Function.h>
 #include <otkpp/solvers/native/trsreg/TrustRegionSolver.h>
 
 /// Implements Steihaug's trust region algorithm.

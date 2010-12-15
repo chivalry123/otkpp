@@ -1,7 +1,7 @@
 
 #ifndef HESSIANEVALUATOR_H
 
-#include <otkpp/function/EvalCountable.h>
+#include <otkpp/objfunc/EvalCountable.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>

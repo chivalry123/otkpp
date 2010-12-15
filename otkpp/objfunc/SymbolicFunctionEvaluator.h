@@ -2,7 +2,7 @@
 #ifndef SYMBOLICFUNCTIONEVALUATOR_H
 
 #include <otkpp/lib/Cloneable.h>
-#include <otkpp/function/FunctionEvaluator.h>
+#include <otkpp/objfunc/FunctionEvaluator.h>
 
 #include <boost/numeric/ublas/vector.hpp>
 #include <list>

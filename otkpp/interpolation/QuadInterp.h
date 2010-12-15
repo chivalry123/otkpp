@@ -1,7 +1,7 @@
 
 #ifndef QUADINTERP_H
 
-#include <otkpp/function/Function.h>
+#include <otkpp/objfunc/Function.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>

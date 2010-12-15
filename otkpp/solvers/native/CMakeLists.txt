@@ -9,6 +9,7 @@ SET(INST_HEADERS "ConjGradMT.h"
                  "NativeGradientSolver.h"
                  "NativeSolver.h"
                  "PARTAN.h"
+                 "Rosenbrock.h"
                  "SteihaugSR1.h")
 
 INSTALL(FILES ${INST_HEADERS} DESTINATION include/otkpp/localsolvers/native)

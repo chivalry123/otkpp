@@ -2,9 +2,9 @@
 #ifndef SYMBOLICHESSIANEVALUATOR_H
 
 #include <otkpp/lib/Cloneable.h>
-#include <otkpp/function/HessianEvaluator.h>
-#include <otkpp/function/SymbolicFunctionEvaluator.h>
-#include <otkpp/function/SymbolicGradientEvaluator.h>
+#include <otkpp/objfunc/HessianEvaluator.h>
+#include <otkpp/objfunc/SymbolicFunctionEvaluator.h>
+#include <otkpp/objfunc/SymbolicGradientEvaluator.h>
 
 /// Implements a symbolic Hessian evaluator.
 /**

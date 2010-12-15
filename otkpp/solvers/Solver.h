@@ -2,7 +2,7 @@
 #ifndef SOLVER_H
 
 #include <otkpp/constraints/Constraints.h>
-#include <otkpp/function/Function.h>
+#include <otkpp/objfunc/Function.h>
 
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/shared_ptr.hpp>

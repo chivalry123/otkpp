@@ -2,8 +2,8 @@
 #ifndef FDIFFGRADIENTEVALUATOR_H
 
 #include <otkpp/lib/Cloneable.h>
-#include <otkpp/function/FunctionEvaluator.h>
-#include <otkpp/function/GradientEvaluator.h>
+#include <otkpp/objfunc/FunctionEvaluator.h>
+#include <otkpp/objfunc/GradientEvaluator.h>
 
 /// Implements a finite-difference gradient evaluator.
 class FDiffGradientEvaluator : public Cloneable< FDiffGradientEvaluator, GradientEvaluator >

@@ -2,8 +2,8 @@
 #ifndef SYMBOLICGRADIENTEVALUATOR_H
 
 #include <otkpp/lib/Cloneable.h>
-#include <otkpp/function/GradientEvaluator.h>
-#include <otkpp/function/SymbolicFunctionEvaluator.h>
+#include <otkpp/objfunc/GradientEvaluator.h>
+#include <otkpp/objfunc/SymbolicFunctionEvaluator.h>
 
 /// Implements a symbolic gradient evaluator.
 /**

@@ -8,8 +8,8 @@
 #ifndef MGHTESTFUNCTION_H
 
 #include <otkpp/lib/Cloneable.h>
-#include <otkpp/function/Function.h>
-#include <otkpp/function/FunctionEvaluator.h>
+#include <otkpp/objfunc/Function.h>
+#include <otkpp/objfunc/FunctionEvaluator.h>
 
 template < typename T, int N > class TFEvaluator_fixed_n : 
   public Cloneable< T, FunctionEvaluator >

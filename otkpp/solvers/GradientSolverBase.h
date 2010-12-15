@@ -1,7 +1,7 @@
 
 #ifndef GRADIENTSOLVERBASE_H
 
-#include <otkpp/function/Function.h>
+#include <otkpp/objfunc/Function.h>
 #include <otkpp/solvers/native/NativeSolver.h>
 
 /// Defines the interface for gradient-based solvers.

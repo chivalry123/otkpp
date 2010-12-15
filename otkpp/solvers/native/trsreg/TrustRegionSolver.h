@@ -1,7 +1,7 @@
 
 #ifndef TRUSTREGIONSOLVER_H
 
-#include <otkpp/function/Function.h>
+#include <otkpp/objfunc/Function.h>
 
 /// A base class for trust region algorithms.
 class TrustRegionSolver
