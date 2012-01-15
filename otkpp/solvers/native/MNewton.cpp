@@ -3,8 +3,6 @@
 #include "MNewton.h"
 #include "MoreThuente.h"
 
-#include <boost/numeric/ublas/triangular.hpp>
-
 MNewton::MNewton()
 {
   lineMinimizer_ = new MoreThuente();
@@ -37,11 +35,11 @@ NativeSolver::IterationStatus MNewton::iterate_()
   setup_->f.H(state_.x, H_);
   d_ = -state_.g;
   int r = cholesky_decompose(H_, H_chol_);
-  /*while(r != 0)
+  while(r != 0)
   {
-    H_ = H_ + 1e-3 * identity_matrix< double >(n_);
+    H_ = H_ + 1e-3 * identity_matrix< double >(setup_->n);
     r = cholesky_decompose(H_, H_chol_);
-  }*/
+  }
   inplace_solve(H_chol_, d_, lower_tag());
   inplace_solve(trans(H_chol_), d_, upper_tag());
   

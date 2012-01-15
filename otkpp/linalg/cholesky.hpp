@@ -56,7 +56,7 @@ template < class MATRIX, class TRIA >
                     project(row(L, k), range(0, k) ) ) ) / L_kk;
     }
   }
-  return 0;      
+  return 0;
 }
 
 

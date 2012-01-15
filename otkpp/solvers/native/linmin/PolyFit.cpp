@@ -78,9 +78,7 @@ int quad_minimizer2 (double a, double dfa,
      isnan(b) || isinf(b) || isnan(dfb) || isinf(dfb))
     return OTK::DOMAIN_ERROR;
   
-  double denom;
-  
-  denom = dfa - dfb;
+  double denom = dfa - dfb;
   
   if(fabs(denom) < OTK::EPS)
     return OTK::ZERO_DIVISION;

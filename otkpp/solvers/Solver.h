@@ -38,21 +38,17 @@ class Solver
   };
   
   /// Defines the results of a solver.
-  /**
-   * This class defines the results produced by 
-   * iteration of a solver.
-   */
   struct Results
   {
-    bool converged;                     ///< was the chosen stopping criterion satisfied
-    double fMin;                        ///< final function value
-    unsigned int numFuncEval;           ///< the number of used function evaluations
-    unsigned int numGradEval;           ///< the number of used gradient evaluations
-    unsigned int numIter;               ///< the number of used iterations
-    boost::shared_ptr< Setup > setup;   ///< the used input parameters
-    double termVal;                     ///< the final termination test value
-    double time;                        ///< used time
-    vector< double > xMin;              ///< the final iterate
+    bool converged;                   ///< was the chosen stopping criterion satisfied
+    double fMin;                      ///< final function value
+    unsigned int numFuncEval;         ///< the number of used function evaluations
+    unsigned int numGradEval;         ///< the number of used gradient evaluations
+    unsigned int numIter;             ///< the number of used iterations
+    boost::shared_ptr< Setup > setup; ///< the used input parameters
+    double termVal;                   ///< the final termination test value
+    double time;                      ///< used CPU time
+    vector< double > xMin;            ///< the final iterate
     
     virtual ~Results() { };
   };
@@ -76,9 +72,8 @@ class Solver
   
   /// Initializes this solver.
   /**
-   * Initializes this solver with objective 
-   * function objFunc and starting point x0. 
-   * The dimensions of objFunc and x0 must match.
+   * Initializes this solver with objective function objFunc and starting 
+   * point x0. The dimensions of objFunc and x0 must match.
    * @param objFunc objective function
    * @param x0 starting point
    * @param solverSetup a structure containing algorithm-specific parameters
@@ -97,12 +92,13 @@ class Solver
    * @param stopCrit stopping criterion
    * @return a SolverResults structure containing the results
    */
-  virtual boost::shared_ptr< Solver::Results > solve(Function &objFunc,
-                                                     const vector< double > &x0,
-                                                     const StoppingCriterion &stopCrit,
-                                                     const Setup &solverSetup = DefaultSetup(),
-                                                     const Constraints &C = NoConstraints(),
-                                                     bool timeTest = false) = 0;
+  virtual boost::shared_ptr< Solver::Results > solve(
+    Function &objFunc,
+    const vector< double > &x0,
+    const StoppingCriterion &stopCrit,
+    const Setup &solverSetup = DefaultSetup(),
+    const Constraints &C = NoConstraints(),
+    bool timeTest = false) = 0;
   
   /// Does this solver support the given constraints.
   virtual bool supportsConstraints(const Constraints &C) { return false; }

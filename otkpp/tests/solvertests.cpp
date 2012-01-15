@@ -34,60 +34,87 @@
 #include <list>
 #include <string>
 
-static const std::string F_EXPR = "(1-x)^2+100*(y-x*x)^2";
-//static const std::string F_EXPR = "(1.5-x*(1-y))^2+(2.25-x*(1-y^2))^2+(2.625-x*(1-y^3))^2";
-//static const std::string F_EXPR = "x*x+y*y";
-static const unsigned int MAX_NUM_ITER = 1000;
-
-static void initSolvers(std::list< NativeSolver * > &solvers)
+struct Fixture
 {
+  const std::string F_EXPR;
+  const unsigned int MAX_NUM_ITER;
+  
+  std::list< NativeSolver * > solvers;
+  CompoundStoppingCriterion *stopCrit;
+  std::list< Function * > testFunctions;
+  vector< double > xMin;
+  
+  //F_EXPR = "(1.5-x*(1-y))^2+(2.25-x*(1-y^2))^2+(2.625-x*(1-y^3))^2";
+  //F_EXPR = "x*x+y*y";
+
+  Fixture() : F_EXPR("(1-x)^2+100*(y-x*x)^2"), MAX_NUM_ITER(1000), 
+    xMin(vector< double >(2))
+  {
+    initSolvers_();
+    initTestFunctions_();
+    xMin[0] = xMin[1] = 1.0;
+    stopCrit = new CompoundStoppingCriterion(
+      XDistToMinTest(xMin, 1e-6, false) + MaxNumIterTest(MAX_NUM_ITER));
+  }
+  
+  ~Fixture()
+  {
+    freeSolvers_();
+    freeTestFunctions_();
+    delete stopCrit;
+  }
+
+  void freeSolvers_()
+  {
+    std::list< NativeSolver * >::iterator it;
+    for(it = solvers.begin(); it != solvers.end(); it++)
+      delete *it;
+  }
+
+  void freeTestFunctions_()
+  {
+    std::list< Function * >::iterator it;
+    for(it = testFunctions.begin(); it != testFunctions.end(); it++)
+      delete *it;
+  }
+
+  void initSolvers_()
+  {
 #ifdef WITH_GSL
-  solvers.push_back(new GSLFSolver(gsl_multimin_fminimizer_nmsimplex));
-  solvers.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_fr));
-  solvers.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_pr));
-  solvers.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs));
-  solvers.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2));
+    solvers.push_back(new GSLFSolver(gsl_multimin_fminimizer_nmsimplex));
+    solvers.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_fr));
+    solvers.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_conjugate_pr));
+    solvers.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs));
+    solvers.push_back(new GSLFDFSolver(gsl_multimin_fdfminimizer_vector_bfgs2));
 #endif
-  solvers.push_back(new DSQA());
-  solvers.push_back(new LRWWSimplex());
-  solvers.push_back(new DoglegBFGS());
-  solvers.push_back(new SteihaugSR1());
-  solvers.push_back(new LinminBFGS(LinminBFGS::FLETCHER));
-  solvers.push_back(new LinminBFGS(LinminBFGS::MORE_THUENTE));
-  solvers.push_back(new LinminBFGS(LinminBFGS::MORE_THUENTE, 8));
-  solvers.push_back(new MNewton());
-  solvers.push_back(new PARTAN());
-  solvers.push_back(new HookeJeeves());
-  solvers.push_back(new ConjGradMT(ConjGradMT::FLETCHER_REEVES));
-  solvers.push_back(new ConjGradMT(ConjGradMT::POLAK_RIBIERE));
+    solvers.push_back(new DSQA());
+    solvers.push_back(new LRWWSimplex());
+    solvers.push_back(new DoglegBFGS());
+    solvers.push_back(new SteihaugSR1());
+    solvers.push_back(new LinminBFGS(LinminBFGS::FLETCHER));
+    solvers.push_back(new LinminBFGS(LinminBFGS::MORE_THUENTE));
+    solvers.push_back(new LinminBFGS(LinminBFGS::MORE_THUENTE, 8));
+    solvers.push_back(new MNewton());
+    solvers.push_back(new PARTAN());
+    solvers.push_back(new HookeJeeves());
+    solvers.push_back(new ConjGradMT(ConjGradMT::FLETCHER_REEVES));
+    solvers.push_back(new ConjGradMT(ConjGradMT::POLAK_RIBIERE));
 #ifdef WITH_FORTRAN
-  solvers.push_back(new LBFGSB());
+    solvers.push_back(new LBFGSB());
 #endif
-}
+  }
 
-void initTestFunctions(std::list< Function * > &funcList)
-{
+  void initTestFunctions_()
+  {
 #ifdef WITH_LIBMATHEVAL
-  funcList.push_back(new Function(F_EXPR, Function::DERIV_SYMBOLIC));
+    testFunctions.push_back(new Function(F_EXPR, Function::DERIV_SYMBOLIC));
 #endif
-  funcList.push_back(new ExtendedRosenbrock(2, Function::DERIV_FDIFF_CENTRAL_2));
-}
+    testFunctions.push_back(new ExtendedRosenbrock(2, Function::DERIV_FDIFF_CENTRAL_2));
+  }
 
-static void freeSolvers(std::list< NativeSolver * > &solvers)
-{
-  std::list< NativeSolver * >::iterator it;
-  for(it = solvers.begin(); it != solvers.end(); it++)
-    delete *it;
-}
+};
 
-static void freeTestFunctions(std::list< Function * > &testFunctions)
-{
-  std::list< Function * >::iterator it;
-  for(it = testFunctions.begin(); it != testFunctions.end(); it++)
-    delete *it;
-}
-
-static void printResults(const std::string &algoName, 
+/*static void printResults(const std::string &algoName, 
                          int n_iter, 
                          const vector< double > &x, 
                          double f,
@@ -99,25 +126,17 @@ static void printResults(const std::string &algoName,
            algoName.c_str(), n_iter, x[0], x[1], f);
   else
     printf("%-15s: FAILURE (%s)\n", algoName.c_str(), "???"); // TODO: error code string
-}
+}*/
 
-BOOST_AUTO_TEST_CASE(testAlgorithms)
+BOOST_FIXTURE_TEST_SUITE(TestSolvers, Fixture)
+
+BOOST_AUTO_TEST_CASE(testConvergence)
 {
-  std::list< NativeSolver * > solvers;
-  std::list< Function * > testFunctions;
   vector< double > x0(2);
   std::list< Function * >::const_iterator f;
   std::list< NativeSolver * >::const_iterator s;
   NativeSolver::IterationStatus status;
-  CompoundStoppingCriterion *stopCrit;
   int k;
-  
-  initSolvers(solvers);
-  initTestFunctions(testFunctions);
-  vector< double > xMin(2);
-  xMin[0] = xMin[1] = 1.0;
-  stopCrit = new CompoundStoppingCriterion(XDistToMinTest(
-    xMin, 1e-6, false) + MaxNumIterTest(MAX_NUM_ITER));
   
   x0[0] = -1.2;
   x0[1] = 1.0;
@@ -125,16 +144,21 @@ BOOST_AUTO_TEST_CASE(testAlgorithms)
   int fi = 0;
   for(f = testFunctions.begin(); f != testFunctions.end(); f++)
   {
-#ifdef WITH_LIBMATHEVAL
+/*#ifdef WITH_LIBMATHEVAL
     if (fi == 0)
       std::cout<<"Rosenbrock function with symbolic evaluation:"<<std::endl;
     else
 #endif
-      std::cout<<"Precompiled Rosenbrock function with finite-difference derivatives:"<<std::endl;
+      std::cout<<"Precompiled Rosenbrock function with finite-difference derivatives:"
+               <<std::endl;*/
     
     for(s = solvers.begin(); s != solvers.end(); s++)
     {
-      (*s)->setup(**f, x0);
+      Solver::Results results = *(*s)->solve(**f, x0, *stopCrit);
+      BOOST_CHECK_MESSAGE(norm_2(results.xMin - xMin) < 1e-6, 
+                          "solver " + (*s)->getName() + " failed to converge");
+      
+      /*(*s)->setup(**f, x0);
       
       k = 0;
       status = NativeSolver::ITERATION_CONTINUE;
@@ -150,16 +174,14 @@ BOOST_AUTO_TEST_CASE(testAlgorithms)
                           "solver " + (*s)->getName() + " failed to converge");
       
       printResults((*s)->getName(), k, (*s)->getX(), 
-                  (*s)->getFVal(), status);
+                  (*s)->getFVal(), status);*/
     }
     
     fi++;
   }
-  
-  freeSolvers(solvers);
-  freeTestFunctions(testFunctions);
-  delete stopCrit;
 }
+
+BOOST_AUTO_TEST_SUITE_END()
 
 // experimental code
 

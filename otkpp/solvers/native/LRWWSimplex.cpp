@@ -216,7 +216,7 @@ NativeSolver::IterationStatus LRWWSimplex::iterate_()
     // Case 2: inside
     else if(fr >= state_.S.getfx(setup_->n))
     {
-      state_.S.computeOutsideContraction(xic_);
+      state_.S.computeInsideContraction(xic_);
       fic = setup_->f(xic_);
       
       if(fic < state_.S.getfx(setup_->n))

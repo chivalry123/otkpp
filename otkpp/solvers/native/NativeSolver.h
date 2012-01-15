@@ -11,10 +11,11 @@
 
 using namespace boost::numeric::ublas;
 
-/// Defines the base class of the implemented algorithms.
+/// Defines the base class for the "native" solvers implemented in OTK++.
 /**
- * This class is the base class for algorithms that find a (local) 
- * minimum of a function \f$f:\mathbb{R}^n\rightarrow\mathbb{R}\f$.
+ * The solvers derived from this class are the "native" solvers that are written 
+ * in C++ by the author. These algorithms find a find a (local) minimum of a 
+ * function \f$f:\mathbb{R}^n\rightarrow\mathbb{R}\f$ with simple constraints.
  */
 class NativeSolver : public Solver
 {
@@ -42,9 +43,8 @@ class NativeSolver : public Solver
   
   /// Defines the results produced by the solver.
   /**
-   * In addition to the information produced by a 
-   * generic solver, this class of solvers also 
-   * stores the state of the solver after each 
+   * In addition to the information produced by a generic solver, the solvers 
+   * derived from this class also store the state of the solver after each 
    * iteration step.
    */
   struct Results : public Solver::Results

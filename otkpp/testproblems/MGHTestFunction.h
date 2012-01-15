@@ -1,8 +1,7 @@
 
 /*
- * This file contains test functions described in 
- * More, Garbow and Hillstrom: Testing Unconstrained 
- * Optimization Software (1981)
+ * This file contains implementations of test functions described in More, 
+ * Garbow and Hillstrom: Testing Unconstrained Optimization Software (1981)
  */
 
 #ifndef MGHTESTFUNCTION_H
@@ -172,9 +171,10 @@ class MGHTestFunction_arbitrary_nm : public Function
     bool checkDimensions(int n, int m) const; \
   }
 
+// TODO: symbolic expressions
 FUNCTION    (PowellBadlyScaled, PowellBadlyScaled_evaluator);
 FUNCTION    (BrownBadlyScaled, BrownBadlyScaled_evaluator);
-FUNCTION    (Beale, Beale_evaluator);
+FUNCTION    (Beale, Beale_evaluator); //"(1.5-x*(1-y))^2+(2.25-x*(1-y^2))^2+(2.625-x*(1-y^3))^2");
 FUNCTION    (HelicalValley, HelicalValley_evaluator);
 FUNCTION    (Gaussian, Gaussian_evaluator);
 N_FUNCTION  (ExtendedRosenbrock, ExtendedRosenbrock_evaluator);
