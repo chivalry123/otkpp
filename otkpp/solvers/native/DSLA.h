@@ -5,7 +5,7 @@
 /*#include <otkpp/linalg/BFGSUpdater.h>
 #include <otkpp/linalg/SR1Updater.h>*/
 
-#include <otkpp/localsolvers/native/NativeSolver.h>
+#include <otkpp/solvers/native/NativeSolver.h>
 
 class DSLA : public NativeSolver
 {
